@@ -1,0 +1,31 @@
+{
+  "name": "pi-agent-manager",
+  "version": "0.14.0",
+  "description": "A package for managing agents in Pi",
+  "license": "MIT",
+  "repository": "github.com/leo-alvarenga/pi-mono",
+  "keywords": [
+    "pi-package",
+    "pi"
+  ],
+  "files": ["src", "docs", "README.md", "LICENSE"],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "dependencies": {
+    "@earendil-works/pi-tui": "^0.84.0",
+    "yaml": "^2.9.0"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "devDependencies": {
+    "typescript": "^7.0.2"
+  }
+}
