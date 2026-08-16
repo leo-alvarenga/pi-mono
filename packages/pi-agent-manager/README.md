@@ -1,55 +1,60 @@
-# pi-agent-manager
+# @leo-alvarenga/pi-agent-manager
 
-A [pi](https://github.com/earendil-works/pi-coding-agent) extension for agent-mode switching with OpenCode-style
-permission guards. Each agent is a persona + a ruleset that resolves every tool call to **allow**, **ask**, or **deny**.
+A [`pi-coding-agent`](https://github.com/earendil-works/pi-coding-agent) extension providing persona-based agent switching and OpenCode-style permission guards.
 
-- `deny` → tool physically stripped (model never sees it)
-- `ask` → confirmation dialog with once / always / reject outcomes
-- `allow` → passes through
+Each agent combines a system prompt persona with a permission ruleset that resolves tool executions into three actions:
 
-![Preview](./docs/preview.gif)
+- **`deny`**: Physically disables tools via `pi.setActiveTools()` so the model never sees them.
+- **`ask`**: Pauses execution and prompts for interactive user confirmation (`once`, `always`, or `reject`).
+- **`allow`**: Permits immediate tool execution without confirmation.
 
-## How it works
+---
 
-A **Ruleset** is an ordered list of `{ permission, pattern, action }` rules — last-matching-rule-wins.
-The same rule engine powers both physical tool stripping (`deny` + `"*"`) and the interactive ask gate.
+## How It Works
 
-On startup the extension snapshots all registered tools and pushes only the allowed ones via `pi.setActiveTools()`.
-Before every turn the active agent's persona is injected into the system prompt. On every tool call the extension
-evaluates the tool against the current ruleset. `ask` triggers a confirmation; "always" appends a runtime rule to
-the session ruleset so it won't prompt again.
+1. **Tool Stripping**: On startup or agent switch, the extension evaluates the active agent's ruleset. Tools matched with `deny` rules are filtered out entirely via `pi.setActiveTools()`
+2. **Prompt Injection**: The active agent's system prompt (and optional XML permission envelope) is prepended to the system prompt before each conversation turn
+3. **Interactive Gate**: When a tool configured with `ask` is invoked, a confirmation dialog appears. Selecting "always" appends a runtime rule to the session state to allow subsequent calls without prompting
 
-## Built-in agents
+---
 
-| Agent    | Rules                                                                  | Description                          |
-| -------- | ---------------------------------------------------------------------- | ------------------------------------ |
-| planner  | read/grep/glob/list + web + subagent allowed; edit/bash denied         | Analysis-first, never writes or runs |
-| builder  | everything allowed; `rm`, `sudo`, `chmod`, `chown` gated behind ask    | Execution-oriented, destructive ops protected |
+## Built-In Agents
 
-## Install
+| Agent         | Description                                                                     | Default Ruleset Summary                                                                 |
+| ------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| **`planner`** | Analysis and inspection profile; cannot modify files or execute shell commands. | `read`, `grep`, `glob`, `list`, `web`, `task` allowed; `edit` and `bash` denied.        |
+| **`builder`** | Full development profile with guarded destructive shell operations.             | All tools allowed; destructive commands (`rm`, `sudo`, `chmod`, `chown`) trigger `ask`. |
+
+---
+
+## Installation
+
+Install via the `pi` package manager:
 
 ```bash
 pi install npm:@leo-alvarenga/pi-agent-manager
-# or local:
-pi install ./path/to/pi-agent-manager
 ```
 
-Restart pi or run `/reload`.
+After installation, restart `pi` or execute `/reload` within the TUI.
 
-## Usage
+---
 
-| Command          | Action                                                                         |
-| ---------------- | ------------------------------------------------------------------------------ |
-| `/agents`        | Interactive picker (arrows, type-to-filter, enter/esc)                         |
-| `/agents <name>` | Switch directly (tab-complete)                                                 |
-| `/agents_help`   | Agent list, rules summary, keybindings, help                                   |
-| `/agent_guard`   | Toggle XML permission-envelope injection (`on` / `off` / no args = toggle)         |
+## Commands & Keybindings
 
-An agent switch applies to the next interaction; the last agent is restored on restart.
+### TUI Commands
 
-## Keybindings
+| Command                   | Description                                                                  |
+| ------------------------- | ---------------------------------------------------------------------------- |
+| `/agents`                 | Opens the interactive agent selection picker                                 |
+| `/agents <name>`          | Switches directly to the specified agent (supports tab-completion)           |
+| `/agents_help`            | Displays active agent configuration and rule summaries                       |
+| `/agent_guard [on / off]` | Toggles XML permission-envelope system prompt injection (toggles if omitted) |
 
-Configure in `~/.pi/agent/keybindings.json`:
+_Note: Selected agents persist across sessions and are restored upon restarting_
+
+### Custom Keybindings
+
+Configure shortcuts in `~/.pi/agent/keybindings.json`:
 
 ```json
 {
@@ -59,46 +64,43 @@ Configure in `~/.pi/agent/keybindings.json`:
 }
 ```
 
-Run `/reload` after editing.
+Run `/reload` after updating keybindings.
 
-## Permission model
+---
 
-The permission engine evaluates `{ permission, pattern }` pairs against one or more rulesets.
-**Last matching rule wins.** If no rule matches, the default is `ask` (safe by default).
+## Permission Engine
 
-### Permission keys (tool families)
+The permission engine evaluates `{ permission, pattern }` pairs against defined rulesets.
 
-| Key         | Pi tools mapped                                        |
-| ----------- | ------------------------------------------------------ |
-| `read`      | `read`                                                 |
-| `grep`      | `grep`                                                 |
-| `glob`      | `find`                                                 |
-| `list`      | `ls`                                                   |
-| `edit`      | `write`, `edit`, `delete_file`                         |
-| `bash`      | `bash`, `shell`, `run`, `exec`                         |
-| `websearch` | `web_search`, `source_check`, `get_search_content`     |
-| `webfetch`  | `fetch_content`                                        |
+**Evaluation Order**: Rules are evaluated top-to-bottom in definition order, where the **last matching rule takes precedence**. If no rule matches an invoked tool, the default fallback is `ask`.
+
+### Permission Mappings
+
+| Key         | Mapped Pi Tools                                                |
+| ----------- | -------------------------------------------------------------- |
+| `read`      | `read`                                                         |
+| `grep`      | `grep`                                                         |
+| `glob`      | `find`                                                         |
+| `list`      | `ls`                                                           |
+| `edit`      | `write`, `edit`, `delete_file`                                 |
+| `bash`      | `bash`, `shell`, `run`, `exec`                                 |
+| `websearch` | `web_search`, `source_check`, `get_search_content`             |
+| `webfetch`  | `fetch_content`                                                |
 | `task`      | `subagent`, `subagent_wait`, `subagent_supervisor`, `intercom` |
-| `question`  | `questionnaire`, `ask_user_question`                   |
+| `question`  | `questionnaire`, `ask_user_question`                           |
 
-Custom/MCP tools not listed above use their own name as the permission key.
+_Unlisted custom or MCP tools map directly to their exact tool name._
 
-### Actions
+---
 
-| Action  | Meaning                                                  |
-| ------- | -------------------------------------------------------- |
-| `allow` | Tool runs without prompting                              |
-| `ask`   | Confirmation dialog (once / always / reject)             |
-| `deny`  | Tool physically disabled — model never sees it           |
+## Custom Agents
 
-## Adding agents
-
-Drop `.md` files with YAML frontmatter into `~/.pi/agent/agents/`:
+Add custom agent definition files (`.md`) with YAML frontmatter to `~/.pi/agent/agents/`:
 
 ```markdown
 ---
 name: reviewer
-description: Reviews code for quality and potential issues
+description: Reviews code for quality, performance, and security issues
 permissions:
   "*": deny
   read: allow
@@ -114,39 +116,37 @@ You are a Code Reviewer: focus on security, performance, and maintainability.
 Read freely and suggest improvements, but never edit files or run commands.
 ```
 
-### Frontmatter fields
+### Frontmatter Schema
 
-| Field         | Required | Description                                                         |
-| ------------- | -------- | ------------------------------------------------------------------- |
-| `name`        | no*      | Agent name (unique). Defaults to file name                          |
-| `description` | yes      | Shown in picker, completions, help                                  |
-| `permissions` | yes      | Ruleset object, legacy array, or preset string (see below)          |
-| `type`        | no       | `primary` (default) or `subagent`                                   |
-| `icon`        | no       | Single-char or short icon string displayed before the name           |
-| `color`       | no       | Theme color: `accent`, `success`, `warning`, `error`, `info`, `dim` |
-| `hidden`      | no       | `true` hides from picker and shortcut cycling                       |
-| `steps`       | no       | Max tool-call iterations before forced summary                      |
-| `prompt`      | no       | Body of the .md file becomes the prompt if not set in frontmatter   |
+| Field         | Required | Description                                                                  |
+| ------------- | -------- | ---------------------------------------------------------------------------- |
+| `description` | **Yes**  | Short summary displayed in the selection picker and help views.              |
+| `permissions` | **Yes**  | Preset name (`plan`, `build`, `read`), ruleset array, or full rule object.   |
+| `name`        | No       | Unique identifier (defaults to filename without `.md`).                      |
+| `type`        | No       | `primary` (default) or `subagent`.                                           |
+| `icon`        | No       | Display icon/glyph placed before the agent name.                             |
+| `color`       | No       | Theme color token (`accent`, `success`, `warning`, `error`, `info`, `dim`).  |
+| `hidden`      | No       | Set to `true` to exclude from cycle shortcuts and the picker menu.           |
+| `steps`       | No       | Maximum tool execution turns permitted before requesting a response summary. |
+| `prompt`      | No       | Overrides markdown body text as the system prompt instructions.              |
 
-\* Falls back to the markdown file name (without `.md`).
+### Permission Definition Formats
 
-### Permissions formats
-
-**1. Preset string** — shorthand for common profiles:
+#### 1. Preset Strings
 
 ```yaml
-permissions: plan    # read + web + subagent; edit/bash denied
-permissions: build   # all allowed; destructive bash gated
-permissions: read    # inspection tools only
+permissions: plan # Read/web/subagent allowed; edit and bash denied
+permissions: build # Full access; destructive bash commands gated with ask
+permissions: read # Inspection tools only
 ```
 
-**2. Legacy array** (auto-migrated to ruleset):
+#### 2. Legacy Array (Auto-converted to ruleset)
 
 ```yaml
 permissions: [read, web, ask]
 ```
 
-**3. Full ruleset object** — OpenCode-compatible:
+#### 3. Full Ruleset Object (OpenCode Compatible)
 
 ```yaml
 permissions:
@@ -162,28 +162,28 @@ permissions:
     "npm run build*": allow
 ```
 
-Rules are evaluated last-to-first within the object. Put the catch-all `"*"` first, then override with more
-specific rules below.
+---
 
-## File hierarchy
+## Directory Layout
 
 ```
 src/
-  index.ts                  Extension entry point (commands, hooks, wiring)
-  constants.ts              Shared string constants (keys, tags, defaults)
-  agent/
-    types.ts                AgentConfig, AgentState, AgentType
-    builtin.ts              BUILT_IN_AGENTS, DEFAULT_AGENT
-    manager.ts              AgentManager — state machine, tool guard, session rules
-    config.ts               User-agent loader (.md files), keybinding loader
-  permission/
-    types.ts                Action, Rule, Ruleset, ToolToPermission
-    evaluate.ts             evaluate(), disabled(), merge()
-    wildcard.ts             Wildcard.match()
-    mapping.ts              TOOL_TO_PERMISSION constant, extractPattern()
-    presets.ts              PERMISSION_PRESETS, fromLegacyPermissions()
-  cli/
-    picker.ts               Interactive TUI agent picker
-    help.ts                 Help text, permission badges, validators
-    logger.ts               Logger wrapper around pi's UI notify
+├── index.ts              # Extension entry point, lifecycle hooks, and commands
+├── constants.ts          # Key definitions, default values, and XML tags
+├── agent/
+│   ├── types.ts          # Agent state, configuration, and type definitions
+│   ├── builtin.ts        # Default built-in agent definitions
+│   ├── manager.ts        # Agent state machine and tool guard enforcement
+│   └── config.ts         # User markdown agent and keybinding loaders
+├── permission/
+│   ├── types.ts          # Ruleset schemas, actions, and evaluation types
+│   ├── evaluate.ts       # Core rule evaluation algorithms and state merging
+│   ├── wildcard.ts       # Glob pattern matching engine
+│   ├── mapping.ts        # Built-in tool-to-permission maps
+│   └── presets.ts        # Preset profiles and legacy format converters
+└── cli/
+    ├── picker.ts         # Interactive TUI selection interface
+    ├── help.ts           # Help renderer, permission badges, and validators
+    └── logger.ts         # Wrapper for pi notification rendering
+
 ```

@@ -24,6 +24,22 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
+  packages/pi-hash-edit:
+    dependencies:
+      '@earendil-works/pi-coding-agent':
+        specifier: '*'
+        version: 0.84.2(ws@8.21.3)
+      typebox:
+        specifier: '*'
+        version: 1.3.7
+    devDependencies:
+      '@types/node':
+        specifier: ^26.1.2
+        version: 26.2.0
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+
   packages/pi-zen-frame:
     dependencies:
       '@earendil-works/pi-coding-agent':

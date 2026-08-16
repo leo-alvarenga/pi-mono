@@ -1,7 +1,8 @@
 {
-  "name": "@leo-alvarenga/pi-agent-manager",
-  "version": "0.16.0",
-  "description": "A package for managing agents in Pi",
+  "name": "@leo-alvarenga/pi-hash-edit",
+  "version": "0.1.0",
+  "description": "Hash-anchored file reading and editing tools (hash_read / hash_edit) that eliminate code corruption and line drift",
+  "author": "Leonardo A. Alvarenga",
   "license": "MIT",
   "repository": "github.com/leo-alvarenga/pi-mono",
   "publishConfig": {
@@ -14,16 +15,12 @@
   ],
   "files": [
     "src",
-    "docs",
     "README.md",
     "LICENSE"
   ],
   "peerDependencies": {
-    "@earendil-works/pi-coding-agent": "*"
-  },
-  "dependencies": {
-    "@earendil-works/pi-tui": "^0.84.0",
-    "yaml": "^2.9.0"
+    "@earendil-works/pi-coding-agent": "*",
+    "typebox": "*"
   },
   "scripts": {
     "build": "tsc --noEmit",
@@ -31,10 +28,11 @@
   },
   "pi": {
     "extensions": [
-      "./src/index.ts"
+      "./src/hash-edit-tools.ts"
     ]
   },
   "devDependencies": {
+    "@types/node": "^26.1.2",
     "typescript": "^7.0.2"
   }
 }

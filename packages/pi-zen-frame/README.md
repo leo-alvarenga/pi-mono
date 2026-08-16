@@ -1,63 +1,75 @@
-# pi-zen-frame
+# @leo-alvarenga/pi-zen-frame
 
-A [pi-coding-agent](https://github.com/earendil-works/pi) extension that gives the TUI editor a simple yet polished look and feel.
-
-- **Frame** — a box (`╭ ╮ ╰ ╯ │ ─`) with live status segments embedded in the top/bottom border.
-- **Header** — an optional Claude-welcome-style top box: logo (left, 40%) + model/provider and cwd/git info (right, 60%, split in two halves).
-- **Working messages** — randomized messages in pi's built-in working loader, swapped on a configurable interval (on by default).
-- **Theme native** — every color is a pi `ThemeColor`, so it follows your active pi theme.
+A [`pi-coding-agent`](https://github.com/earendil-works/pi) extension that gives the TUI editor a clean, minimalist layout with customizable status indicators and frames.
 
 ![Preview](./docs/preview.png)
 
-## Install
+## Features
 
-It's distributed as a pi package. Add it to `settings.json` → `packages`, e.g. install from
-a local checkout or registry:
+- **Clean Frame**: Clean editor frame with segments placed above and below it to easily see relevant info
+- **Header Box**: Optional Claude-style welcome panel displaying a logo, model/provider info, current working directory, and Git status
+- **Working Messages**: Randomized loading status messages during response generation, updated on a configurable timer
+- **Native Theme Support**: Uses pi `ThemeColor` tokens to automatically align with your active theme
+
+---
+
+## Installation
+
+Run the following command:
+
+```bash
+pi install @leo-alvarenga/pi-zen-frame
+```
+
+Or add `pi-zen-frame` to your pi packages list in `~/.pi/agent/settings.json`:
 
 ```jsonc
-// ~/.pi/agent/settings.json
 {
-  "packages": ["npm:@leo-alvarenga/pi-zen-frame", "path/to/pi-zen-frame"],
+  "packages": ["npm:@leo-alvarenga/pi-zen-frame"],
 }
 ```
 
-Restart pi (or `/reload`).
+Then, restart pi or run `/reload` in the console.
 
-## Config
+---
 
-zen editor reads `~/.pi/agent/pi-zen-frame.json`. All keys are optional; defaults are shown.
+## Configuration
+
+Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are optional.
 
 ```jsonc
 {
-  // Accent used by segments/frame when a more specific color isn't set.
+  // Fallback accent color for frame border and active segments
   "accentColor": "accent",
 
-  // Master mute: every segment except agent-mode renders muted.
-  // Toggle at runtime with /zen_mode or the piZenFrame.zenMode keybinding.
+  // Master mute: renders all segments in muted tones except agent-mode
   "zenMode": true,
 
   "header": {
     "enable": true,
-    "logo": [" ", "██████████", "███   ███ ", "██████    ", ...],
-    "heading": "Zen Pi",
-    "subheading": "A pi-coding-agent powered terminal editor",
+    "logo": ["█████████  ", "███   ███  ", "██████     ", "███     ███"],
+    "heading": "Welcome back!",
+    "subheading": "Ready for your next session? Terminal warm, context clean, tools ready to execute",
     "logoColor": "text",
-    "accentColor": "customMessageLabel"
+    "accentColor": "customMessageLabel",
   },
 
   "frame": {
     "enable": true,
-    // Below this terminal width the box is skipped (plain editor).
+
+    // Minimum terminal width required to render the border frame
     "minWidth": 20,
 
-    // Blank lines inside the box (padding) / outside it (margin).
+    // Padding inside the frame
     "paddingTop": 1,
     "paddingBottom": 1,
     "paddingX": 1,
+
+    // Outer margin around the frame
     "marginTop": 0,
     "marginBottom": 0,
 
-    // Border segments on/off.
+    // Toggle individual status segments
     "showCwd": true,
     "showModel": true,
     "showContext": true,
@@ -65,84 +77,80 @@ zen editor reads `~/.pi/agent/pi-zen-frame.json`. All keys are optional; default
     "showSpinner": false,
     "showAgentMode": true,
 
-    // Defaults to accentColor, then "border"; Can also be set to "agentMode" to match the current agent's color
+    // Color options: "border", "accentColor", or "agentMode"
     "borderColor": "border",
 
-    // Glyph shown before the editor content. Default "❯".
+    // Input prompt prefix glyph and color settings
     "prefix": "❯",
+    "prefixColor": "muted", // Options: "agentMode", "frameBorder", or any ThemeColor
 
-    // Prefix color source: "agentMode" (current agent), "frameBorder" (frame
-    // border color), or any ThemeColor. Default: text color.
-    "prefixColor": "muted",
+    // Override default Nerd-Font glyphs
+    "icons": {
+      // Keys: folder, model, context, thinking, gitDirty, gitBranch
+    },
 
-    // Override the Nerd-Font glyphs (folder, model, context, thinking,
-    // gitDirty, gitBranch).
-    "icons": {},
-
-    // Per-segment fg overrides (any subset; supersede the built-in colors,
-    // e.g. the ctx traffic-light). Keys: model, thinking, context, cwd,
-    // agentMode. agentMode only applies when zenMode is off and no agent
-    // color is set.
-    "colors": { "model": "accent", "cwd": "accent" }
+    // Per-segment foreground color overrides (supersedes default theme colors)
+    "colors": {
+      "model": "accent",
+      "cwd": "accent",
+    },
   },
 
-  // Randomized messages shown in pi's built-in working loader (the
-  // "Working..." line while streaming). A new random message is picked
-  // every `intervalMs`; no repeats until the pool is exhausted. Default on.
+  // Randomized status messages shown while streaming responses
   "workingMessage": {
     "enable": true,
     "intervalMs": 3000,
-    "messages": ["Exploring the seas", "Tinkering with strange objects", "..."]
-  }
+    "messages": [
+      "Exploring the seas",
+      "Tinkering with strange objects",
+      "Analyzing patterns",
+    ],
+  },
 }
 ```
 
-## Commands & keybindings
+---
 
-- `/zen_mode` — toggle zen mode (all segments muted except agent-mode).
-- Toggle keybinding: `piZenFrame.zenMode`, default `ctrl+shift+z`. Rebind or
-  disable it in `~/.pi/agent/keybindings.json`:
+## Structure & Status Segments
+
+The editor window features status indicators embedded along the frame borders:
+
+| Location         | Segment        | Description                                                           |
+| ---------------- | -------------- | --------------------------------------------------------------------- |
+| **Top Left**     | **model**      | Active model name and provider                                        |
+|                  | **reasoning**  | Current reasoning effort level, tinted with pi thinking tokens        |
+|                  | **spinner**    | Active phase indicator (`thinking`, `outputting`, `toolcall`, `exec`) |
+| **Top Right**    | **ctx**        | Context usage percentage and token counts with color alerts           |
+| **Bottom Left**  | **agent mode** | Active agent indicator pill from `pi-agent-manager`                   |
+| **Bottom Right** | **cwd**        | Shortened path, active Git branch, and uncommitted file counts        |
+
+---
+
+## Commands & Keybindings
+
+- **Toggle Command**: `/zen_mode` — Toggles Zen mode on and off.
+- **Default Keybinding**: `ctrl+shift+z`
+
+To rebind or disable the hotkey, update `~/.pi/agent/keybindings.json`:
 
 ```jsonc
-// ~/.pi/agent/keybindings.json
 {
-  "piZenFrame.zenMode": "ctrl+shift+z", // or [] to disable; /zen_mode still works
+  "piZenFrame.zenMode": "ctrl+shift+z", // Set to [] to disable the shortcut
 }
 ```
 
-After editing `keybindings.json`, run `/reload` to apply.
+Run `/reload` after modifying your keybindings.
 
-## The frame
+---
 
-The editor's content is boxed with rounded corner glyphs and two live status rails painted into the top and bottom borders.
-
-### Top border (left)
-
-- **model** — active model name + provider, accented.
-- **reasoning** — current thinking level, tinted with pi's own thinking token (`thinkingLow` … `thinkingXhigh`).
-- **spinner** — streaming phase (`thinking` / `outputting` / `toolcall` / `exec`), replaces the left slot while active.
-
-### Top border (right)
-
-- **ctx** — context window usage: percentage + `used/window` tokens. Color winds traffic light (green → warning at ≥50% → red at ≥80%).
-
-### Bottom border (left)
-
-- **agent mode** — current pi-agent-manager agent as a colored pill (optional, no hard dependency).
-
-### Bottom border (right)
-
-- **cwd** — working directory (shortened) + git branch and dirty file count.
-
-All of these are colored with pi `ThemeColor`s, so they follow kanagawa, dark, etc.
-
-## Source layout
+## Directory Layout
 
 ```
 extensions/
-  index.ts            entry: config, events, editor install
-  config/             types, constants, settings loading/normalization
-  components/         header, frame, segments, registry (one file per segment)
-  editor/             FrameEditor (frame + spinner rendering)
-  utils/              agent-mode, git, path, string helpers
+├── index.ts            # Extension entry point: config initialization and events
+├── config/             # Types, defaults, and settings normalization
+├── components/         # Header, frame border, and status segment modules
+├── editor/             # FrameEditor component for layout rendering
+└── utils/              # Helpers for Git status, paths, and agent modes
+
 ```
