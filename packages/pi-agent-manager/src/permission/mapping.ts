@@ -11,11 +11,13 @@ export const TOOL_TO_PERMISSION: ToolToPermission = {
   grep: "grep",
   find: "glob",
   ls: "list",
+  hash_read: "read",
 
   // File modification
   write: "edit",
   edit: "edit",
   delete_file: "edit",
+  hash_edit: "edit",
 
   // Shell
   bash: "bash",

@@ -61,6 +61,7 @@ export class AgentManager {
 
   private syncActiveTools(pi: ExtensionAPI): void {
     if (!this.initialized) return;
+    this.allTools = pi.getAllTools().map((t) => t.name);
     const denied = disabled(
       this.allTools,
       TOOL_TO_PERMISSION,

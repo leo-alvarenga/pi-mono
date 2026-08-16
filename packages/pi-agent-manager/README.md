@@ -78,11 +78,11 @@ The permission engine evaluates `{ permission, pattern }` pairs against defined 
 
 | Key         | Mapped Pi Tools                                                |
 | ----------- | -------------------------------------------------------------- |
-| `read`      | `read`                                                         |
+| `read`      | `read`, `hash_read`                                        |
 | `grep`      | `grep`                                                         |
 | `glob`      | `find`                                                         |
 | `list`      | `ls`                                                           |
-| `edit`      | `write`, `edit`, `delete_file`                                 |
+| `edit`      | `write`, `edit`, `delete_file`, `hash_edit`                    |
 | `bash`      | `bash`, `shell`, `run`, `exec`                                 |
 | `websearch` | `web_search`, `source_check`, `get_search_content`             |
 | `webfetch`  | `fetch_content`                                                |
