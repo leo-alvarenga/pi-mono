@@ -22,7 +22,7 @@ jobs:
           registry-url: https://registry.npmjs.org
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm --filter pi-agent-manager build
+      - run: pnpm --filter @leo-alvarenga/pi-agent-manager build
       - name: Publish
         working-directory: packages/pi-agent-manager
         run: pnpm publish --no-git-checks

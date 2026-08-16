@@ -29,7 +29,7 @@ the session ruleset so it won't prompt again.
 ## Install
 
 ```bash
-pi install git:github.com/leo-alvarenga/pi-agent-manager
+pi install npm:@leo-alvarenga/pi-agent-manager
 # or local:
 pi install ./path/to/pi-agent-manager
 ```

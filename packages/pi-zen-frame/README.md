@@ -17,7 +17,7 @@ a local checkout or registry:
 ```jsonc
 // ~/.pi/agent/settings.json
 {
-  "packages": ["git:github.com/<you>/pi-zen-frame", "path/to/pi-zen-frame"],
+  "packages": ["npm:@leo-alvarenga/pi-zen-frame", "path/to/pi-zen-frame"],
 }
 ```
 

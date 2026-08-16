@@ -5,7 +5,7 @@ Each package lives in `packages/`, keeps its own version, and is published to np
 
 ## Packages
 
-| Package            | Path                        | Description                                                |
-| ------------------ | --------------------------- | ---------------------------------------------------------- |
-| `pi-agent-manager` | `packages/pi-agent-manager` | Agent-mode switching with OpenCode-style permission guards |
-| `pi-zen-frame`     | `packages/pi-zen-frame`     | Polished frame/header look for the TUI editor              |
+| Package                           | Path                        | Description                                                |
+| --------------------------------- | --------------------------- | ---------------------------------------------------------- |
+| `@leo-alvarenga/pi-agent-manager` | `packages/pi-agent-manager` | Agent-mode switching with OpenCode-style permission guards |
+| `@leo-alvarenga/pi-zen-frame`     | `packages/pi-zen-frame`     | Polished frame/header look for the TUI editor              |
