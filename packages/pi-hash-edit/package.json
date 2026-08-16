@@ -1,6 +1,6 @@
 {
   "name": "@leo-alvarenga/pi-hash-edit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Hash-anchored file reading and editing tools (hash_read / hash_edit) that eliminate code corruption and line drift",
   "author": "Leonardo A. Alvarenga",
   "license": "MIT",
@@ -15,6 +15,7 @@
   ],
   "files": [
     "src",
+    "skills",
     "README.md",
     "LICENSE"
   ],
@@ -29,6 +30,9 @@
   "pi": {
     "extensions": [
       "./src/hash-edit-tools.ts"
+    ],
+    "skills": [
+      "./skills"
     ]
   },
   "devDependencies": {
