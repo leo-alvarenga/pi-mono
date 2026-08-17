@@ -32,6 +32,17 @@ export interface HeaderEnv {
 const RANDOM_TIP =
   HEADER_TIPS[Math.floor(Math.random() * HEADER_TIPS.length)]?.text ?? "";
 
+function wrapLines(
+  lines: string[],
+  maxLen: number,
+  style?: (line: string) => string,
+): string[] {
+  const wrapped = lines.map((l) => wrapTextWithAnsi(l, maxLen)).flat();
+  if (style) return wrapped.map((l) => (l.length ? style(l) : l));
+
+  return wrapped;
+}
+
 export function createHeader(
   _tui: TUI,
   theme: Theme,
@@ -56,29 +67,6 @@ export function createHeader(
     lines: settings.header?.logo ?? DEFAULT_SETTINGS.header?.logo ?? [],
     color: settings.header?.logoColor ?? DEFAULT_SETTINGS.header?.logoColor,
   };
-
-  const leftLines = [
-    ...logo.lines.map((l) => theme.fg(logo.color, l)),
-
-    "",
-    "",
-
-    theme.bold(
-      theme.fg(
-        "muted",
-        settings.header?.heading ?? DEFAULT_SETTINGS.header?.heading,
-      ),
-    ),
-
-    "",
-
-    theme.italic(
-      theme.fg(
-        "muted",
-        settings.header?.subheading ?? DEFAULT_SETTINGS.header?.subheading,
-      ),
-    ),
-  ];
 
   const border = (s: string, fg?: ThemeColor) => theme.fg(fg ?? accentColor, s);
 
@@ -106,7 +94,7 @@ export function createHeader(
   }
 
   /** Right column halves: top = model(+provider), bottom = cwd + git. */
-  function infoRows(env: HeaderEnv): string[] {
+  function infoRows(env: HeaderEnv, width: number): string[] {
     const icons = DEFAULT_ICONS;
     const parts: string[] = [];
 
@@ -123,46 +111,74 @@ export function createHeader(
 
     return [
       theme.bold(border("Model Info")),
-      env.modelName ? theme.fg("muted", `${icons.model} ${env.modelName}`) : "",
+
+      ...wrapLines(
+        [
+          env.modelName
+            ? theme.fg("muted", `${icons.model} ${env.modelName}`)
+            : "",
+        ],
+        width,
+        (str) => theme.fg("muted", str),
+      ),
+
       "",
+
       theme.bold(border("Current Directory")),
       parts.length ? parts.join(" · ") : "",
+
       "",
+
       theme.bold(border("Tip")),
-      theme.fg("muted", RANDOM_TIP),
+      ...wrapLines([RANDOM_TIP], width, (str) => theme.fg("muted", str)),
     ];
   }
 
   return {
     render(width: number): string[] {
+      const env = getEnv(pi);
+
+      const inner = Math.max(0, width - 2);
+      const leftW = Math.floor(inner * LEFT_COL_RATIO);
+
+      const rightW = inner - leftW - 1;
+
+      const rightLines = infoRows(env, rightW);
+      const leftLines = [
+        ...logo.lines.map((l) => theme.fg(logo.color, l)),
+
+        "",
+        "",
+
+        ...wrapLines(
+          [settings.header?.heading ?? DEFAULT_SETTINGS.header?.heading ?? ""],
+          leftW,
+        ).map((line) => theme.bold(theme.fg("muted", line))),
+
+        "",
+
+        ...wrapLines(
+          [
+            settings.header?.subheading ??
+              DEFAULT_SETTINGS.header?.subheading ??
+              "",
+          ],
+          leftW,
+        ).map((line) => theme.italic(theme.fg("muted", line))),
+      ];
+
       // Too narrow for a box → fall back to a plain centered logo.
       if (width < MIN_BOX_WIDTH) {
         return leftLines;
       }
 
-      const env = getEnv(pi);
-      const rightRows = infoRows(env);
-
-      const inner = Math.max(0, width - 2);
-      const leftW = Math.floor(inner * LEFT_COL_RATIO);
-      const rightW = inner - leftW - 1; // divider column
-
       // No truncation: overflow wraps onto following lines until it all fits.
-      const leftWrapped = leftLines
-        .map((l) => wrapTextWithAnsi(l, leftW))
-        .flat();
-      const rightWrapped = rightRows
-        .map((r) => wrapTextWithAnsi(r, Math.max(1, rightW - 2))) // 2-col indent
-        .flat();
+      const height = Math.max(leftLines.length, rightLines.length);
+      const logoTop = Math.max(0, Math.floor((height - leftLines.length) / 2));
 
-      const height = Math.max(leftWrapped.length, rightWrapped.length);
-      const logoTop = Math.max(
-        0,
-        Math.floor((height - leftWrapped.length) / 2),
-      );
       const rightTop = Math.max(
         0,
-        Math.floor((height - rightWrapped.length) / 2),
+        Math.floor((height - rightLines.length) / 2),
       );
 
       const lines: string[] = [""];
@@ -172,12 +188,10 @@ export function createHeader(
 
       for (let i = 0; i < height; i++) {
         const l = i - logoTop;
-        const leftLine =
-          l >= 0 && l < leftWrapped.length ? leftWrapped[l]! : "";
+        const leftLine = l >= 0 && l < leftLines.length ? leftLines[l]! : "";
 
         const r = i - rightTop;
-        const rightLine =
-          r >= 0 && r < rightWrapped.length ? rightWrapped[r]! : "";
+        const rightLine = r >= 0 && r < rightLines.length ? rightLines[r]! : "";
 
         lines.push(splitRow(leftW, rightW, leftLine, rightLine));
       }
