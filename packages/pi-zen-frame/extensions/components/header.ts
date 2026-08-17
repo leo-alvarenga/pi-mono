@@ -143,7 +143,7 @@ export function createHeader(
 
       const rightW = inner - leftW - 1;
 
-      const rightLines = infoRows(env, rightW);
+      const rightLines = infoRows(env, rightW - 2);
       const leftLines = [
         ...logo.lines.map((l) => theme.fg(logo.color, l)),
 
@@ -152,7 +152,7 @@ export function createHeader(
 
         ...wrapLines(
           [settings.header?.heading ?? DEFAULT_SETTINGS.header?.heading ?? ""],
-          leftW,
+          leftW - 2,
         ).map((line) => theme.bold(theme.fg("muted", line))),
 
         "",
@@ -163,7 +163,7 @@ export function createHeader(
               DEFAULT_SETTINGS.header?.subheading ??
               "",
           ],
-          leftW,
+          leftW - 2,
         ).map((line) => theme.italic(theme.fg("muted", line))),
       ];
 

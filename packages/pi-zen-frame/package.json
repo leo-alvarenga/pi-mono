@@ -2,7 +2,7 @@
   "name": "@leo-alvarenga/pi-zen-frame",
   "description": "A pi-coding-agent extension that gives the TUI editor a simple yet polished look and feel",
   "author": "Leonardo A. Alvarenga",
-  "version": "0.12.1",
+  "version": "0.12.2",
   "license": "MIT",
   "repository": "github.com/leo-alvarenga/pi-mono",
   "publishConfig": {
