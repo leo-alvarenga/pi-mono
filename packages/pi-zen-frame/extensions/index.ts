@@ -94,7 +94,8 @@ function provideExternal(pi: ExtensionAPI): ExternalData {
     gitBranch: git.branch,
     theme: ctx?.ui.theme,
     thinkingLevel: pi.getThinkingLevel(),
-    modelName: `${model?.name ?? model?.id ?? "Unknown"} (${capitalize(model?.provider ?? "unknown")})`,
+    modelName: model?.name ?? model?.id ?? "Unknown",
+    modelProvider: capitalize(model?.provider ?? "unknown"),
     context: usage
       ? {
           tokens: usage.tokens,

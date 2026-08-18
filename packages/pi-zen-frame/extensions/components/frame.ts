@@ -1,22 +1,12 @@
 /**
- * The box. Wraps the base editor's rows (rendered narrower) with rounded
- * corner glyphs, embeds the segment text into the top/bottom border, and
- * inserts the configurable blank padding lines inside the box.
+ * Row layout for the borderless band editor.
  *
- * Row budget: content is rendered at `width - 2 - 2*paddingX`, wrapped with
- * `paddingX` spaces + a `│` on each side, so every output row is exactly
- * `width` columns — same contract as the default editor.
+ * composeBand assembles the bg-filled band: padding rows, content (prefix on
+ * the first row), autocomplete, one blank row, then the box-bottom segments.
+ * Every output row is exactly `width` columns. fitFrameRow/fitInfoRow lay out
+ * the header and status rows.
  */
 import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
-
-export interface FrameOptions {
-  width: number;
-  prefix?: string;
-  paddingX: number;
-  paddingTop: number;
-  paddingBottom: number;
-  border: (str: string) => string;
-}
 
 const SGR_RE = /\x1b\[[0-9;]*m/g;
 const CURSOR_MARKER_RE = /\x1b_pi:c\x07/g;
@@ -26,13 +16,65 @@ function plain(row: string): string {
 }
 
 /** A border row is all `─`, or a `─── ↑/↓ N more ───` scroll indicator. */
-function isBorderRow(row: string): boolean {
+export function isBorderRow(row: string): boolean {
   const t = plain(row).trim();
 
   if (t === "") return true;
   if (/^─+$/.test(t)) return true;
 
   return /^─── [↑↓] \d+ more ─*$/.test(t);
+}
+
+export interface BandOptions {
+  padX: number;
+  width: number;
+  prefix: string;
+  marginX: number;
+  boxBottom: string;
+  paddingTop: number;
+  paddingBottom: number;
+  paint: (row: string) => string;
+}
+
+/** Borderless bg band: padding, content (prefix on first row), autocomplete,
+ *  blank row, box-bottom segments. Every row is exactly `width` columns. */
+export function composeBand(
+  content: string[],
+  autocomplete: string[],
+  opts: BandOptions,
+): string[] {
+  const {
+    padX,
+    paint,
+    width,
+    prefix,
+    marginX,
+    boxBottom,
+    paddingTop,
+    paddingBottom,
+  } = opts;
+
+  const lead = Math.max(0, padX - visibleWidth(prefix));
+
+  const inset = (row: string) =>
+    paint(prefix + " ".repeat(lead) + row + " ".repeat(padX));
+
+  const fill = () => inset(paint(" ".repeat(Math.max(0, width - 2 * padX))));
+
+  const rows: string[] = [];
+  for (let i = 0; i < paddingTop; i++) rows.push(fill());
+
+  content.forEach((row) => {
+    rows.push(inset(row));
+  });
+
+  autocomplete.forEach((row) => rows.push(inset(row)));
+
+  rows.push(fill());
+  rows.push(inset(boxBottom));
+
+  for (let i = 0; i < paddingBottom; i++) rows.push(fill());
+  return rows;
 }
 
 /** Lay one border row: cap + leftText + ─fill + rightText + cap, always
@@ -90,51 +132,4 @@ export function fitInfoRow(
     width - visibleWidth(leftText2) - visibleWidth(rightText2),
   );
   return leftText2 + " ".repeat(fill) + rightText2;
-}
-
-function wrapContent(row: string, paddingX: number): string {
-  if (paddingX <= 0) return row;
-
-  return " ".repeat(paddingX) + row + " ".repeat(paddingX);
-}
-
-export function renderFrame(inner: string[], opts: FrameOptions): string[] {
-  const { border, width, paddingX, prefix } = opts;
-  if (inner.length === 0) return inner;
-
-  // The real bottom border is the last border-like row (autocomplete rows
-  // are appended *after* it, so the last row is NOT necessarily the bottom).
-  let bottomIdx = inner.length - 1;
-
-  for (let i = inner.length - 1; i >= 0; i--) {
-    if (isBorderRow(inner[i]!)) {
-      bottomIdx = i;
-      break;
-    }
-  }
-
-  const result: string[] = [];
-  const padRow = " ".repeat(Math.max(0, width));
-  const fullBorder = border("─".repeat(width));
-
-  result.push(fullBorder);
-
-  for (let i = 0; i < opts.paddingTop; i++) result.push(padRow);
-
-  for (let i = 1; i < bottomIdx; i++) {
-    const decorator = i === 1 ? (prefix ?? "") : "";
-    const content = decorator + inner[i]!;
-
-    result.push(wrapContent(content, paddingX - visibleWidth(decorator)));
-  }
-
-  for (let i = 0; i < opts.paddingBottom; i++) result.push(padRow);
-
-  result.push(fullBorder);
-
-  for (let i = bottomIdx + 1; i < inner.length; i++) {
-    result.push(wrapContent(inner[i]!, paddingX));
-  }
-
-  return result;
 }

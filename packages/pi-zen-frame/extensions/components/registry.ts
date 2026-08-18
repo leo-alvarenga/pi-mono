@@ -13,11 +13,11 @@ import { agentModeSegment } from "./agent-mode";
 import type { FrameData, SegmentContext, SegmentDef, Slot } from "./types";
 
 export const segments: SegmentDef[] = [
+  agentModeSegment,
   modelSegment,
   reasoningSegment,
   spinnerSegment,
   tokenCountSegment,
-  agentModeSegment,
   cwdSegment,
 ];
 
@@ -38,5 +38,5 @@ export function segmentsFor(
   return active
     .map((s) => s.render(d, ctx))
     .filter((t) => t !== "")
-    .join(ctx.border("·"));
+    .join(ctx.theme.fg("dim", "·"));
 }

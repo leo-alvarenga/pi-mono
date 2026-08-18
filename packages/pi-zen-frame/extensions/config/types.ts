@@ -9,17 +9,7 @@ export interface BannerTip {
   text: string;
 }
 
-export interface FrameColors {
-  border: ThemeColor;
-  background: ThemeColor;
-  cwd: ThemeColor;
-  model: ThemeColor;
-  context: ThemeColor;
-  thinking: ThemeColor;
-  agentMode: ThemeColor;
-}
-
-/** Nerd-font / glyph icons shown in the frame border. Each is overridable. */
+/** Nerd-font / glyph icons shown in the band and status rows. Overridable. */
 export interface FrameIcons {
   folder: string;
   model: string;
@@ -30,9 +20,9 @@ export interface FrameIcons {
 }
 
 /**
- * ``frame`` — the rounded-corner shell look. Padding values are plain
+ * ``frame`` — the borderless band look. Padding values are plain
  * numbers (>= 0): paddingTop/paddingBottom are blank lines shown *inside*
- * the box above/below the content.
+ * the band above/below the content.
  */
 export interface FrameSettings {
   enable?: boolean;
@@ -40,19 +30,22 @@ export interface FrameSettings {
   /** Below this terminal width the frame is skipped entirely (passthrough) */
   minWidth?: number;
 
-  /** Blank lines inside the box above the content. Default 1. */
+  /** Blank rows inside the band above the content. Default 1 */
   paddingTop?: number;
 
-  /** Blank lines inside the box below the content. Default 1. */
+  /** Blank rows inside the band below the content. Default 1 */
   paddingBottom?: number;
 
-  /** Horizontal inner padding for the content rows. Default 1. */
+  /** Horizontal inner padding for the content rows. Default 2 */
   paddingX?: number;
 
-  /** Blank rows OUTSIDE the box, above its top border. Default 0. */
+  /** Horizontal outer margin for the content rows. Default 1 */
+  marginX?: number;
+
+  /** Blank rows OUTSIDE the band, above it. Default 0 */
   marginTop?: number;
 
-  /** Blank rows OUTSIDE the box, below its bottom border. Default 0. */
+  /** Blank rows OUTSIDE the band, below the pseudo-footer. Default 0 */
   marginBottom?: number;
 
   showCwd?: boolean;
@@ -61,21 +54,16 @@ export interface FrameSettings {
   showThinking?: boolean;
   showAgentMode?: boolean;
 
-  /** Show the status-animation spinner segment while streaming. Default false. */
+  /** Show the status-animation spinner segment while streaming. Default false */
   showSpinner?: boolean;
 
   icons?: Partial<FrameIcons>;
-  colors?: Partial<FrameColors>;
 
-  /** ThemeColor used as the fg for all editor border characters; If set to `"agentMode"`, will follow the current Agent color. Default "border". */
-  borderColor?: ThemeColor | "agentMode";
-
-  /** Text shown before the editor content. Default "❯". */
+  /** Text before the editor content. Default "┃" */
   prefix?: string;
 
-  /** ThemeColor used as the fg for the prefix text; If set to `"agentMode"`, will follow the current Agent color;
-   * If set to `"frameBorder"`, will follow the border color. Default: text color. */
-  prefixColor?: "agentMode" | "frameBorder" | ThemeColor;
+  /** ThemeColor for the prefix; "agentMode" follows the agent's color if (@leo-alvarenga/pi-agent-manager is installed, defaults to "text otherwise"). Default: "agentMode" */
+  prefixColor?: "agentMode" | ThemeColor;
 }
 
 /** `header` — the top-line header, which can show a logo or other text */
@@ -110,6 +98,6 @@ export interface Settings {
    *  keybinding (default `ctrl+shift+z`). */
   zenMode?: boolean;
 
-  /** Accent color for the frame border and other highlights; Defaults to 'accent' */
+  /** Accent color for segment highlights; Defaults to 'accent' */
   accentColor?: ThemeColor;
 }

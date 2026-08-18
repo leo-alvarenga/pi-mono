@@ -19,12 +19,12 @@ function formatWindow(n: number): string {
   return `${(n / 1_000).toFixed(0)}k`;
 }
 
-/** Bottom-left: context window usage (percent + used/window tokens). */
+/** Box bottom (right): context window usage (percent + used/window tokens). */
 export const tokenCountSegment: SegmentDef = {
   id: "token-count",
-  slot: "topRight",
+  slot: "bottomRight",
   enabled: (_d, cfg) => cfg.showContext !== false,
-  render: (d, { border, theme, icons, segColor }) => {
+  render: (d, { theme, icons }) => {
     const c = d.context;
     if (!c) return "";
 
@@ -41,15 +41,13 @@ export const tokenCountSegment: SegmentDef = {
       }
     }
 
+    const color2 = d.zenMode ? "muted" : color;
     const used = c.tokens === null ? "?" : formatTokens(c.tokens);
 
     return (
-      theme.fg(segColor("context", color), ` ${icons.context} ctx ${pct} `) +
-      border("·") +
-      theme.fg(
-        segColor("context", color),
-        ` ${used}/${formatWindow(c.window)} `,
-      )
+      theme.fg(color2, ` ${icons.context} ctx ${pct} `) +
+      theme.fg("dim", "·") +
+      theme.fg(color2, ` ${used}/${formatWindow(c.window)} `)
     );
   },
 };

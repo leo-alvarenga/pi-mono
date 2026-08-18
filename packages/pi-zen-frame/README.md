@@ -63,7 +63,7 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
     // Padding inside the frame
     "paddingTop": 1,
     "paddingBottom": 1,
-    "paddingX": 1,
+    "paddingX": 2,
 
     // Outer margin around the frame
     "marginTop": 0,
@@ -81,7 +81,7 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
     "borderColor": "border",
 
     // Input prompt prefix glyph and color settings
-    "prefix": "❯",
+    "prefix": "┃",
     "prefixColor": "muted", // Options: "agentMode", "frameBorder", or any ThemeColor
 
     // Override default Nerd-Font glyphs

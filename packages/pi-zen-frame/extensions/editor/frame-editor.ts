@@ -1,7 +1,7 @@
 /**
  * FrameEditor — the editor component. Subclasses CustomEditor so all of
  * pi's editing/undo/app-keybinding machinery keeps working; `render` layers
- * the box frame. Vim behavior was removed — all input passes through to the
+ * the bg band. Vim behavior was removed — all input passes through to the
  * base editor. Appearance lives in `components/` (segments + frame).
  */
 import {
@@ -12,7 +12,7 @@ import {
 
 import { DEFAULT_ICONS, SPINNER_FRAMES } from "../config/constants";
 import type { FrameSettings, SpinnerPhase } from "../config/types";
-import { renderFrame, fitInfoRow } from "../components/frame";
+import { composeBand, fitInfoRow, isBorderRow } from "../components/frame";
 import { segmentsFor } from "../components/registry";
 import type {
   ExternalData,
@@ -83,101 +83,109 @@ export class FrameEditor extends CustomEditor {
 
     const padX = Math.min(
       frame.paddingX ?? 1,
-      Math.max(0, Math.floor((width - 2) / 2)),
+      Math.max(0, Math.floor(width / 2)),
     );
 
-    const innerWidth = width - 2 - padX * 2;
+    const marginX = Math.min(
+      frame.marginX ?? 0,
+      Math.max(0, Math.floor(width / 2)),
+    );
+
+    const contentWidth = width - marginX * 2;
+    const innerWidth = width - padX * 2 - marginX * 2;
     if (innerWidth < 8) return super.render(width);
 
     const ext = this.provider(this.pi);
     const d: FrameData = {
       cwd: ext.cwd,
       context: ext.context,
+      zenMode: ext.zenMode,
       gitDirty: ext.gitDirty,
       agentMode: ext.agentMode,
       gitBranch: ext.gitBranch,
       modelName: ext.modelName,
       spinnerPhase: ext.spinnerPhase,
+      modelProvider: ext.modelProvider,
       thinkingLevel: ext.thinkingLevel,
       spinnerFrame: this.spinnerFrame(),
       accentColor: this.opts.accentColor,
-      zenMode: ext.zenMode,
     };
 
-    let prefix = frame.prefix ?? "❯";
+    let prefix = frame.prefix ?? "┃";
 
     if (ext.theme?.fg) {
-      let borderColor: ThemeColor = "accent";
-
-      if (frame.borderColor === "agentMode") {
-        borderColor = ext.agentMode?.color ?? "accent";
-      } else {
-        borderColor = frame.borderColor ?? "accent";
-      }
-
       let prefixColor: ThemeColor = "text";
       if (frame.prefixColor === "agentMode") {
-        prefixColor = ext.agentMode?.color ?? "accent";
-      } else if (frame.prefixColor === "frameBorder") {
-        prefixColor = borderColor;
+        prefixColor = ext.agentMode?.color ?? "text";
       } else if (frame.prefixColor && isThemeColor(frame.prefixColor)) {
         prefixColor = frame.prefixColor;
       }
 
       prefix = ext.theme.fg(prefixColor, prefix);
-
-      this.borderColor = (s: string) => ext.theme!.fg(borderColor, s);
     }
 
     // No theme (non-TUI) or frame disabled or too narrow → plain editor.
-    if (!ext.theme || !frame.enable || width < (frame.minWidth ?? 20)) {
+    if (!ext.theme || !frame.enable || contentWidth < (frame.minWidth ?? 20)) {
       return super.render(width);
     }
 
     const inner = super.render(innerWidth);
+
+    let bottomIdx = inner.length - 1;
+    for (let i = inner.length - 1; i >= 0; i--) {
+      if (isBorderRow(inner[i]!)) {
+        bottomIdx = i;
+        break;
+      }
+    }
+
+    const content = inner.slice(1, bottomIdx);
+    const autocomplete = inner.slice(bottomIdx + 1);
+
+    const bgSgr = ext.theme.getBgAnsi("customMessageBg");
+    const paint = (row: string) =>
+      bgSgr + row.split("\x1b[0m").join(`\x1b[0m${bgSgr}`) + "\x1b[0m";
+
     const ctx: SegmentContext = {
       cfg: frame,
       theme: ext.theme,
-      border: this.borderColor,
       icons: {
         ...DEFAULT_ICONS,
         ...frame.icons,
       },
-      segColor: (key, fallback) =>
-        d.zenMode && key !== "agentMode"
-          ? "muted"
-          : (frame.colors?.[key] ?? fallback),
     };
 
-    const topLine = fitInfoRow(
-      segmentsFor("topLeft", d, ctx),
-      segmentsFor("topRight", d, ctx),
-      width,
-    );
-
-    const bottomLine = fitInfoRow(
-      segmentsFor("bottomLeft", d, ctx),
-      segmentsFor("bottomRight", d, ctx),
-      width,
-    );
-
-    const box = renderFrame(inner, {
-      width,
+    const box = composeBand(content, autocomplete, {
+      padX,
+      paint,
       prefix,
-      paddingX: padX,
-      border: this.borderColor,
+      width: contentWidth,
+      marginX: frame.marginX ?? 0,
       paddingTop: frame.paddingTop ?? 1,
       paddingBottom: frame.paddingBottom ?? 1,
+      boxBottom: fitInfoRow(
+        segmentsFor("topLeft", d, ctx),
+        segmentsFor("topRight", d, ctx),
+        innerWidth,
+      ),
     });
 
-    // Blank rows OUTSIDE the box, above/below its borders.
-    const marginRow = " ".repeat(width);
+    const pseudoFooter = fitInfoRow(
+      segmentsFor("bottomLeft", d, ctx),
+      segmentsFor("bottomRight", d, ctx),
+      contentWidth,
+    );
+
+    // Blank rows OUTSIDE the band, above/below it.
+    const marginRow = " ".repeat(contentWidth);
     const marginTop = Array(Math.max(0, frame.marginTop ?? 0)).fill(marginRow);
     const marginBottom = Array(Math.max(0, frame.marginBottom ?? 0)).fill(
       marginRow,
     );
 
-    return [...marginTop, topLine, ...box, bottomLine, ...marginBottom];
+    return [...marginTop, ...box, marginRow, pseudoFooter, ...marginBottom].map(
+      (row) => " ".repeat(marginX) + row + " ".repeat(marginX),
+    );
   }
 
   private spinnerFrame(): string {

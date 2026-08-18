@@ -8,7 +8,7 @@ import {
   DEFAULT_SETTINGS,
   WORKING_MESSAGES,
 } from "./constants";
-import { Settings, FrameColors } from "./types";
+import type { Settings } from "./types";
 import { isThemeColor } from "../utils";
 
 function getResolvedSettingsFilePath(): string {
@@ -48,10 +48,11 @@ function normalize(raw: unknown): Settings {
 
     out.frame = {
       enable: bool(f.enable, d.frame?.enable),
-      minWidth: num(f.minWidth, d.frame?.minWidth ?? 20),
-      paddingTop: num(f.paddingTop, d.frame?.paddingTop ?? 1),
-      paddingBottom: num(f.paddingBottom, d.frame?.paddingBottom ?? 1),
+      marginX: num(f.marginX, d.frame?.marginX ?? 1),
       paddingX: num(f.paddingX, d.frame?.paddingX ?? 1),
+      minWidth: num(f.minWidth, d.frame?.minWidth ?? 20),
+      paddingTop: num(f.paddingTop, d.frame?.paddingTop ?? 0),
+      paddingBottom: num(f.paddingBottom, d.frame?.paddingBottom ?? 1),
       marginTop: num(f.marginTop, d.frame?.marginTop ?? 0),
       marginBottom: num(f.marginBottom, d.frame?.marginBottom ?? 0),
       showModel: bool(f.showModel, d.frame?.showModel),
@@ -64,29 +65,12 @@ function normalize(raw: unknown): Settings {
         typeof f.icons === "object" && f.icons
           ? { ...d.frame?.icons, ...(f.icons as Record<string, unknown>) }
           : d.frame?.icons,
-      borderColor:
-        typeof f.borderColor === "string" &&
-        (isThemeColor(f.borderColor) || f.borderColor === "agentMode")
-          ? f.borderColor
-          : (d.frame?.borderColor ?? "border"),
-
-      colors:
-        typeof f.colors === "object" && f.colors
-          ? (Object.fromEntries(
-              Object.entries(f.colors as Record<string, unknown>).filter(
-                ([, v]) => typeof v === "string" && isThemeColor(v),
-              ),
-            ) as Partial<FrameColors>)
-          : d.frame?.colors,
-
       prefix:
-        typeof f.prefix === "string" ? f.prefix : (d.frame?.prefix ?? "❯"),
+        typeof f.prefix === "string" ? f.prefix : (d.frame?.prefix ?? "┃"),
 
       prefixColor:
         typeof f.prefixColor === "string" &&
-        (f.prefixColor === "agentMode" ||
-          f.prefixColor === "frameBorder" ||
-          isThemeColor(f.prefixColor))
+        (f.prefixColor === "agentMode" || isThemeColor(f.prefixColor))
           ? f.prefixColor
           : d.frame?.prefixColor, // unset → text
     };

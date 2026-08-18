@@ -10,14 +10,11 @@
  */
 import type { Theme, ThemeColor } from "@earendil-works/pi-coding-agent";
 
-import type {
-  FrameColors,
-  FrameIcons,
-  FrameSettings,
-  SpinnerPhase,
-} from "../config/types";
+import type { FrameIcons, FrameSettings, SpinnerPhase } from "../config/types";
 
-/** Where in the frame border a segment renders. */
+/** Where a segment renders. "top*" → the box-bottom row inside the band,
+ *  "bottom*" → the pseudo-footer row below it (names kept from the old
+ *  border layout). */
 export type Slot = "topLeft" | "topRight" | "bottomLeft" | "bottomRight";
 
 export type AgentConfig = {
@@ -47,6 +44,7 @@ export interface FrameData {
   accentColor: ThemeColor;
   gitBranch: string | undefined;
   modelName: string | undefined;
+  modelProvider: string | undefined;
   spinnerPhase: SpinnerPhase | null;
   thinkingLevel: string | undefined;
 
@@ -68,11 +66,6 @@ export interface SegmentContext {
   theme: Theme;
   icons: FrameIcons;
   cfg: FrameSettings;
-  border: (str: string) => string;
-
-  /** Resolve a segment's fg: zen-mode mutes everything except agentMode;
-   *  else `frame.colors.<key>` supersedes the segment default. */
-  segColor: (key: keyof FrameColors, fallback: ThemeColor) => ThemeColor;
 }
 
 /** A segment renders an already-ANSI-styled string, or "" to render nothing. */
@@ -93,14 +86,15 @@ export interface SegmentDef {
  * this with its own live state (mode / count / spinner frame) in render().
  */
 export interface ExternalData {
-  modelName: string | undefined;
-  thinkingLevel: string | undefined;
-  spinnerPhase: SpinnerPhase | null;
-  context: FrameData["context"];
   cwd: string;
-  gitBranch: string | undefined;
   gitDirty: number;
+  zenMode: boolean;
   agentMode: AgentMode;
   theme: Theme | undefined;
-  zenMode: boolean;
+  gitBranch: string | undefined;
+  modelName: string | undefined;
+  context: FrameData["context"];
+  modelProvider: string | undefined;
+  thinkingLevel: string | undefined;
+  spinnerPhase: SpinnerPhase | null;
 }

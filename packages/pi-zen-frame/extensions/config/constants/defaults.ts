@@ -24,7 +24,9 @@ export const DEFAULT_SETTINGS: Settings = {
 
   frame: {
     icons: {},
-    paddingX: 1,
+    marginX: 1,
+    paddingX: 2,
+    prefix: "┃",
     enable: true,
     minWidth: 20,
     marginTop: 0,
@@ -37,11 +39,6 @@ export const DEFAULT_SETTINGS: Settings = {
     showContext: true,
     showThinking: true,
     showAgentMode: true,
-    borderColor: "text",
-
-    colors: {},
-    // ponytail: colors were dormant (nothing read them); now wired — keep
-    // defaults unset so segments keep their natural colors and zen-mode is
-    // the mute switch.
+    prefixColor: "agentMode",
   },
 };
