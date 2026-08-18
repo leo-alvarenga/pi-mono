@@ -1,8 +1,9 @@
 /**
  * pi-zen-frame entry. Thin wiring layer:
  *   - loads config, subscribes to pi lifecycle + mode/agent-mode events
- *   - installs FrameEditor via setEditorComponent (factory is re-run on
- *     model switch — the old instance's spinner timer is stopped first)
+ *   - installs the configured editor-frame renderer via setEditorComponent
+ *     (factory is re-run on model switch — the old instance's spinner
+ *     timer is stopped first)
  *   - assembles ExternalData per paint (model, thinking, context, git, ...)
  *
  * All appearance logic lives in components/ (segments + frame); the editor
@@ -27,16 +28,17 @@ import {
 import { loadSettings } from "./config/settings";
 import type { Settings, SpinnerPhase } from "./config/types";
 import type { AgentMode, AgentState, ExternalData } from "./components/types";
-import { FrameEditor } from "./editor/frame-editor";
+import { getEditorFrame, getHeader } from "./renderers/registry";
+import type { EditorFrameRenderer } from "./renderers/types";
 import {
   capitalize,
   readAgentModeFromSession,
   readGit,
   type GitInfo,
 } from "./utils";
-import { createHeader, type HeaderEnv } from "./components/header";
+import { type HeaderEnv } from "./components/header";
 
-let editor: FrameEditor | null = null;
+let editor: EditorFrameRenderer | null = null;
 let currentCtx: ExtensionContext | null = null;
 let settings: Settings = DEFAULT_SETTINGS;
 let spinnerPhase: SpinnerPhase | null = null;
@@ -202,8 +204,10 @@ export default async function (pi: ExtensionAPI) {
     }
 
     if (settings.header?.enable) {
+      const headerFactory =
+        getHeader(settings.header.type ?? "basic") ?? getHeader("basic")!;
       ctx.ui.setHeader((_tui, theme) =>
-        createHeader(_tui, theme, pi, settings, getHeaderEnv),
+        headerFactory(_tui, theme, pi, settings, getHeaderEnv),
       );
     }
 
@@ -218,13 +222,19 @@ export default async function (pi: ExtensionAPI) {
     ctx.ui.setEditorComponent((...args) => {
       editor?.stopSpinner();
 
-      editor = new FrameEditor(
+      const frameFactory =
+        getEditorFrame(settings.editorFrame ?? "blocky") ??
+        getEditorFrame("blocky")!;
+
+      editor = frameFactory(
         pi,
         provideExternal,
         {
           frame: settings.frame ?? DEFAULT_SETTINGS.frame!,
           accentColor:
-            settings.accentColor ?? DEFAULT_SETTINGS.accentColor ?? "accent",
+            settings.accentColor ??
+            DEFAULT_SETTINGS.accentColor ??
+            "accent",
         },
         ...args,
       );

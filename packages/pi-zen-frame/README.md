@@ -45,8 +45,13 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
   // Master mute: renders all segments in muted tones except agent-mode
   "zenMode": true,
 
+  // Editor-frame renderer by registered name (built-in: "blocky")
+  "editorFrame": "blocky",
+
   "header": {
     "enable": true,
+    // Header renderer by registered name (built-in: "basic")
+    "type": "basic",
     "logo": ["█████████  ", "███   ███  ", "██████     ", "███     ███"],
     "heading": "Welcome back!",
     "subheading": "Ready for your next session? Terminal warm, context clean, tools ready to execute",
@@ -149,8 +154,9 @@ Run `/reload` after modifying your keybindings.
 extensions/
 ├── index.ts            # Extension entry point: config initialization and events
 ├── config/             # Types, defaults, and settings normalization
-├── components/         # Header, frame border, and status segment modules
-├── editor/             # FrameEditor component for layout rendering
+├── components/         # Header (BasicHeader), frame border, and status segment modules
+├── editor/             # BlockyEditor editor-frame renderer
+├── renderers/          # Renderer registry + swap-in API (blocky / basic)
 └── utils/              # Helpers for Git status, paths, and agent modes
 
 ```

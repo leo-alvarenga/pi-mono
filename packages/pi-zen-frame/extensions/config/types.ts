@@ -74,6 +74,9 @@ export interface HeaderSettings {
   subheading: string;
   logoColor: ThemeColor;
   accentColor: ThemeColor;
+
+  /** Header renderer by registered name. Default "basic". */
+  type?: string;
 }
 
 /** `workingMessage` — rotating messages in pi's built-in working loader. */
@@ -92,6 +95,9 @@ export interface Settings {
   frame?: FrameSettings;
   header?: HeaderSettings;
   workingMessage?: WorkingMessageSettings;
+
+  /** Editor-frame renderer by registered name. Default "blocky". */
+  editorFrame?: string;
 
   /** Master mute: every segment except agent-mode renders muted.
    *  Default true. Toggle at runtime with `/zen_mode` or the `piZenFrame.zenMode`

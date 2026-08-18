@@ -3,9 +3,11 @@ import { WORKING_MESSAGES } from "./messages";
 export const DEFAULT_SETTINGS: Settings = {
   zenMode: false,
   accentColor: "accent",
+  editorFrame: "blocky",
 
   header: {
     enable: false,
+    type: "basic",
     logoColor: "text",
     accentColor: "accent",
 

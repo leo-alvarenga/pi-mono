@@ -1,5 +1,5 @@
 /**
- * FrameEditor — the editor component. Subclasses CustomEditor so all of
+ * BlockyEditor — the editor-frame renderer. Subclasses CustomEditor so all of
  * pi's editing/undo/app-keybinding machinery keeps working; `render` layers
  * the bg band. Vim behavior was removed — all input passes through to the
  * base editor. Appearance lives in `components/` (segments + frame).
@@ -11,7 +11,7 @@ import {
 } from "@earendil-works/pi-coding-agent";
 
 import { DEFAULT_ICONS, SPINNER_FRAMES } from "../config/constants";
-import type { FrameSettings, SpinnerPhase } from "../config/types";
+import type { SpinnerPhase } from "../config/types";
 import { composeBand, fitInfoRow, isBorderRow } from "../components/frame";
 import { segmentsFor } from "../components/registry";
 import type {
@@ -19,16 +19,12 @@ import type {
   FrameData,
   SegmentContext,
 } from "../components/types";
+import type { EditorFrameRenderOptions } from "../renderers/types";
 import { isThemeColor } from "../utils";
 
-export interface FrameEditorOptions {
-  frame: FrameSettings;
-  accentColor: ThemeColor;
-}
-
-export class FrameEditor extends CustomEditor {
+export class BlockyEditor extends CustomEditor {
   private pi: ExtensionAPI;
-  private opts: FrameEditorOptions;
+  private opts: EditorFrameRenderOptions;
   private provider: (pi: ExtensionAPI) => ExternalData;
 
   private spinnerIdx = 0;
@@ -38,7 +34,7 @@ export class FrameEditor extends CustomEditor {
   constructor(
     pi: ExtensionAPI,
     provider: (pi: ExtensionAPI) => ExternalData,
-    opts: FrameEditorOptions,
+    opts: EditorFrameRenderOptions,
     ...args: ConstructorParameters<typeof CustomEditor>
   ) {
     super(...args);

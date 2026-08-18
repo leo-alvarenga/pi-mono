@@ -41,6 +41,8 @@ function normalize(raw: unknown): Settings {
     ...DEFAULT_SETTINGS,
     frame: { ...DEFAULT_SETTINGS.frame },
     zenMode: bool(r.zenMode, d.zenMode ?? true),
+    editorFrame:
+      typeof r.editorFrame === "string" ? r.editorFrame : d.editorFrame,
   };
 
   if (typeof r.frame === "object" && r.frame) {
@@ -80,6 +82,7 @@ function normalize(raw: unknown): Settings {
     const h = r.header as Record<string, unknown>;
 
     out.header = {
+      type: typeof h.type === "string" ? h.type : (d.header?.type ?? "basic"),
       enable: bool(h.enable, d.header?.enable),
       heading: str(h.heading, d.header?.heading ?? ""),
       subheading: str(h.subheading, d.header?.subheading ?? ""),
