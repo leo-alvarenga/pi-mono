@@ -1,0 +1,43 @@
+{
+  "name": "@leo-alvarenga/pi-todo-list",
+  "version": "0.1.0",
+  "description": "Session-aware todo list overlay for Pi: todo tool, /todos command, and a live TUI panel",
+  "license": "MIT",
+  "repository": "github.com/leo-alvarenga/pi-mono",
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "pi-extension",
+    "pi-package",
+    "pi",
+    "todo"
+  ],
+  "files": [
+    "src",
+    "README.md",
+    "LICENSE",
+    "!src/*.test.ts"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "tsx --test src/core.test.ts"
+  },
+  "pi": {
+    "extensions": [
+      "./src/index.ts"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0",
+    "typescript": "^7.0.2"
+  }
+}

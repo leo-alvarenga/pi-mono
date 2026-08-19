@@ -1,0 +1,64 @@
+# pi-todo-list
+
+Session-aware todo list overlay for the [Pi coding agent](https://github.com/earendil-works/pi-mono).
+The agent manages tasks with a `todo` tool while you watch them live in a panel above the input editor.
+
+## Features
+
+- **`todo` tool** — the agent can add tasks, update their status
+  (`pending` → `in-progress` → `completed`), declare dependencies
+  (`blockedBy`), remove, list, and clear. Invalid operations (unknown ids,
+  self-blocks, dependency cycles) are rejected before any state change.
+- **Live TUI panel** above the input editor — `Todos (done/total)` header,
+  status glyphs (`○` pending, `◐` in-progress, `✓` completed), blocked-task
+  hints, and a hardcoded row budget with a `+N more` summary line.
+- **Toggle with `Ctrl+Shift+T`** — collapsed shows just the header.
+- **`/todos` command** — prints the full list grouped by status straight to
+  the terminal transcript.
+- **Session-isolated state** — each session has its own list; it survives
+  `/reload` and context compaction with no external files, because state is
+  replayed from the session branch (tool results + custom entries), never
+  written by the extension itself.
+- **No configuration, no localization** — all limits are hardcoded constants
+  and all text is English.
+
+## Install
+
+```bash
+pi install ./packages/pi-todo-list
+```
+
+or add the local path / npm spec to your project `.pi/settings.json`, then
+run `/reload`.
+
+## Usage
+
+Tell the agent: *"track these tasks as todos: …"*, or use the tool directly:
+
+- `todo add` with `text`
+- `todo update` with `id` and optional `status` / `text` / `blockedBy`
+- `todo remove` / `todo list` / `todo clear`
+
+Run `/todos` yourself at any time to see the full grouped list.
+
+## Keybinding
+
+`Ctrl+Shift+T` toggles the panel. If your terminal intercepts that chord
+(e.g. GNOME Terminal opens a new tab), pick a free one and change
+`PANEL_TOGGLE_CHORD` in `src/constants.ts`.
+
+## Development
+
+```bash
+pnpm --filter @leo-alvarenga/pi-todo-list typecheck
+pnpm --filter @leo-alvarenga/pi-todo-list test
+```
+
+To release a new version, bump `version` in `package.json`, then push a tag
+(`git tag pi-todo-list@0.1.0 && git push origin pi-todo-list@0.1.0`). The
+`.github/workflows/publish-pi-todo-list.yml` workflow publishes to npm
+(requires the `NPM_TOKEN` repository secret).
+
+## License
+
+MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Leonardo A. Alvarenga.
