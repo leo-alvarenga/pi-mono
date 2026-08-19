@@ -37,6 +37,9 @@ const BUILDER: Required<Pick<AgentConfig, "permissions">>["permissions"] = [
   { permission: "bash", pattern: "sudo *", action: "ask" },
   { permission: "bash", pattern: "chmod *", action: "ask" },
   { permission: "bash", pattern: "chown *", action: "ask" },
+
+  { permission: "webfetch", pattern: "*", action: "deny" },
+  { permission: "websearch", pattern: "*", action: "deny" },
 ];
 
 // ---------------------------------------------------------------------------
