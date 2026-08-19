@@ -13,6 +13,22 @@ const PLANNER: Required<Pick<AgentConfig, "permissions">>["permissions"] = [
   { permission: "websearch", pattern: "*", action: "allow" },
   { permission: "webfetch", pattern: "*", action: "allow" },
   { permission: "task", pattern: "*", action: "allow" },
+  { permission: "todo", pattern: "*", action: "allow" },
+
+  // context-mode read-side tools: usable by the read (planner) agent
+  { permission: "ctx_index", pattern: "*", action: "allow" },
+  { permission: "ctx_purge", pattern: "*", action: "allow" },
+  { permission: "ctx_stats", pattern: "*", action: "allow" },
+  { permission: "ctx_doctor", pattern: "*", action: "allow" },
+  { permission: "ctx_search", pattern: "*", action: "allow" },
+  { permission: "ctx_upgrade", pattern: "*", action: "allow" },
+  { permission: "ctx_insight", pattern: "*", action: "allow" },
+  { permission: "ctx_fetch_and_index", pattern: "*", action: "allow" },
+
+  // execution is write-only: keep context exec tools off the read agent
+  { permission: "ctx_execute", pattern: "*", action: "deny" },
+  { permission: "ctx_execute_file", pattern: "*", action: "deny" },
+  { permission: "ctx_batch_execute", pattern: "*", action: "deny" },
 ];
 
 const BUILDER: Required<Pick<AgentConfig, "permissions">>["permissions"] = [

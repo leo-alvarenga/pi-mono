@@ -22,7 +22,7 @@ Each agent combines a system prompt persona with a permission ruleset that resol
 
 | Agent         | Description                                                                     | Default Ruleset Summary                                                                 |
 | ------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **`planner`** | Analysis and inspection profile; cannot modify files or execute shell commands. | `read`, `grep`, `glob`, `list`, `web`, `task` allowed; `edit` and `bash` denied.        |
+| **`planner`** | Analysis and inspection profile; cannot modify files or execute shell commands. | `read`, `grep`, `glob`, `list`, `web`, `task`, `todo`, and context-mode read tools allowed; `edit`, `bash`, and context-mode exec tools denied.        |
 | **`builder`** | Full development profile with guarded destructive shell operations.             | All tools allowed; destructive commands (`rm`, `sudo`, `chmod`, `chown`) trigger `ask`. |
 
 ---
