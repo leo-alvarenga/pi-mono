@@ -52,11 +52,6 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
     "enable": true,
     // Header renderer by registered name (built-in: "basic")
     "type": "basic",
-    "logo": ["█████████  ", "███   ███  ", "██████     ", "███     ███"],
-    "heading": "Welcome back!",
-    "subheading": "Ready for your next session? Terminal warm, context clean, tools ready to execute",
-    "logoColor": "text",
-    "accentColor": "customMessageLabel",
   },
 
   "frame": {
@@ -65,15 +60,6 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
     // Minimum terminal width required to render the border frame
     "minWidth": 20,
 
-    // Padding inside the frame
-    "paddingTop": 1,
-    "paddingBottom": 1,
-    "paddingX": 2,
-
-    // Outer margin around the frame
-    "marginTop": 0,
-    "marginBottom": 0,
-
     // Toggle individual status segments
     "showCwd": true,
     "showModel": true,
@@ -81,24 +67,6 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
     "showThinking": true,
     "showSpinner": false,
     "showAgentMode": true,
-
-    // Color options: "border", "accentColor", or "agentMode"
-    "borderColor": "border",
-
-    // Input prompt prefix glyph and color settings
-    "prefix": "┃",
-    "prefixColor": "muted", // Options: "agentMode", "frameBorder", or any ThemeColor
-
-    // Override default Nerd-Font glyphs
-    "icons": {
-      // Keys: folder, model, context, thinking, gitDirty, gitBranch
-    },
-
-    // Per-segment foreground color overrides (supersedes default theme colors)
-    "colors": {
-      "model": "accent",
-      "cwd": "accent",
-    },
   },
 
   // Randomized status messages shown while streaming responses

@@ -8,7 +8,6 @@ import type {
 
 import {
   DEFAULT_ICONS,
-  DEFAULT_SETTINGS,
   HEADER_TIPS,
 } from "../config/constants";
 import type { Settings } from "../config/types";
@@ -18,6 +17,18 @@ import { getShortCwd } from "../utils";
 /** Below which terminal width the box is skipped (plain logo). */
 const MIN_BOX_WIDTH = 20;
 const LEFT_COL_RATIO = 0.4; // logo column width / total width
+
+/** BasicHeader preset styling — self-contained, not user-configurable. */
+const LOGO_LINES = [
+  "█████████  ",
+  "███   ███  ",
+  "██████     ",
+  "███     ███",
+];
+const LOGO_COLOR: ThemeColor = "text";
+const HEADING = "Welcome back!";
+const SUBHEADING =
+  "Ready for your next session? Terminal warm, context clean, tools ready to execute";
 
 /** Live env snapshot the header renders in the right column. */
 export interface HeaderEnv {
@@ -60,12 +71,11 @@ export function createHeader(
     };
   }
 
-  const accentColor =
-    settings.header?.accentColor ?? settings.accentColor ?? "accent";
+  const accentColor = settings.accentColor ?? "accent";
 
   const logo = {
-    lines: settings.header?.logo ?? DEFAULT_SETTINGS.header?.logo ?? [],
-    color: settings.header?.logoColor ?? DEFAULT_SETTINGS.header?.logoColor,
+    lines: LOGO_LINES,
+    color: LOGO_COLOR,
   };
 
   const border = (s: string, fg?: ThemeColor) => theme.fg(fg ?? accentColor, s);
@@ -151,18 +161,14 @@ export function createHeader(
         "",
 
         ...wrapLines(
-          [settings.header?.heading ?? DEFAULT_SETTINGS.header?.heading ?? ""],
+          [HEADING],
           leftW - 2,
         ).map((line) => theme.bold(theme.fg("muted", line))),
 
         "",
 
         ...wrapLines(
-          [
-            settings.header?.subheading ??
-              DEFAULT_SETTINGS.header?.subheading ??
-              "",
-          ],
+          [SUBHEADING],
           leftW - 2,
         ).map((line) => theme.italic(theme.fg("muted", line))),
       ];

@@ -8,14 +8,6 @@ export const DEFAULT_SETTINGS: Settings = {
   header: {
     enable: false,
     type: "basic",
-    logoColor: "text",
-    accentColor: "accent",
-
-    heading: "Welcome back!",
-    subheading:
-      "Ready for your next session? Terminal warm, context clean, tools ready to execute",
-
-    logo: ["█████████  ", "███   ███  ", "██████     ", "███     ███"],
   },
 
   workingMessage: {
@@ -25,22 +17,13 @@ export const DEFAULT_SETTINGS: Settings = {
   },
 
   frame: {
-    icons: {},
-    marginX: 1,
-    paddingX: 2,
-    prefix: "┃",
     enable: true,
     minWidth: 20,
-    marginTop: 0,
     showCwd: true,
-    paddingTop: 1,
-    marginBottom: 0,
     showModel: true,
-    paddingBottom: 1,
-    showSpinner: false,
     showContext: true,
     showThinking: true,
     showAgentMode: true,
-    prefixColor: "agentMode",
+    showSpinner: false,
   },
 };

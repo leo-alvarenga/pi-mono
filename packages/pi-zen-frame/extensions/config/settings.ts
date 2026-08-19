@@ -31,9 +31,6 @@ function normalize(raw: unknown): Settings {
   const bool = (v: unknown, fallback: boolean | undefined): boolean =>
     typeof v === "boolean" ? v : (fallback ?? true);
 
-  const str = (v: unknown, fallback: string): string =>
-    typeof v === "string" ? v : fallback;
-
   const d = DEFAULT_SETTINGS;
   const r = raw as Record<string, unknown>;
 
@@ -50,31 +47,13 @@ function normalize(raw: unknown): Settings {
 
     out.frame = {
       enable: bool(f.enable, d.frame?.enable),
-      marginX: num(f.marginX, d.frame?.marginX ?? 1),
-      paddingX: num(f.paddingX, d.frame?.paddingX ?? 1),
       minWidth: num(f.minWidth, d.frame?.minWidth ?? 20),
-      paddingTop: num(f.paddingTop, d.frame?.paddingTop ?? 0),
-      paddingBottom: num(f.paddingBottom, d.frame?.paddingBottom ?? 1),
-      marginTop: num(f.marginTop, d.frame?.marginTop ?? 0),
-      marginBottom: num(f.marginBottom, d.frame?.marginBottom ?? 0),
       showModel: bool(f.showModel, d.frame?.showModel),
       showThinking: bool(f.showThinking, d.frame?.showThinking),
       showContext: bool(f.showContext, d.frame?.showContext),
       showCwd: bool(f.showCwd, d.frame?.showCwd),
       showAgentMode: bool(f.showAgentMode, d.frame?.showAgentMode),
       showSpinner: bool(f.showSpinner, d.frame?.showSpinner),
-      icons:
-        typeof f.icons === "object" && f.icons
-          ? { ...d.frame?.icons, ...(f.icons as Record<string, unknown>) }
-          : d.frame?.icons,
-      prefix:
-        typeof f.prefix === "string" ? f.prefix : (d.frame?.prefix ?? "┃"),
-
-      prefixColor:
-        typeof f.prefixColor === "string" &&
-        (f.prefixColor === "agentMode" || isThemeColor(f.prefixColor))
-          ? f.prefixColor
-          : d.frame?.prefixColor, // unset → text
     };
   }
 
@@ -84,20 +63,6 @@ function normalize(raw: unknown): Settings {
     out.header = {
       type: typeof h.type === "string" ? h.type : (d.header?.type ?? "basic"),
       enable: bool(h.enable, d.header?.enable),
-      heading: str(h.heading, d.header?.heading ?? ""),
-      subheading: str(h.subheading, d.header?.subheading ?? ""),
-      logoColor:
-        typeof h.logoColor === "string" && isThemeColor(h.logoColor)
-          ? h.logoColor
-          : (d.header?.logoColor ?? "accent"),
-      accentColor:
-        typeof h.accentColor === "string" && isThemeColor(h.accentColor)
-          ? h.accentColor
-          : (d.header?.accentColor ?? "accent"),
-      logo:
-        Array.isArray(h.logo) && h.logo.every((x) => typeof x === "string")
-          ? (h.logo as string[])
-          : (d.header?.logo ?? []),
     };
   }
 

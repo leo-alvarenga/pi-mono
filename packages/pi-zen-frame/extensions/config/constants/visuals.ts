@@ -11,7 +11,7 @@ export const SPINNER_FRAMES: Record<SpinnerPhase, string[]> = {
   // Sample ["░", "▒", "▓", "█", "▓", "▒"],
 };
 
-/** Nerd Font defaults (override any subset via `frame.icons`). */
+/** Nerd Font glyphs used by the blocky editor preset. */
 export const DEFAULT_ICONS: FrameIcons = {
   model: "󰣖",
   folder: " ",

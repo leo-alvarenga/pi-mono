@@ -20,7 +20,6 @@ import type {
   SegmentContext,
 } from "../components/types";
 import type { EditorFrameRenderOptions } from "../renderers/types";
-import { isThemeColor } from "../utils";
 
 export class BlockyEditor extends CustomEditor {
   private pi: ExtensionAPI;
@@ -77,15 +76,9 @@ export class BlockyEditor extends CustomEditor {
   render(width: number): string[] {
     const frame = this.opts.frame;
 
-    const padX = Math.min(
-      frame.paddingX ?? 1,
-      Math.max(0, Math.floor(width / 2)),
-    );
+    const padX = Math.min(2, Math.max(0, Math.floor(width / 2)));
 
-    const marginX = Math.min(
-      frame.marginX ?? 0,
-      Math.max(0, Math.floor(width / 2)),
-    );
+    const marginX = Math.min(1, Math.max(0, Math.floor(width / 2)));
 
     const contentWidth = width - marginX * 2;
     const innerWidth = width - padX * 2 - marginX * 2;
@@ -107,16 +100,10 @@ export class BlockyEditor extends CustomEditor {
       accentColor: this.opts.accentColor,
     };
 
-    let prefix = frame.prefix ?? "┃";
+    let prefix = "┃";
 
     if (ext.theme?.fg) {
-      let prefixColor: ThemeColor = "text";
-      if (frame.prefixColor === "agentMode") {
-        prefixColor = ext.agentMode?.color ?? "text";
-      } else if (frame.prefixColor && isThemeColor(frame.prefixColor)) {
-        prefixColor = frame.prefixColor;
-      }
-
+      const prefixColor: ThemeColor = ext.agentMode?.color ?? "text";
       prefix = ext.theme.fg(prefixColor, prefix);
     }
 
@@ -145,10 +132,7 @@ export class BlockyEditor extends CustomEditor {
     const ctx: SegmentContext = {
       cfg: frame,
       theme: ext.theme,
-      icons: {
-        ...DEFAULT_ICONS,
-        ...frame.icons,
-      },
+      icons: DEFAULT_ICONS,
     };
 
     const box = composeBand(content, autocomplete, {
@@ -156,9 +140,9 @@ export class BlockyEditor extends CustomEditor {
       paint,
       prefix,
       width: contentWidth,
-      marginX: frame.marginX ?? 0,
-      paddingTop: frame.paddingTop ?? 1,
-      paddingBottom: frame.paddingBottom ?? 1,
+      marginX: 1,
+      paddingTop: 1,
+      paddingBottom: 1,
       boxBottom: fitInfoRow(
         segmentsFor("topLeft", d, ctx),
         segmentsFor("topRight", d, ctx),
@@ -174,10 +158,8 @@ export class BlockyEditor extends CustomEditor {
 
     // Blank rows OUTSIDE the band, above/below it.
     const marginRow = " ".repeat(contentWidth);
-    const marginTop = Array(Math.max(0, frame.marginTop ?? 0)).fill(marginRow);
-    const marginBottom = Array(Math.max(0, frame.marginBottom ?? 0)).fill(
-      marginRow,
-    );
+    const marginTop: string[] = [];
+    const marginBottom: string[] = [];
 
     return [...marginTop, ...box, marginRow, pseudoFooter, ...marginBottom].map(
       (row) => " ".repeat(marginX) + row + " ".repeat(marginX),
