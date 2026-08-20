@@ -168,6 +168,44 @@ function clear(): ActionResult {
   };
 }
 
+function addMany(state: TodoState, texts: string[]): ActionResult {
+  const cleaned = texts.map(cleanText);
+  if (cleaned.some((t) => !t)) return { ok: false, error: "text required for add" };
+  if (cleaned.some((t) => t && t.length > MAX_TEXT_LENGTH)) return textError();
+
+  let nextId = state.nextId;
+  const added: Todo[] = cleaned.map((t) => ({
+    text: t as string,
+    blockedBy: [],
+    id: nextId++,
+    status: "pending",
+  }));
+
+  return {
+    ok: true,
+    text: `Added ${added.length} todos: ${added.map((t) => `#${t.id}`).join(", ")}`,
+    state: { todos: [...state.todos, ...added], nextId },
+  };
+}
+
+function removeMany(state: TodoState, ids: number[]): ActionResult {
+  const missing = ids.filter((id) => !state.todos.some((t) => t.id === id));
+  if (missing.length > 0) {
+    return { ok: false, error: `todos not found: #${missing.join(", #")}` };
+  }
+
+  const gone = new Set(ids);
+  const todos = state.todos
+    .filter((t) => !gone.has(t.id))
+    .map((t) => ({ ...t, blockedBy: t.blockedBy.filter((b) => !gone.has(b)) }));
+
+  return {
+    ok: true,
+    text: `Removed ${ids.length} todos`,
+    state: { todos, nextId: state.nextId },
+  };
+}
+
 /**
  * Apply a tool action against a copy of the state.
  * Returns the new state only when validation passes; the caller commits it.
@@ -176,7 +214,9 @@ export function applyAction(
   state: TodoState,
   params: {
     id?: number;
+    ids?: number[];
     text?: string;
+    texts?: string[];
     action: TodoAction;
     status?: TodoStatus;
     blockedBy?: number[];
@@ -184,6 +224,7 @@ export function applyAction(
 ): ActionResult {
   switch (params.action) {
     case "add":
+      if (params.texts !== undefined && params.texts.length > 0) return addMany(state, params.texts);
       return add(state, params.text ?? "");
 
     case "update":
@@ -194,6 +235,7 @@ export function applyAction(
       return update(state, params.id, params);
 
     case "remove":
+      if (params.ids !== undefined && params.ids.length > 0) return removeMany(state, params.ids);
       if (params.id === undefined) {
         return { ok: false, error: "id required for remove" };
       }

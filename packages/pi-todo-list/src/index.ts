@@ -3,7 +3,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { registerTodosCommand } from "./command";
 import { STATE_ENTRY, WIDGET_KEY } from "./constants";
 import { TodoStore } from "./state";
-import { registerTodoTool } from "./tool";
+import { registerTodoTool, registerTodoCompleteAllTool } from "./tool";
 import { registerTodoWidget, refreshWidget } from "./widget";
 
 export default function (pi: ExtensionAPI): void {
@@ -13,6 +13,7 @@ export default function (pi: ExtensionAPI): void {
   );
 
   registerTodoTool(pi, store);
+  registerTodoCompleteAllTool(pi, store);
   registerTodosCommand(pi, store);
   registerTodoWidget(pi, store);
 

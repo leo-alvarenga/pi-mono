@@ -15,6 +15,10 @@ The agent manages tasks with a `todo` tool while you watch them live in a panel 
 - **Toggle with `Alt+T`** — collapsed shows just the header.
 - **`/todos` command** — prints the full list grouped by status straight to
   the terminal transcript.
+- **Batch operations** — `todo add` accepts a `texts` array to add many at
+  once, and `todo remove` accepts an `ids` array to remove many at once.
+- **`todo_complete_all` tool** — marks every todo completed and clears the
+  list in one call, telling you how many items were completed.
 - **Session-isolated state** — each session has its own list; it survives
   `/reload` and context compaction with no external files, because state is
   replayed from the session branch (tool results + custom entries), never
