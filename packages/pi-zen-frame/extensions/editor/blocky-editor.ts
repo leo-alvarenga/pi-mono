@@ -103,7 +103,8 @@ export class BlockyEditor extends CustomEditor {
     let prefix = "┃";
 
     if (ext.theme?.fg) {
-      const prefixColor: ThemeColor = ext.agentMode?.color ?? "text";
+      const prefixColor: ThemeColor =
+        ext.agentMode?.color ?? this.opts.accentColor ?? "text";
       prefix = ext.theme.fg(prefixColor, prefix);
     }
 

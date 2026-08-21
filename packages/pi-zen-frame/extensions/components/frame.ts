@@ -43,21 +43,13 @@ export function composeBand(
   autocomplete: string[],
   opts: BandOptions,
 ): string[] {
-  const {
-    padX,
-    paint,
-    width,
-    prefix,
-    marginX,
-    boxBottom,
-    paddingTop,
-    paddingBottom,
-  } = opts;
+  const { padX, paint, width, prefix, boxBottom, paddingTop, paddingBottom } =
+    opts;
 
   const lead = Math.max(0, padX - visibleWidth(prefix));
 
   const inset = (row: string) =>
-    paint(prefix + " ".repeat(lead) + row + " ".repeat(padX));
+    prefix + paint(" ".repeat(lead) + row + " ".repeat(padX));
 
   const fill = () => inset(paint(" ".repeat(Math.max(0, width - 2 * padX))));
 
