@@ -37,6 +37,7 @@ import {
   type GitInfo,
 } from "./utils";
 import { type HeaderEnv } from "./components/header";
+import { getUsage } from "./utils/token";
 
 let editor: EditorFrameRenderer | null = null;
 let currentCtx: ExtensionContext | null = null;
@@ -84,7 +85,6 @@ function getHeaderEnv(pi: ExtensionAPI): HeaderEnv {
 
 function provideExternal(pi: ExtensionAPI): ExternalData {
   const ctx = currentCtx;
-  const usage = ctx?.getContextUsage?.();
   const model = ctx?.model;
 
   return {
@@ -95,16 +95,10 @@ function provideExternal(pi: ExtensionAPI): ExternalData {
     gitDirty: git.dirty,
     gitBranch: git.branch,
     theme: ctx?.ui.theme,
+    context: getUsage(ctx ?? undefined),
     thinkingLevel: pi.getThinkingLevel(),
     modelName: model?.name ?? model?.id ?? "Unknown",
     modelProvider: capitalize(model?.provider ?? "unknown"),
-    context: usage
-      ? {
-          tokens: usage.tokens,
-          window: usage.contextWindow,
-          percent: usage.percent,
-        }
-      : null,
   };
 }
 
@@ -232,9 +226,7 @@ export default async function (pi: ExtensionAPI) {
         {
           frame: settings.frame ?? DEFAULT_SETTINGS.frame!,
           accentColor:
-            settings.accentColor ??
-            DEFAULT_SETTINGS.accentColor ??
-            "accent",
+            settings.accentColor ?? DEFAULT_SETTINGS.accentColor ?? "accent",
         },
         ...args,
       );

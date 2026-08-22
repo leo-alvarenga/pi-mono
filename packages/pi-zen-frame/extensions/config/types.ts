@@ -14,6 +14,8 @@ export interface FrameIcons {
   folder: string;
   model: string;
   context: string;
+  tokenIn: string;
+  tokenOut: string;
   thinking: string;
   gitDirty: string;
   gitBranch: string;

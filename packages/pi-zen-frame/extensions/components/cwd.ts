@@ -13,7 +13,9 @@ export const cwdSegment: SegmentDef = {
 
     if (d.gitBranch) {
       let git = ` ${icons.gitBranch} ${d.gitBranch}`;
-      text += theme.fg(d.zenMode ? "muted" : d.accentColor, git);
+      text +=
+        theme.fg("dim", " ·") +
+        theme.fg(d.zenMode ? "muted" : d.accentColor, git);
 
       if (d.gitDirty > 0) {
         text += theme.fg(

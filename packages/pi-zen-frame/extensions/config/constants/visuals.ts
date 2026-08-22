@@ -15,7 +15,9 @@ export const SPINNER_FRAMES: Record<SpinnerPhase, string[]> = {
 export const DEFAULT_ICONS: FrameIcons = {
   model: "󰣖",
   folder: " ",
+  tokenIn: "",
   context: "",
+  tokenOut: "",
   gitDirty: "",
   thinking: "󰌶",
   gitBranch: "",
@@ -31,7 +33,6 @@ export const THINKING_TOKEN: Record<string, string> = {
   xhigh: "thinkingXhigh",
   max: "thinkingMax",
 };
-
 
 export const THEME_COLORS: Record<ThemeColor, true> = {
   accent: true,

@@ -11,6 +11,7 @@
 import type { Theme, ThemeColor } from "@earendil-works/pi-coding-agent";
 
 import type { FrameIcons, FrameSettings, SpinnerPhase } from "../config/types";
+import { TokenUsage } from "../utils/token";
 
 /** Where a segment renders. "top*" → the box-bottom row inside the band,
  *  "bottom*" → the pseudo-footer row below it (names kept from the old
@@ -54,11 +55,7 @@ export interface FrameData {
   /** To render the agent mode (from @leo-alvarenga/pi-agent-manager) segment, if any */
   agentMode: AgentMode;
 
-  context: {
-    window: number;
-    tokens: number | null;
-    percent: number | null;
-  } | null;
+  context: TokenUsage | null;
 }
 
 /** Data + rendering helpers handed to every segment. */
