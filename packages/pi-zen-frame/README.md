@@ -6,8 +6,8 @@ A [`pi-coding-agent`](https://github.com/earendil-works/pi) extension that gives
 
 ## Features
 
-- **Clean Frame**: Clean editor frame with segments placed above and below it to easily see relevant info
-- **Header Box**: Optional Claude-style welcome panel displaying a logo, model/provider info, current working directory, and Git status
+- **Clean Frame**: Clean editor frame with status segments rendered below the editor
+- **Header Box**: Optional welcome panel with a logo and "Welcome back!" heading, model name, current working directory, Git status, and a random tip
 - **Working Messages**: Randomized loading status messages during response generation, updated on a configurable timer
 - **Native Theme Support**: Uses pi `ThemeColor` tokens to automatically align with your active theme
 
@@ -18,7 +18,7 @@ A [`pi-coding-agent`](https://github.com/earendil-works/pi) extension that gives
 Run the following command:
 
 ```bash
-pi install @leo-alvarenga/pi-zen-frame
+pi install npm:@leo-alvarenga/pi-zen-frame
 ```
 
 Or add `pi-zen-frame` to your pi packages list in `~/.pi/agent/settings.json`:
@@ -42,14 +42,15 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
   // Fallback accent color for frame border and active segments
   "accentColor": "accent",
 
-  // Master mute: renders all segments in muted tones except agent-mode
-  "zenMode": true,
+  // Master mute: renders all segments in muted tones except agent-mode (default: false)
+  "zenMode": false,
 
   // Editor-frame renderer by registered name (built-in: "blocky")
   "editorFrame": "blocky",
 
   "header": {
-    "enable": true,
+    // Welcome panel is opt-in (default: false)
+    "enable": false,
     // Header renderer by registered name (built-in: "basic")
     "type": "basic",
   },
@@ -73,6 +74,7 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
   "workingMessage": {
     "enable": true,
     "intervalMs": 3000,
+    // Omit to use the built-in message pool
     "messages": [
       "Exploring the seas",
       "Tinkering with strange objects",
@@ -86,16 +88,16 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
 
 ## Structure & Status Segments
 
-The editor window features status indicators embedded along the frame borders:
+The editor frame shows status indicators in two rows below the editor:
 
-| Location         | Segment        | Description                                                           |
-| ---------------- | -------------- | --------------------------------------------------------------------- |
-| **Top Left**     | **model**      | Active model name and provider                                        |
-|                  | **reasoning**  | Current reasoning effort level, tinted with pi thinking tokens        |
-|                  | **spinner**    | Active phase indicator (`thinking`, `outputting`, `toolcall`, `exec`) |
-| **Top Right**    | **ctx**        | Context usage percentage and token counts with color alerts           |
-| **Bottom Left**  | **agent mode** | Active agent indicator pill from `pi-agent-manager`                   |
-| **Bottom Right** | **cwd**        | Shortened path, active Git branch, and uncommitted file counts        |
+| Location           | Segment        | Description                                                           |
+| ------------------ | -------------- | --------------------------------------------------------------------- |
+| Editor band (left) | **agent mode** | Active agent indicator pill from `pi-agent-manager`                   |
+|                    | **model**      | Active model name and provider                                        |
+|                    | **reasoning**  | Current reasoning effort level, tinted with pi thinking tokens        |
+|                    | **spinner**    | Active phase indicator (`thinking`, `outputting`, `toolcall`, `exec`); replaces the row while streaming when `showSpinner` is enabled (default off) |
+| Footer (left)      | **cwd**        | Shortened path, active Git branch, and uncommitted file counts        |
+| Footer (right)     | **ctx**        | Context usage percentage and token counts with color alerts           |
 
 ---
 
@@ -122,9 +124,9 @@ Run `/reload` after modifying your keybindings.
 extensions/
 ├── index.ts            # Extension entry point: config initialization and events
 ├── config/             # Types, defaults, and settings normalization
-├── components/         # Header (BasicHeader), frame border, and status segment modules
+├── components/         # Status segments, header, and frame layout helpers
 ├── editor/             # BlockyEditor editor-frame renderer
 ├── renderers/          # Renderer registry + swap-in API (blocky / basic)
-└── utils/              # Helpers for Git status, paths, and agent modes
+└── utils/              # Helpers for Git status, paths, agent modes, and token usage
 
 ```

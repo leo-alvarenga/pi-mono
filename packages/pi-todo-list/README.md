@@ -1,4 +1,4 @@
-# pi-todo-list
+# @leo-alvarenga/pi-todo-list
 
 Session-aware todo list overlay for the [Pi coding agent](https://github.com/earendil-works/pi-mono).
 The agent manages tasks with a `todo` tool while you watch them live in a panel above the input editor.
@@ -9,10 +9,13 @@ The agent manages tasks with a `todo` tool while you watch them live in a panel 
   (`pending` → `in-progress` → `completed`), declare dependencies
   (`blockedBy`), remove, list, and clear. Invalid operations (unknown ids,
   self-blocks, dependency cycles) are rejected before any state change.
-- **Live TUI panel** above the input editor — `Todos (done/total)` header,
-  status glyphs (`○` pending, `◐` in-progress, `✓` completed), blocked-task
-  hints, and a hardcoded row budget with a `+N more` summary line.
-- **Toggle with `Alt+T`** — collapsed shows just the header.
+- **Live TUI panel** above the input editor — a header line with a
+  collapse/expand chevron and per-status counters, Nerd Font status glyphs
+  (  pending, 󱥸  in-progress,   completed), blocked-task hints, and a hardcoded
+  8-row budget with a `… +N more` summary line. The panel hides itself
+  entirely while the list is empty.
+- **Toggle with `Alt+T`** — collapsed by default; collapsed shows just the
+  header line.
 - **`/todos` command** — prints the full list grouped by status straight to
   the terminal transcript.
 - **Batch operations** — `todo add` accepts a `texts` array to add many at

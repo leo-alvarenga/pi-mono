@@ -14,16 +14,15 @@ Each agent combines a system prompt persona with a permission ruleset that resol
 
 1. **Tool Stripping**: On startup or agent switch, the extension evaluates the active agent's ruleset. Tools matched with `deny` rules are filtered out entirely via `pi.setActiveTools()`
 2. **Prompt Injection**: The active agent's system prompt (and optional XML permission envelope) is prepended to the system prompt before each conversation turn
-3. **Interactive Gate**: When a tool configured with `ask` is invoked, a confirmation dialog appears. Selecting "always" appends a runtime rule to the session state to allow subsequent calls without prompting
-
+3. **Interactive Gate**: When a tool configured with `ask` is invoked, the user is prompted to allow or deny the call. Allowing then asks whether to remember the decision ("always") for the rest of the session, which appends a runtime rule to the session state.
 ---
 
 ## Built-In Agents
 
 | Agent         | Description                                                                     | Default Ruleset Summary                                                                 |
 | ------------- | ------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
-| **`planner`** | Analysis and inspection profile; cannot modify files or execute shell commands. | `read`, `grep`, `glob`, `list`, `web`, `task`, `todo`, and context-mode read tools allowed; `edit`, `bash`, and context-mode exec tools denied.        |
-| **`builder`** | Full development profile with guarded destructive shell operations.             | All tools allowed; destructive commands (`rm`, `sudo`, `chmod`, `chown`) trigger `ask`. |
+| **planner** 󱞁 | Analysis and inspection profile; cannot modify files or execute shell commands. | `read`, `grep`, `glob`, `list`, `websearch`, `webfetch`, `task`, `todo`, and all context-mode tools except `ctx_execute` / `ctx_execute_file` / `ctx_batch_execute` allowed; `edit`, `bash`, and context-mode exec tools denied. |
+| **builder** 󱁤 | Execution-oriented profile; unrestricted file changes and commands, but web tools are unavailable. | All tools allowed except `websearch` and `webfetch` (denied); destructive commands (`rm`, `sudo`, `chmod`, `chown`) trigger `ask`. |
 
 ---
 
@@ -47,7 +46,7 @@ After installation, restart `pi` or execute `/reload` within the TUI.
 | ------------------------- | ---------------------------------------------------------------------------- |
 | `/agents`                 | Opens the interactive agent selection picker                                 |
 | `/agents <name>`          | Switches directly to the specified agent (supports tab-completion)           |
-| `/agents_help`            | Displays active agent configuration and rule summaries                       |
+| `/agents_help`            | Shows agent list, permissions, keybindings, and usage                       |
 | `/agent_guard [on / off]` | Toggles XML permission-envelope system prompt injection (toggles if omitted) |
 
 _Note: Selected agents persist across sessions and are restored upon restarting_

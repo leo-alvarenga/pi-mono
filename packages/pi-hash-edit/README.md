@@ -24,8 +24,20 @@ A hash mismatch returns:
 
 > Hash Mismatch Error: Could not find start hash [...] or end hash [...] in file. The file has been modified since your last read. Please re-run hash_read.
 
+Notes:
+
+- To replace a single line, pass its hash as both `startHash` and `endHash`.
+- To delete lines, pass an empty `newContent`.
+- Identical lines share a hash — `hash_edit` targets the first occurrence; anchor on a unique line if needed.
+
 ## How it works
 
 - Hashes are 4 hex chars (16 bits) of sha256 over the line with trailing whitespace trimmed
   (CRLF- and LF-tolerant)
 - Zero runtime dependencies beyond pi's bundled `typebox`; uses only `node:fs`, `node:crypto`, `node:path`
+
+## Skill
+
+The package also ships a `hash-edit` skill (`skills/hash-edit/SKILL.md`), auto-loaded
+by pi. It instructs the agent to prefer `hash_read` / `hash_edit` over the built-in
+read/write/edit tools when working with existing files, and to re-read before every edit.
