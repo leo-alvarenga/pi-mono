@@ -1,6 +1,6 @@
 {
   "name": "@leo-alvarenga/pi-agent-manager",
-  "version": "0.18.2",
+  "version": "0.18.3",
   "description": "A package for managing agents in Pi",
   "license": "MIT",
   "repository": "github.com/leo-alvarenga/pi-mono",
