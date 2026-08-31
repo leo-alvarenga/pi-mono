@@ -1,9 +1,5 @@
 import type { Ruleset } from "./types";
 
-// ---------------------------------------------------------------------------
-// Named presets
-// ---------------------------------------------------------------------------
-
 export const PERMISSION_PRESETS: Record<string, Ruleset> = {
   /** Read-only: inspection tools only. */
   read: [
@@ -35,10 +31,6 @@ export const PERMISSION_PRESETS: Record<string, Ruleset> = {
     { permission: "bash", pattern: "chown *", action: "ask" },
   ],
 };
-
-// ---------------------------------------------------------------------------
-// Legacy migration
-// ---------------------------------------------------------------------------
 
 /**
  * Convert a legacy flat permission list (`["read","web","ask"]`) into a

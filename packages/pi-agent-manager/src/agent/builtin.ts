@@ -1,9 +1,5 @@
 import type { AgentConfig } from "./types";
 
-// ---------------------------------------------------------------------------
-// Rulesets
-// ---------------------------------------------------------------------------
-
 const PLANNER: Required<Pick<AgentConfig, "permissions">>["permissions"] = [
   { permission: "*", pattern: "*", action: "deny" },
   { permission: "read", pattern: "*", action: "allow" },
@@ -41,10 +37,6 @@ const BUILDER: Required<Pick<AgentConfig, "permissions">>["permissions"] = [
   { permission: "webfetch", pattern: "*", action: "deny" },
   { permission: "websearch", pattern: "*", action: "deny" },
 ];
-
-// ---------------------------------------------------------------------------
-// Agents
-// ---------------------------------------------------------------------------
 
 export const BUILT_IN_AGENTS: AgentConfig[] = [
   {

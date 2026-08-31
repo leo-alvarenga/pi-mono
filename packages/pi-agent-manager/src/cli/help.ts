@@ -2,10 +2,6 @@ import type { Action, Rule } from "../permission/types";
 import type { AgentConfig } from "../agent/types";
 import type { Logger } from "./logger";
 
-// ---------------------------------------------------------------------------
-// String helpers
-// ---------------------------------------------------------------------------
-
 export function capitalize(str: string): string {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
@@ -18,10 +14,6 @@ function truncate(str: string, max: number, suffix = " [...]"): string {
   if (str.length <= max - suffix.length) return str;
   return str.slice(0, max - suffix.length) + suffix;
 }
-
-// ---------------------------------------------------------------------------
-// Permission badges
-// ---------------------------------------------------------------------------
 
 /**
  * Compact badge row showing the resolved action for each tool family.
@@ -58,10 +50,6 @@ export function getPermissionBadges(agent: AgentConfig): string {
     .join(" · ");
 }
 
-// ---------------------------------------------------------------------------
-// Validation
-// ---------------------------------------------------------------------------
-
 export function isValidAgent(name: string, agents: AgentConfig[]): boolean {
   return agents.some((a) => a.name === name.toLowerCase());
 }
@@ -69,10 +57,6 @@ export function isValidAgent(name: string, agents: AgentConfig[]): boolean {
 export function getValidAgentNames(agents: AgentConfig[]): string[] {
   return agents.map((a) => a.name);
 }
-
-// ---------------------------------------------------------------------------
-// Help text
-// ---------------------------------------------------------------------------
 
 function ruleSummary(rule: Rule): string {
   const scope = rule.pattern === "*" ? "" : ` (${rule.pattern})`;

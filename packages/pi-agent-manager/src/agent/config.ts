@@ -9,24 +9,12 @@ import type { AgentConfig, AgentType } from "./types";
 import type { Action, Ruleset } from "../permission/types";
 import { fromLegacyPermissions, PERMISSION_PRESETS } from "../permission/presets";
 
-// ---------------------------------------------------------------------------
-// Validation
-// ---------------------------------------------------------------------------
-
 const VALID_ACTIONS: readonly Action[] = ["allow", "ask", "deny"];
 const VALID_TYPES: readonly AgentType[] = ["primary", "subagent"];
-
-// ---------------------------------------------------------------------------
-// Paths
-// ---------------------------------------------------------------------------
 
 export function resolveAgentsDir(): string {
   return join(getAgentDir(), AGENTS_DIR_NAME);
 }
-
-// ---------------------------------------------------------------------------
-// Keybindings
-// ---------------------------------------------------------------------------
 
 export function loadAgentShortcuts(): Map<string, string[]> {
   const path = join(getAgentDir(), "keybindings.json");
@@ -55,10 +43,6 @@ export function loadAgentShortcuts(): Map<string, string[]> {
 
   return result;
 }
-
-// ---------------------------------------------------------------------------
-// User agent loading
-// ---------------------------------------------------------------------------
 
 export type LoadedUserAgents = {
   agents: AgentConfig[];
@@ -107,10 +91,6 @@ export async function loadUserAgents(): Promise<LoadedUserAgents> {
   return { agents, errors };
 }
 
-// ---------------------------------------------------------------------------
-// Parsing
-// ---------------------------------------------------------------------------
-
 async function parseFile(filePath: string): Promise<ParsedFile> {
   let raw: string;
   try {
@@ -139,10 +119,6 @@ async function parseFile(filePath: string): Promise<ParsedFile> {
   const body = parts.slice(2).join("---").trim();
   return { ok: true, frontmatter: frontmatter as Record<string, unknown>, body };
 }
-
-// ---------------------------------------------------------------------------
-// Validation & normalisation
-// ---------------------------------------------------------------------------
 
 type ValidatedAgent =
   | { ok: true; agent: AgentConfig }
@@ -202,10 +178,7 @@ function validateAgent(
   };
 }
 
-// ---------------------------------------------------------------------------
 // Permission parsing (handles legacy + new formats)
-// ---------------------------------------------------------------------------
-
 type ParsedPerms =
   | { ok: true; ruleset: Ruleset }
   | { ok: false; error: string };
@@ -254,10 +227,6 @@ function parseRulesetObject(obj: Record<string, unknown>): ParsedPerms {
 
   return { ok: true, ruleset };
 }
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 function isENOENT(err: unknown): boolean {
   return (

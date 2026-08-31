@@ -26,10 +26,7 @@ import { TOOL_TO_PERMISSION, extractPattern } from "./permission/mapping";
 import type { AgentState } from "./agent/types";
 
 export default async function (pi: ExtensionAPI) {
-  // ------------------------------------------------------------------
   // Bootstrap
-  // ------------------------------------------------------------------
-
   const { agents: userAgents, errors: configErrors } = await loadUserAgents();
   const userNames = new Set(userAgents.map((a) => a.name));
   const agents = [
@@ -43,10 +40,7 @@ export default async function (pi: ExtensionAPI) {
   let logger: Logger;
   let previousAgent: string | undefined;
 
-  // ------------------------------------------------------------------
   // Lifecycle: session start — restore last agent
-  // ------------------------------------------------------------------
-
   pi.on("session_start", async (_, ctx) => {
     logger = createLogger(ctx);
     agentManager.initialize(pi);
@@ -79,10 +73,7 @@ export default async function (pi: ExtensionAPI) {
     if (guardEnabled) agentManager.setGuardEnabled(true, pi);
   });
 
-  // ------------------------------------------------------------------
   // Lifecycle: before each turn — inject persona only (no policy block)
-  // ------------------------------------------------------------------
-
   pi.on("before_agent_start", async (event) => {
     if (previousAgent === agentManager.getCurrentAgent()) {
       return { systemPrompt: event.systemPrompt };
@@ -135,11 +126,8 @@ export default async function (pi: ExtensionAPI) {
     return { systemPrompt: `${base}\n\n${block}` };
   });
 
-  // ------------------------------------------------------------------
   // Permission guard — prepend XML envelope when enabled (chained after
   // the persona handler, so it sits at the very top of the prompt)
-  // ------------------------------------------------------------------
-
   pi.on("before_agent_start", async (event) => {
     if (!agentManager.getGuardEnabled()) return;
 
@@ -148,10 +136,7 @@ export default async function (pi: ExtensionAPI) {
     };
   });
 
-  // ------------------------------------------------------------------
   // Commands
-  // ------------------------------------------------------------------
-
   pi.registerCommand("agent_guard", {
     description:
       "Toggle the permission-guard XML envelope (on | off | no args = toggle)",
@@ -231,10 +216,7 @@ export default async function (pi: ExtensionAPI) {
     },
   });
 
-  // ------------------------------------------------------------------
   // Keybindings
-  // ------------------------------------------------------------------
-
   const registerKeys = (
     id: string,
     desc: string,
@@ -264,12 +246,8 @@ export default async function (pi: ExtensionAPI) {
     if (chosen) setAgent(chosen, ctx);
   });
 
-  // ------------------------------------------------------------------
   // Tool-call guard — the "ask" gate
-  // ------------------------------------------------------------------
-
   pi.on("tool_call", async (event, ctx) => {
-    // Steps exhausted: block all tool calls except read-family.
     if (agentManager.isStepsExhausted()) {
       const permission = event.toolName;
       if (!["read", "grep", "find", "ls"].includes(permission)) {
@@ -291,7 +269,7 @@ export default async function (pi: ExtensionAPI) {
     const p = extractPattern(event.toolName, args ?? {});
 
     // Offer: yes = allow once, always = remember for session, no = deny
-    // We use a two-step flow: first approve/deny, then optionally persist.
+    // Two-step flow: approve/deny, then optionally persist.
     const ok = await ctx.ui.confirm(
       "Permission required",
       `Allow \`${event.toolName}\` (${family}: ${p}) as "${agentManager.getCurrentAgent()}"?\n\nYes = allow this call\nNo  = deny and block\n\n(To remember for the session, approve then use /always)`,
@@ -320,10 +298,7 @@ export default async function (pi: ExtensionAPI) {
     }
   });
 
-  // ------------------------------------------------------------------
   // Helpers
-  // ------------------------------------------------------------------
-
   function setAgent(
     name: string,
     ctx?: ExtensionContext,

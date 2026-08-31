@@ -44,20 +44,12 @@ export class AgentManager {
     this.currentAgent = this.currentAgentConfig.name;
   }
 
-  // ------------------------------------------------------------------
-  // Init
-  // ------------------------------------------------------------------
-
   initialize(pi: ExtensionAPI): void {
     if (this.initialized) return;
     this.allTools = pi.getAllTools().map((t) => t.name);
     this.initialized = true;
     this.syncActiveTools(pi);
   }
-
-  // ------------------------------------------------------------------
-  // Tool sync
-  // ------------------------------------------------------------------
 
   private syncActiveTools(pi: ExtensionAPI): void {
     if (!this.initialized) return;
@@ -70,10 +62,6 @@ export class AgentManager {
     this.activeTools = this.allTools.filter((t) => !denied.has(t));
     pi.setActiveTools(this.activeTools);
   }
-
-  // ------------------------------------------------------------------
-  // Evaluation
-  // ------------------------------------------------------------------
 
   private combinedRuleset(): Ruleset {
     return merge(this.currentAgentConfig.permissions, this.sessionRuleset);
@@ -91,10 +79,6 @@ export class AgentManager {
   ): boolean {
     return this.resolve(toolName, args) === "ask";
   }
-
-  // ------------------------------------------------------------------
-  // Session rules (always / reject)
-  // ------------------------------------------------------------------
 
   approveAlways(
     toolName: string,
@@ -121,10 +105,6 @@ export class AgentManager {
     });
     this.syncActiveTools(pi);
   }
-
-  // ------------------------------------------------------------------
-  // Agent switching
-  // ------------------------------------------------------------------
 
   setAgent(name: string, pi: ExtensionAPI): number {
     const config = this.agents.find((a) => a.name === name.toLowerCase());
@@ -161,17 +141,9 @@ export class AgentManager {
     return this.setAgent(this.agents[idx].name, pi);
   }
 
-  // ------------------------------------------------------------------
-  // Steps
-  // ------------------------------------------------------------------
-
   isStepsExhausted(): boolean {
     return this.maxSteps != null && this.turn >= this.maxSteps;
   }
-
-  // ------------------------------------------------------------------
-  // Permission guard
-  // ------------------------------------------------------------------
 
   setGuardEnabled(enabled: boolean, pi: ExtensionAPI): void {
     this.guardEnabled = enabled;
@@ -214,10 +186,6 @@ export class AgentManager {
       "</permission_overrides>",
     ].join("\n");
   }
-
-  // ------------------------------------------------------------------
-  // Accessors
-  // ------------------------------------------------------------------
 
   getCurrentAgent(): string {
     return this.currentAgent;

@@ -135,7 +135,7 @@ export function registerMiniSubagentTool(
         );
       }
 
-      // --- single mode ---
+      // single mode
       if (hasSingle) {
         const record = store.start(
           ctx,
@@ -184,7 +184,7 @@ export function registerMiniSubagentTool(
         };
       }
 
-      // --- parallel mode ---
+      // parallel mode
       const tasks = params.tasks!;
       if (tasks.length > MAX_PARALLEL_TASKS) {
         return errorResult(
