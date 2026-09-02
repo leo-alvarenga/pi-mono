@@ -1,6 +1,6 @@
 {
   "name": "@leo-alvarenga/pi-notify",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Desktop notification + sound when a Pi prompt settles: D-Bus popup on Linux, opt-in",
   "license": "MIT",
   "repository": "github.com/leo-alvarenga/pi-mono",
