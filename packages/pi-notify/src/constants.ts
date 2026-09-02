@@ -2,6 +2,10 @@ import type { KeyId } from "@earendil-works/pi-tui";
 
 export const NOTIFY_CHORD: KeyId = "alt+shift+n";
 
+/** Event channel broadcast on every toggle, so other extensions (e.g.
+ *  pi-zen-frame) can mirror the enabled state. */
+export const NOTIFY_TOGGLE_EVENT = "pi-notify:toggle-changed";
+
 export const APP_NAME = "pi-notify";
 export const MAX_NOTIFICATION_LABEL_LENGTH = 16;
 export const NOTIFICATION_ICON = "dialog-information";

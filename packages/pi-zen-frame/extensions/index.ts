@@ -21,6 +21,7 @@ import type { KeyId } from "@earendil-works/pi-tui";
 import {
   DEFAULT_SETTINGS,
   PI_AGENT_MANAGER_AGENT_EVENT,
+  PI_NOTIFY_TOGGLE_EVENT,
   SPINNER_FRAMES,
   ZEN_MODE_DEFAULT_KEY,
   ZEN_MODE_SHORTCUT_ID,
@@ -44,6 +45,7 @@ let currentCtx: ExtensionContext | null = null;
 let settings: Settings = DEFAULT_SETTINGS;
 let spinnerPhase: SpinnerPhase | null = null;
 let agentMode: AgentMode = null;
+let notifyEnabled = false;
 let zenMode = true;
 let git: GitInfo = {
   branch: undefined,
@@ -99,6 +101,7 @@ function provideExternal(pi: ExtensionAPI): ExternalData {
     thinkingLevel: pi.getThinkingLevel(),
     modelName: model?.name ?? model?.id ?? "Unknown",
     modelProvider: capitalize(model?.provider ?? "unknown"),
+    notifyEnabled,
   };
 }
 
@@ -171,6 +174,13 @@ export default async function (pi: ExtensionAPI) {
       agentMode = { name: state.currentAgentLabel || state.currentAgent };
     }
 
+    editor?.refresh();
+  });
+
+  // Optional pi-notify integration (no hard dependency).
+  pi.events.on(PI_NOTIFY_TOGGLE_EVENT, (event) => {
+    const enabled = (event as { enabled?: unknown } | undefined)?.enabled;
+    if (typeof enabled === "boolean") notifyEnabled = enabled;
     editor?.refresh();
   });
 

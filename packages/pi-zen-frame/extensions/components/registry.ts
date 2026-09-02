@@ -5,6 +5,7 @@
  * The frame calls `segmentsFor(slot, ...)` and handles all width/joining.
  */
 import { modelSegment } from "./model";
+import { notifySegment } from "./notify";
 import { reasoningSegment } from "./reasoning";
 import { spinnerSegment } from "./spinner";
 import { tokenCountSegment } from "./token-count";
@@ -14,6 +15,7 @@ import type { FrameData, SegmentContext, SegmentDef, Slot } from "./types";
 
 export const segments: SegmentDef[] = [
   agentModeSegment,
+  notifySegment,
   modelSegment,
   reasoningSegment,
   spinnerSegment,

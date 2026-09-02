@@ -98,6 +98,7 @@ export class BlockyEditor extends CustomEditor {
       thinkingLevel: ext.thinkingLevel,
       spinnerFrame: this.spinnerFrame(),
       accentColor: this.opts.accentColor,
+      notifyEnabled: ext.notifyEnabled,
     };
 
     let prefix = "┃";

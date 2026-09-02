@@ -19,6 +19,8 @@ export interface FrameIcons {
   thinking: string;
   gitDirty: string;
   gitBranch: string;
+  bell: string;
+  bellOff: string;
 }
 
 /**

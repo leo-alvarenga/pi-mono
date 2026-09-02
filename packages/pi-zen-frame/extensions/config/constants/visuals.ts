@@ -21,6 +21,8 @@ export const DEFAULT_ICONS: FrameIcons = {
   gitDirty: "",
   thinking: "󰌶",
   gitBranch: "",
+  bell: "󰂚",
+  bellOff: "󰂛",
 };
 
 /** Thinking level → theme token, mirroring pi's own border-color mapping. */

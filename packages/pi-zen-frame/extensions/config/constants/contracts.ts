@@ -5,6 +5,9 @@
 export const PI_AGENT_MANAGER_AGENT_EVENT = "pi-agent-manager:agent-changed";
 export const PI_AGENT_MANAGER_AGENT_DATA_KEY = "pi-agent-manager-agent";
 
+/** pi-notify integration (optional — no hard dependency). */
+export const PI_NOTIFY_TOGGLE_EVENT = "pi-notify:toggle-changed";
+
 /** Keybinding id users bind in keybindings.json to toggle zen mode. */
 export const ZEN_MODE_SHORTCUT_ID = "piZenFrame.zenMode";
 /** Default key when the user hasn't bound one (override or disable via

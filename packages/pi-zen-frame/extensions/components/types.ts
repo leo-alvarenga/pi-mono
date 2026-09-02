@@ -56,6 +56,9 @@ export interface FrameData {
   agentMode: AgentMode;
 
   context: TokenUsage | null;
+
+  /** pi-notify toggle state (true = notifications enabled). */
+  notifyEnabled: boolean;
 }
 
 /** Data + rendering helpers handed to every segment. */
@@ -94,4 +97,5 @@ export interface ExternalData {
   modelProvider: string | undefined;
   thinkingLevel: string | undefined;
   spinnerPhase: SpinnerPhase | null;
+  notifyEnabled: boolean;
 }

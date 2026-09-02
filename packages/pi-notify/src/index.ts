@@ -7,6 +7,7 @@ import {
   displayChord,
   MAX_NOTIFICATION_LABEL_LENGTH,
   NOTIFY_CHORD,
+  NOTIFY_TOGGLE_EVENT,
 } from "./constants";
 import { createNotifier } from "./notifier";
 import { parseArgs } from "./state";
@@ -35,6 +36,7 @@ export default function (pi: ExtensionAPI): void {
     `Notifier ${value ? "ON" : "OFF"}: ${displayChord(NOTIFY_CHORD)} toggles`;
 
   const notifyToggle = (ctx: ExtensionContext, value: boolean): void => {
+    pi.events.emit(NOTIFY_TOGGLE_EVENT, { enabled: value });
     const msg = toggleMessage(value);
 
     if (ctx.hasUI) {
