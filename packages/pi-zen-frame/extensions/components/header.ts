@@ -6,10 +6,7 @@ import type {
   ThemeColor,
 } from "@earendil-works/pi-coding-agent";
 
-import {
-  DEFAULT_ICONS,
-  HEADER_TIPS,
-} from "../config/constants";
+import { DEFAULT_ICONS, HEADER_TIPS } from "../config/constants";
 import type { Settings } from "../config/types";
 import { fitFrameRow } from "./frame";
 import { getShortCwd } from "../utils";
@@ -19,12 +16,7 @@ const MIN_BOX_WIDTH = 20;
 const LEFT_COL_RATIO = 0.4; // logo column width / total width
 
 /** BasicHeader preset styling — self-contained, not user-configurable. */
-const LOGO_LINES = [
-  "█████████  ",
-  "███   ███  ",
-  "██████     ",
-  "███     ███",
-];
+const LOGO_LINES = ["█████████  ", "███   ███  ", "██████     ", "███     ███"];
 const LOGO_COLOR: ThemeColor = "text";
 const HEADING = "Welcome back!";
 const SUBHEADING =
@@ -160,17 +152,15 @@ export function createHeader(
         "",
         "",
 
-        ...wrapLines(
-          [HEADING],
-          leftW - 2,
-        ).map((line) => theme.bold(theme.fg("muted", line))),
+        ...wrapLines([HEADING], leftW - 2).map((line) =>
+          theme.bold(theme.fg("muted", line)),
+        ),
 
         "",
 
-        ...wrapLines(
-          [SUBHEADING],
-          leftW - 2,
-        ).map((line) => theme.italic(theme.fg("muted", line))),
+        ...wrapLines([SUBHEADING], leftW - 2).map((line) =>
+          theme.italic(theme.fg("muted", line)),
+        ),
       ];
 
       // Too narrow for a box → fall back to a plain centered logo.

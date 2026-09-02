@@ -3,7 +3,7 @@ name: Publish pi-notify
 on:
   push:
     tags:
-      - 'pi-notify@*'
+      - "pi-notify@*"
   workflow_dispatch:
 
 jobs:

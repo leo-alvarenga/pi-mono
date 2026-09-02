@@ -35,6 +35,9 @@ export class RunTracker {
 
     const project = basename(this.cwd()) || "?";
     const elapsed = formatDuration(Date.now() - this.startedAt);
-    this.notifier.notify(`Pi ${label} done`, `Finished in ${elapsed} · ${project}`);
+    this.notifier.notify(
+      `Pi ${label} done`,
+      `Finished in ${elapsed} · ${project}`,
+    );
   }
 }

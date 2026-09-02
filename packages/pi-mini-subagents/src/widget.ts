@@ -1,4 +1,8 @@
-import type { ExtensionAPI, ExtensionContext, Theme } from "@earendil-works/pi-coding-agent";
+import type {
+  ExtensionAPI,
+  ExtensionContext,
+  Theme,
+} from "@earendil-works/pi-coding-agent";
 
 import { PANEL_TOGGLE_CHORD, WIDGET_KEY } from "./constants";
 import type { SubagentStore } from "./state";
@@ -42,7 +46,10 @@ class SubagentWidget {
   }
 }
 
-export function refreshWidget(ctx: ExtensionContext, store: SubagentStore): void {
+export function refreshWidget(
+  ctx: ExtensionContext,
+  store: SubagentStore,
+): void {
   if (!ctx.hasUI) return;
 
   ctx.ui.setWidget(
@@ -56,7 +63,10 @@ export function refreshWidget(ctx: ExtensionContext, store: SubagentStore): void
   );
 }
 
-export function registerSubagentWidget(pi: ExtensionAPI, store: SubagentStore): void {
+export function registerSubagentWidget(
+  pi: ExtensionAPI,
+  store: SubagentStore,
+): void {
   pi.registerShortcut(PANEL_TOGGLE_CHORD, {
     description: "Toggle subagents panel",
     handler: (ctx) => {

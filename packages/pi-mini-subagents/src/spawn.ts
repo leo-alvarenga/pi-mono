@@ -53,10 +53,17 @@ function getPiInvocation(args: string[]): { command: string; args: string[] } {
   return { command: "pi", args };
 }
 
-async function writePromptTempFile(prompt: string): Promise<{ dir: string; filePath: string }> {
-  const dir = await fs.promises.mkdtemp(path.join(os.tmpdir(), "pi-mini-subagent-"));
+async function writePromptTempFile(
+  prompt: string,
+): Promise<{ dir: string; filePath: string }> {
+  const dir = await fs.promises.mkdtemp(
+    path.join(os.tmpdir(), "pi-mini-subagent-"),
+  );
   const filePath = path.join(dir, "prompt.md");
-  await fs.promises.writeFile(filePath, prompt, { encoding: "utf-8", mode: 0o600 });
+  await fs.promises.writeFile(filePath, prompt, {
+    encoding: "utf-8",
+    mode: 0o600,
+  });
   return { dir, filePath };
 }
 
@@ -65,7 +72,8 @@ function extractText(msg: any): string {
   const content = Array.isArray(msg?.content) ? msg.content : [];
   for (let i = content.length - 1; i >= 0; i--) {
     const part = content[i];
-    if (part?.type === "text" && typeof part.text === "string") return part.text;
+    if (part?.type === "text" && typeof part.text === "string")
+      return part.text;
   }
   return "";
 }
@@ -82,7 +90,9 @@ export interface RunSubagentOptions {
  * Spawn a transient headless pi subprocess, stream its JSON events, and
  * resolve with the final output once it exits.
  */
-export async function runSubagent(opts: RunSubagentOptions): Promise<SubagentRunResult> {
+export async function runSubagent(
+  opts: RunSubagentOptions,
+): Promise<SubagentRunResult> {
   const prompt = buildSystemPrompt(opts.allowWrite);
   const { dir: tmpDir, filePath: tmpPath } = await writePromptTempFile(prompt);
 
@@ -91,17 +101,28 @@ export async function runSubagent(opts: RunSubagentOptions): Promise<SubagentRun
     : `Task: ${opts.task}`;
 
   const args = [
-    "--mode", "json",
+    "--mode",
+    "json",
     "-p",
     "--no-session",
-    "--tools", buildAllowlist(opts.allowWrite).join(","),
-    "--append-system-prompt", tmpPath,
+    "--tools",
+    buildAllowlist(opts.allowWrite).join(","),
+    "--append-system-prompt",
+    tmpPath,
     taskText,
   ];
 
   const result: SubagentRunResult = {
     output: "",
-    usage: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cost: 0, contextTokens: 0, turns: 0 },
+    usage: {
+      input: 0,
+      output: 0,
+      cacheRead: 0,
+      cacheWrite: 0,
+      cost: 0,
+      contextTokens: 0,
+      turns: 0,
+    },
     exitCode: 0,
     stderr: "",
     aborted: false,

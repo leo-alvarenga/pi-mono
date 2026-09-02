@@ -48,7 +48,10 @@ export async function openAgentPicker(
 
     container.addChild(
       new Text(
-        theme.fg("dim", "↑↓ navigate · enter select · esc cancel · type to filter"),
+        theme.fg(
+          "dim",
+          "↑↓ navigate · enter select · esc cancel · type to filter",
+        ),
         1,
         0,
       ),

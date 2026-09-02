@@ -39,15 +39,18 @@ export function getPermissionBadges(agent: AgentConfig): string {
 
   function badge(action: Action): string {
     switch (action) {
-      case "allow": return "✓";
-      case "ask":   return "!";
-      case "deny":  return "✗";
+      case "allow":
+        return "✓";
+      case "ask":
+        return "!";
+      case "deny":
+        return "✗";
     }
   }
 
-  return BADGE_FAMILIES
-    .map((f) => `${f.label} ${badge(actionFor(f.key))}`)
-    .join(" · ");
+  return BADGE_FAMILIES.map(
+    (f) => `${f.label} ${badge(actionFor(f.key))}`,
+  ).join(" · ");
 }
 
 export function isValidAgent(name: string, agents: AgentConfig[]): boolean {

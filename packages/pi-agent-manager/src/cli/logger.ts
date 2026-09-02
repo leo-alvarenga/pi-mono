@@ -1,4 +1,8 @@
-import type { ExtensionContext, Theme, ThemeColor } from "@earendil-works/pi-coding-agent";
+import type {
+  ExtensionContext,
+  Theme,
+  ThemeColor,
+} from "@earendil-works/pi-coding-agent";
 import { LOGGER_PREFIX } from "../constants";
 
 const TYPE_COLORS: Record<string, ThemeColor> = {

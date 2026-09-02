@@ -3,7 +3,7 @@ name: Publish pi-todo-list
 on:
   push:
     tags:
-      - 'pi-todo-list@*'
+      - "pi-todo-list@*"
   workflow_dispatch:
 
 jobs:

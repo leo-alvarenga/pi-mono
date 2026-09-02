@@ -34,8 +34,10 @@ export function getHeader(name: string): HeaderRendererFactory | undefined {
 }
 
 // ── built-ins ─────────────────────────────────────────────────────────────
-registerEditorFrame("blocky", (pi, provider, opts, ...args) =>
-  new BlockyEditor(pi, provider, opts, ...args),
+registerEditorFrame(
+  "blocky",
+  (pi, provider, opts, ...args) =>
+    new BlockyEditor(pi, provider, opts, ...args),
 );
 
 registerHeader("basic", createHeader);

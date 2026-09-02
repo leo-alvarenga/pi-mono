@@ -6,19 +6,16 @@ import { wildcardMatch } from "./wildcard";
  * (`manual` is an alias for `default`; omitted here).
  */
 export type ClaudePermissionMode =
-  | "default"
-  | "acceptEdits"
-  | "plan"
-  | "auto"
-  | "dontAsk"
-  | "bypassPermissions";
+  "default" | "acceptEdits" | "plan" | "auto" | "dontAsk" | "bypassPermissions";
 
 /**
  * Map a ruleset to the closest Claude CLI permission mode:
  * `*`=deny → plan (read-only); `*`=allow → bypassPermissions when nothing
  * asks, else acceptEdits; anything else → default.
  */
-export function permissionModeFor(...rulesets: Ruleset[]): ClaudePermissionMode {
+export function permissionModeFor(
+  ...rulesets: Ruleset[]
+): ClaudePermissionMode {
   const merged = rulesets.flat();
   const star = evaluate("*", "*", merged).action;
   if (star === "deny") return "plan";

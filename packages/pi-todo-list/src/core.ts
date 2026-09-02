@@ -170,7 +170,8 @@ function clear(): ActionResult {
 
 function addMany(state: TodoState, texts: string[]): ActionResult {
   const cleaned = texts.map(cleanText);
-  if (cleaned.some((t) => !t)) return { ok: false, error: "text required for add" };
+  if (cleaned.some((t) => !t))
+    return { ok: false, error: "text required for add" };
   if (cleaned.some((t) => t && t.length > MAX_TEXT_LENGTH)) return textError();
 
   let nextId = state.nextId;
@@ -224,7 +225,8 @@ export function applyAction(
 ): ActionResult {
   switch (params.action) {
     case "add":
-      if (params.texts !== undefined && params.texts.length > 0) return addMany(state, params.texts);
+      if (params.texts !== undefined && params.texts.length > 0)
+        return addMany(state, params.texts);
       return add(state, params.text ?? "");
 
     case "update":
@@ -235,7 +237,8 @@ export function applyAction(
       return update(state, params.id, params);
 
     case "remove":
-      if (params.ids !== undefined && params.ids.length > 0) return removeMany(state, params.ids);
+      if (params.ids !== undefined && params.ids.length > 0)
+        return removeMany(state, params.ids);
       if (params.id === undefined) {
         return { ok: false, error: "id required for remove" };
       }

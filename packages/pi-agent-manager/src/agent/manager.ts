@@ -1,7 +1,12 @@
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 import type { Action, Ruleset } from "../permission/types";
-import { evaluate, disabled, merge, permissionModeFor } from "../permission/evaluate";
+import {
+  evaluate,
+  disabled,
+  merge,
+  permissionModeFor,
+} from "../permission/evaluate";
 import { TOOL_TO_PERMISSION, extractPattern } from "../permission/mapping";
 import type { AgentConfig, AgentState } from "./types";
 import { agentToLabel } from "../cli/help";

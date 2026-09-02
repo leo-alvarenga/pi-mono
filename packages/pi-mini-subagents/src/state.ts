@@ -38,7 +38,12 @@ export class SubagentStore {
   }
 
   /** Create a `running` record and commit it. */
-  start(ctx: ExtensionContext, task: string, allowWrite: boolean, cwd?: string): SubagentRecord {
+  start(
+    ctx: ExtensionContext,
+    task: string,
+    allowWrite: boolean,
+    cwd?: string,
+  ): SubagentRecord {
     const s = this.getState(ctx);
     const record: SubagentRecord = {
       id: s.nextId,
@@ -53,7 +58,11 @@ export class SubagentStore {
   }
 
   /** Patch an existing record in place and commit. */
-  finish(ctx: ExtensionContext, id: number, patch: Partial<SubagentRecord>): void {
+  finish(
+    ctx: ExtensionContext,
+    id: number,
+    patch: Partial<SubagentRecord>,
+  ): void {
     const s = this.getState(ctx);
     this.commit(ctx, {
       records: s.records.map((r) => (r.id === id ? { ...r, ...patch } : r)),

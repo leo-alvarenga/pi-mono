@@ -2,15 +2,27 @@ import assert from "node:assert/strict";
 import { applyAction } from "./core";
 
 // addMany appends all with sequential ids
-const a = applyAction({ todos: [], nextId: 1 }, { action: "add", texts: ["one", "two", "three"] });
+const a = applyAction(
+  { todos: [], nextId: 1 },
+  { action: "add", texts: ["one", "two", "three"] },
+);
 assert.equal(a.ok, true);
 if (!a.ok) process.exit(1);
-assert.deepEqual(a.state.todos.map((t) => t.id), [1, 2, 3]);
-assert.deepEqual(a.state.todos.map((t) => t.text), ["one", "two", "three"]);
+assert.deepEqual(
+  a.state.todos.map((t) => t.id),
+  [1, 2, 3],
+);
+assert.deepEqual(
+  a.state.todos.map((t) => t.text),
+  ["one", "two", "three"],
+);
 assert.equal(a.state.nextId, 4);
 
 // blank entry rejects the whole batch
-const bad = applyAction({ todos: [], nextId: 1 }, { action: "add", texts: ["", "ok"] });
+const bad = applyAction(
+  { todos: [], nextId: 1 },
+  { action: "add", texts: ["", "ok"] },
+);
 assert.equal(bad.ok, false);
 
 // removeMany drops each id (missing id errors, nothing changes)
@@ -19,7 +31,10 @@ assert.equal(missing.ok, false);
 const r = applyAction(a.state, { action: "remove", ids: [1, 3] });
 assert.equal(r.ok, true);
 if (!r.ok) process.exit(1);
-assert.deepEqual(r.state.todos.map((t) => t.id), [2]);
+assert.deepEqual(
+  r.state.todos.map((t) => t.id),
+  [2],
+);
 
 // removeMany strips dumped ids from a sibling's blockedBy
 const withDep = {

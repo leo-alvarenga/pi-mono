@@ -6,7 +6,10 @@ import { formatDuration, RunTracker } from "./tracker";
 
 function fake(): { calls: string[][]; notifier: Notifier } {
   const calls: string[][] = [];
-  return { calls, notifier: { notify: (summary, body) => calls.push([summary, body]) } };
+  return {
+    calls,
+    notifier: { notify: (summary, body) => calls.push([summary, body]) },
+  };
 }
 
 // parseArgs
@@ -25,7 +28,11 @@ assert.equal(formatDuration(3_900_000), "1h 5m");
 // disabled -> no notification
 {
   const { calls, notifier } = fake();
-  const t = new RunTracker(() => false, notifier, () => "/tmp/proj");
+  const t = new RunTracker(
+    () => false,
+    notifier,
+    () => "/tmp/proj",
+  );
   t.begin();
   t.settle("3f9c2a81");
   assert.equal(calls.length, 0);
@@ -34,7 +41,11 @@ assert.equal(formatDuration(3_900_000), "1h 5m");
 // enabled -> one notification carrying the session label in the title
 {
   const { calls, notifier } = fake();
-  const t = new RunTracker(() => true, notifier, () => "/tmp/myrepo");
+  const t = new RunTracker(
+    () => true,
+    notifier,
+    () => "/tmp/myrepo",
+  );
   t.begin();
   t.settle("3f9c2a81");
   assert.equal(calls.length, 1);
@@ -45,7 +56,11 @@ assert.equal(formatDuration(3_900_000), "1h 5m");
 // settle without begin is silent; a double settle sends one notification
 {
   const { calls, notifier } = fake();
-  const t = new RunTracker(() => true, notifier, () => "/p");
+  const t = new RunTracker(
+    () => true,
+    notifier,
+    () => "/p",
+  );
   t.settle("3f9c2a81");
   assert.equal(calls.length, 0);
   t.begin();

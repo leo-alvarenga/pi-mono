@@ -3,7 +3,7 @@ name: Publish pi-zen-frame
 on:
   push:
     tags:
-      - 'pi-zen-frame@*'
+      - "pi-zen-frame@*"
   workflow_dispatch:
 
 jobs:

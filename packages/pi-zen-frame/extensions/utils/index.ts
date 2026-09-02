@@ -13,4 +13,3 @@ export * from "./string";
 export function isThemeColor(value: string): value is ThemeColor {
   return value in THEME_COLORS;
 }
-

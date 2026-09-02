@@ -11,7 +11,7 @@ The agent manages tasks with a `todo` tool while you watch them live in a panel 
   self-blocks, dependency cycles) are rejected before any state change.
 - **Live TUI panel** above the input editor — a header line with a
   collapse/expand chevron and per-status counters, Nerd Font status glyphs
-  (  pending, 󱥸  in-progress,   completed), blocked-task hints, and a hardcoded
+  ( pending, 󱥸 in-progress,  completed), blocked-task hints, and a hardcoded
   8-row budget with a `… +N more` summary line. The panel hides itself
   entirely while the list is empty.
 - **Toggle with `Alt+T`** — collapsed by default; collapsed shows just the
