@@ -1,6 +1,7 @@
 import type { ThemeColor } from "@earendil-works/pi-coding-agent";
 import type { FrameIcons, SpinnerPhase } from "../types";
-/** Spinner animation frames per phase (pi-editor-shell style). */
+
+/** Spinner animation frames per phase (pi-editor-shell style) */
 export const SPINNER_FRAMES: Record<SpinnerPhase, string[]> = {
   idle: ["⠃", "⠞", "⡵", "⠿", "⢹", "⠄"],
   outputting: ["⠋", "⠙", "⠸", "⠴", "⠦", "⠇", "⠏"],
@@ -11,7 +12,7 @@ export const SPINNER_FRAMES: Record<SpinnerPhase, string[]> = {
   // Sample ["░", "▒", "▓", "█", "▓", "▒"],
 };
 
-/** Nerd Font glyphs used by the blocky editor preset. */
+/** Nerd Font glyphs used by the blocky editor preset */
 export const DEFAULT_ICONS: FrameIcons = {
   model: "󰣖",
   folder: " ",
@@ -25,15 +26,15 @@ export const DEFAULT_ICONS: FrameIcons = {
   bellOff: "󰂛",
 };
 
-/** Thinking level → theme token, mirroring pi's own border-color mapping. */
+/** Thinking level → theme token, mirroring pi's own border-color mapping */
 export const THINKING_TOKEN: Record<string, string> = {
-  off: "thinkingOff",
-  minimal: "thinkingMinimal",
   low: "thinkingLow",
-  medium: "thinkingMedium",
+  max: "thinkingMax",
+  off: "thinkingOff",
   high: "thinkingHigh",
   xhigh: "thinkingXhigh",
-  max: "thinkingMax",
+  medium: "thinkingMedium",
+  minimal: "thinkingMinimal",
 };
 
 export const THEME_COLORS: Record<ThemeColor, true> = {

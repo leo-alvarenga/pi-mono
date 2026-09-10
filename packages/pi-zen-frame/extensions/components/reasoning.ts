@@ -16,7 +16,7 @@ export const reasoningSegment: SegmentDef = {
       "thinkingText") as ThemeColor;
 
     return theme.fg(
-      d.zenMode ? "muted" : token,
+      token,
       ` ${icons.thinking} ${d.thinkingLevel} `,
     );
   },

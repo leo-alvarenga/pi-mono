@@ -1,10 +1,3 @@
-/**
- * Renderer contracts. A "renderer" is a named, swappable implementation of
- * the editor frame (the blocky band) or the header (the welcome panel).
- * Implementations register by name in registry.ts; the entry point resolves
- * the configured name and instantiates. Signatures mirror pi's
- * setEditorComponent / setHeader factories.
- */
 import type { TUI } from "@earendil-works/pi-tui";
 import type {
   CustomEditor,
@@ -16,15 +9,13 @@ import type { FrameSettings, Settings, SpinnerPhase } from "../config/types";
 import type { ExternalData } from "../components/types";
 import type { HeaderEnv } from "../components/header";
 
-// ── Header ────────────────────────────────────────────────────────────────
-
-/** What pi's TUI needs from any header implementation. */
+/** What pi's TUI needs from any header implementation */
 export interface HeaderRenderer {
-  render(width: number): string[];
   invalidate(): void;
+  render(width: number): string[];
 }
 
-/** Builds a HeaderRenderer; matches ctx.ui.setHeader's factory signature. */
+/** Builds a HeaderRenderer; matches ctx.ui.setHeader's factory signature */
 export type HeaderRendererFactory = (
   tui: TUI,
   theme: Theme,
@@ -33,9 +24,7 @@ export type HeaderRendererFactory = (
   getEnv: (pi: ExtensionAPI) => HeaderEnv,
 ) => HeaderRenderer;
 
-// ── Editor frame ──────────────────────────────────────────────────────────
-
-/** Per-renderer options handed to the frame factory (frame config + accent). */
+/** Per-renderer options handed to the frame factory (frame config + accent) */
 export interface EditorFrameRenderOptions {
   frame: FrameSettings;
   accentColor: ThemeColor;
@@ -43,9 +32,10 @@ export interface EditorFrameRenderOptions {
 
 /** Surface the entry point drives on the active editor-frame renderer. */
 export interface EditorFrameRenderer extends CustomEditor {
-  setSpinner(phase: SpinnerPhase | null): void;
-  stopSpinner(): void;
   refresh(): void;
+  openPalette(): void;
+  stopSpinner(): void;
+  setSpinner(phase: SpinnerPhase | null): void;
 }
 
 /** Builds an EditorFrameRenderer; `...args` forward to CustomEditor. */

@@ -6,7 +6,7 @@ export const notifySegment: SegmentDef = {
   id: "notify",
   slot: "topLeft",
   render: (d, { icons, theme }) => {
-    const color = d.notifyEnabled && !d.zenMode ? d.accentColor : "muted";
+    const color = d.notifyEnabled ? d.accentColor : "muted";
 
     return theme.fg(color, ` ${d.notifyEnabled ? icons.bell : icons.bellOff} `);
   },

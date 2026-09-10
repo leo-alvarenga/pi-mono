@@ -44,13 +44,12 @@ export const tokenCountSegment: SegmentDef = {
       }
     }
 
-    const color2 = d.zenMode ? "muted" : color;
     const used = tokens === null ? "?" : formatTokens(tokens);
 
     return (
-      theme.fg(color2, ` ${icons.context} ctx ${pct} `) +
+      theme.fg(color, ` ${icons.context} ctx ${pct} `) +
       theme.fg("dim", "·") +
-      theme.fg(color2, ` ${used}/${formatWindow(window)} `) +
+      theme.fg(color, ` ${used}/${formatWindow(window)} `) +
       theme.fg("dim", "·") +
       theme.fg(
         "dim",

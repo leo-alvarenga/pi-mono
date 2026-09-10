@@ -1,7 +1,7 @@
 import type { Settings } from "../types";
 import { WORKING_MESSAGES } from "./messages";
+
 export const DEFAULT_SETTINGS: Settings = {
-  zenMode: false,
   accentColor: "accent",
   editorFrame: "blocky",
 

@@ -8,7 +8,7 @@ Each package lives in `packages/`, keeps its own version, and is published to np
 | Package                            | Path                         | Latest | Description                                                               |
 | ---------------------------------- | ---------------------------- | ------ | ------------------------------------------------------------------------- |
 | `@leo-alvarenga/pi-agent-manager`  | `packages/pi-agent-manager`  | 0.18.4 | Agent-mode switching with OpenCode-style permission guards                |
-| `@leo-alvarenga/pi-zen-frame`      | `packages/pi-zen-frame`      | 0.17.1 | Polished frame/header look for the TUI editor                             |
+| `@leo-alvarenga/pi-zen-frame`      | `packages/pi-zen-frame`      | 0.18.0 | Polished frame/header look for the TUI editor                             |
 | `@leo-alvarenga/pi-hash-edit`      | `packages/pi-hash-edit`      | 0.2.1  | Hash-anchored file read/edit tools (`hash_read`/`hash_edit`)              |
 | `@leo-alvarenga/pi-mini-subagents` | `packages/pi-mini-subagents` | 0.2.1  | Transient subagents: `mini_subagent` tool + live TUI panel                |
 | `@leo-alvarenga/pi-todo-list`      | `packages/pi-todo-list`      | 0.4.3  | Session-aware todo list overlay + live TUI panel                          |

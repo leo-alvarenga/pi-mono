@@ -19,7 +19,7 @@ function loadSettingsFile(): Promise<string> {
   return readFile(getResolvedSettingsFilePath(), "utf8");
 }
 
-/** Validate a raw (possibly malformed) config against the schema shapes. */
+/** Validate a raw (possibly malformed) config against the schema shapes */
 function normalize(raw: unknown): Settings {
   if (!raw || typeof raw !== "object") return DEFAULT_SETTINGS;
 
@@ -37,7 +37,6 @@ function normalize(raw: unknown): Settings {
   const out: Settings = {
     ...DEFAULT_SETTINGS,
     frame: { ...DEFAULT_SETTINGS.frame },
-    zenMode: bool(r.zenMode, d.zenMode ?? true),
     editorFrame:
       typeof r.editorFrame === "string" ? r.editorFrame : d.editorFrame,
   };
@@ -95,6 +94,7 @@ function normalize(raw: unknown): Settings {
 export async function loadSettings(): Promise<Settings> {
   try {
     const raw = JSON.parse(await loadSettingsFile()) as unknown;
+
     return normalize(raw);
   } catch {
     return DEFAULT_SETTINGS;

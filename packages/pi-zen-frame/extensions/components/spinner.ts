@@ -12,9 +12,9 @@ export const spinnerSegment: SegmentDef = {
   render: (d, { theme }) => {
     let phase = d.spinnerPhase ?? "thinking";
 
-    // No frame.colors key for the spinner; zen mutes it, else accent.
+    // No frame.colors key for the spinner; accent only.
     const spinner = theme.fg(
-      d.zenMode ? "muted" : d.accentColor,
+      d.accentColor,
       ` ${d.spinnerFrame} `,
     );
     if (phase === "idle") return spinner;

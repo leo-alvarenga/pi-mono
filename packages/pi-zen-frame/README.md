@@ -10,6 +10,7 @@ A [`pi-coding-agent`](https://github.com/earendil-works/pi) extension that gives
 - **Header Box**: Optional welcome panel with a logo and "Welcome back!" heading, model name, current working directory, Git status, and a random tip
 - **Working Messages**: Randomized loading status messages during response generation, updated on a configurable timer
 - **Native Theme Support**: Uses pi `ThemeColor` tokens to automatically align with your active theme
+- **Command Palette**: `alt+p` opens a filterable list of built-in and registered slash commands
 
 ---
 
@@ -42,10 +43,7 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
   // Fallback accent color for frame border and active segments
   "accentColor": "accent",
 
-  // Master mute: renders all segments in muted tones except agent-mode (default: false)
-  "zenMode": false,
-
-  // Editor-frame renderer by registered name (built-in: "blocky")
+  // Editor-frame renderer by registered name (built-in: "blocky", "minimalist")
   "editorFrame": "blocky",
 
   "header": {
@@ -103,14 +101,14 @@ The editor frame shows status indicators in two rows below the editor:
 
 ## Commands & Keybindings
 
-- **Toggle Command**: `/zen_mode` — Toggles Zen mode on and off.
-- **Default Keybinding**: `ctrl+shift+z`
+- **Command Palette**: `alt+p` — filter and insert built-in or registered slash commands.
+- **Palette Keys**: `↑`/`↓` navigate, `Enter` inserts the command, `Esc` closes.
 
 To rebind or disable the hotkey, update `~/.pi/agent/keybindings.json`:
 
 ```jsonc
 {
-  "piZenFrame.zenMode": "ctrl+shift+z", // Set to [] to disable the shortcut
+  "piZenFrame.palette": "alt+p", // Set to [] to disable the shortcut
 }
 ```
 
@@ -125,7 +123,7 @@ extensions/
 ├── index.ts            # Extension entry point: config initialization and events
 ├── config/             # Types, defaults, and settings normalization
 ├── components/         # Status segments, header, and frame layout helpers
-├── editor/             # BlockyEditor editor-frame renderer
+├── editor/             # Editor-frame renderers (blocky / minimalist) + palette
 ├── renderers/          # Renderer registry + swap-in API (blocky / basic)
 └── utils/              # Helpers for Git status, paths, agent modes, and token usage
 

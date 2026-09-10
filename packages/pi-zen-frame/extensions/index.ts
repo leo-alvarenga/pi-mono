@@ -20,11 +20,11 @@ import type { KeyId } from "@earendil-works/pi-tui";
 
 import {
   DEFAULT_SETTINGS,
+  PALETTE_DEFAULT_KEY,
+  PALETTE_SHORTCUT_ID,
   PI_AGENT_MANAGER_AGENT_EVENT,
   PI_NOTIFY_TOGGLE_EVENT,
   SPINNER_FRAMES,
-  ZEN_MODE_DEFAULT_KEY,
-  ZEN_MODE_SHORTCUT_ID,
 } from "./config/constants";
 import { loadSettings } from "./config/settings";
 import type { Settings, SpinnerPhase } from "./config/types";
@@ -46,7 +46,6 @@ let settings: Settings = DEFAULT_SETTINGS;
 let spinnerPhase: SpinnerPhase | null = null;
 let agentMode: AgentMode = null;
 let notifyEnabled = false;
-let zenMode = true;
 let git: GitInfo = {
   branch: undefined,
   dirty: 0,
@@ -90,7 +89,6 @@ function provideExternal(pi: ExtensionAPI): ExternalData {
   const model = ctx?.model;
 
   return {
-    zenMode,
     agentMode,
     spinnerPhase,
     cwd: ctx?.cwd ?? "",
@@ -112,51 +110,27 @@ function setSpinner(phase: SpinnerPhase | null): void {
   editor?.setSpinner(phase);
 }
 
-/** Keys bound to the zen toggle in keybindings.json; default key if unset.
- *  `[]` disables the shortcut (the /zen_mode command still works). */
-function zenModeKeys(): string[] {
+function paletteKeys(): string[] {
   try {
     const raw = JSON.parse(
       readFileSync(join(getAgentDir(), "keybindings.json"), "utf8"),
     ) as Record<string, unknown>;
-    const v = raw[ZEN_MODE_SHORTCUT_ID];
+    const v = raw[PALETTE_SHORTCUT_ID];
     if (typeof v === "string") return [v];
     if (Array.isArray(v) && v.every((k) => typeof k === "string")) return v;
-  } catch {
-    /* no keybindings file → default key */
-  }
-
-  return [ZEN_MODE_DEFAULT_KEY];
-}
-
-function toggleZenMode(): boolean {
-  zenMode = !zenMode;
-  editor?.refresh();
-  return zenMode;
-}
-
-function notifyZen(ctx: {
-  ui: { notify(message: string, type?: "info" | "warning" | "error"): void };
-}): void {
-  ctx.ui.notify(toggleZenMode() ? "Zen mode: on" : "Zen mode: off", "info");
+  } catch {}
+  return [PALETTE_DEFAULT_KEY];
 }
 
 // ── extension entry ──────────────────────────────────────────────────────
 
 export default async function (pi: ExtensionAPI) {
   settings = await loadSettings();
-  zenMode = settings.zenMode !== false;
 
-  pi.registerCommand("zen_mode", {
-    description:
-      "Toggle Editor Zen mode (all segments muted except agent mode)",
-    handler: async (_, ctx) => notifyZen(ctx),
-  });
-
-  for (const key of zenModeKeys()) {
+  for (const key of paletteKeys()) {
     pi.registerShortcut(key as KeyId, {
-      description: "Toggle Zen mode",
-      handler: (ctx) => notifyZen(ctx),
+      description: "Open command palette",
+      handler: () => editor?.openPalette(),
     });
   }
 

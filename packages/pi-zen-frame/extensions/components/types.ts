@@ -49,9 +49,6 @@ export interface FrameData {
   spinnerPhase: SpinnerPhase | null;
   thinkingLevel: string | undefined;
 
-  /** Master mute: when true, every segment except agentMode renders muted. */
-  zenMode: boolean;
-
   /** To render the agent mode (from @leo-alvarenga/pi-agent-manager) segment, if any */
   agentMode: AgentMode;
 
@@ -88,7 +85,6 @@ export interface SegmentDef {
 export interface ExternalData {
   cwd: string;
   gitDirty: number;
-  zenMode: boolean;
   agentMode: AgentMode;
   theme: Theme | undefined;
   gitBranch: string | undefined;
