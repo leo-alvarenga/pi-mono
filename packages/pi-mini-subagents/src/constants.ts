@@ -17,7 +17,7 @@ export const STATUSES = [
 ] as const;
 
 export const STATUS_STYLES: Record<SubagentStatus, SubagentStatusUi> = {
-  running: { icon: "⏳ ", fg: "accent", bold: true },
+  running: { icon: "󱥸 ", fg: "accent", bold: true },
   completed: { icon: "✓ ", fg: "success" },
   failed: { icon: "✗ ", fg: "error", bold: true },
   needs_input: { icon: "? ", fg: "warning", bold: true },
