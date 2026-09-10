@@ -12,8 +12,10 @@ function formatTokens(n: number): string {
 }
 
 export function getStyledSubagent(r: SubagentRecord, th: Theme): string {
+  const task = r.task.replace(/\s*[\r\n]+\s*/g, " ");
   const style = STATUS_STYLES[r.status] ?? STATUS_STYLES.completed;
-  let line = `${th.fg(style.fg, style.icon)} ${th.fg("accent", `#${r.id}`)} ${th.fg(style.fg, r.task)}`;
+
+  let line = `${th.fg(style.fg, style.icon)} ${th.fg("accent", `#${r.id}`)} ${th.fg(style.fg, task)}`;
 
   if (r.status === "completed" && r.tokens) {
     line += th.fg("dim", ` · ${formatTokens(r.tokens)}`);
@@ -38,7 +40,7 @@ export function getStyledSubagentHeader(
 
   return th.fg(
     "accent",
-    `${PANEL_STATE_ICON[collapseState]} ⏳ Subagents — ${running} running / ${done} done`,
+    `${PANEL_STATE_ICON[collapseState]}   Subagents | ${running} running / ${done} done`,
   );
 }
 
@@ -73,6 +75,7 @@ export function getStyledSubagentList(
     } else {
       const running = records.filter((r) => r.status === "running");
       const finished = records.filter((r) => r.status !== "running");
+
       const visible = [...running, ...finished].slice(0, MAX_PANEL_ROWS);
 
       for (const r of visible) {
