@@ -8,12 +8,25 @@ import { buildEntry } from "./session";
 import { ensureFile, readReport, writeReport } from "./store";
 import type { FinishedEntry, SessionEntry, SessionStatus } from "./types";
 
+const LOG_PREFIX = "[pi-status-broadcaster]";
+
 let cached = "";
+let notifyChanges = false;
 let sessionId: string | null = null;
 let sessionName: string | undefined = undefined;
 let createdAt: string | null = null;
 let resumedAt: string | undefined = undefined;
 let currentCtx: ExtensionContext | null = null;
+
+function notify(content?: string) {
+  if (!currentCtx || !currentCtx.hasUI || !currentCtx?.ui || !notifyChanges) {
+    return;
+  }
+
+  currentCtx.ui.notify(
+    `${LOG_PREFIX} ${content ?? "Session changes were detected and saved"}`,
+  );
+}
 
 function flush(status: SessionStatus): void {
   if (!currentCtx || !sessionId || !createdAt) return;
@@ -69,21 +82,26 @@ export default async function (pi: ExtensionAPI) {
     }
 
     flush("IDLE");
+    notify();
   });
 
   pi.on("session_info_changed", (event) => {
     if (event.name !== undefined) sessionName = event.name;
+
     flush("IDLE");
+    notify();
   });
 
   pi.on("agent_start", async (_event, ctx) => {
     currentCtx = ctx;
     flush("BUSY");
+    notify();
   });
 
   pi.on("agent_end", async (_event, ctx) => {
     currentCtx = ctx;
     flush("IDLE");
+    notify();
   });
 
   pi.on("session_shutdown", async () => {
@@ -109,6 +127,7 @@ export default async function (pi: ExtensionAPI) {
       sessionName = undefined;
 
       cached = "";
+      notify("Session status updated");
     } catch {
       //
     }
@@ -118,11 +137,24 @@ export default async function (pi: ExtensionAPI) {
     description: "Rename the current session",
     handler: async (args, ctx) => {
       const name = args.trim();
+
       if (!name) {
         ctx.ui.notify("Usage: /rename-session <new name>", "error");
         return;
       }
+
       pi.setSessionName(name);
+      ctx.ui.notify(`Session renamed to "${name}"`);
+    },
+  });
+
+  pi.registerCommand("notify-status-changes", {
+    description:
+      "Toggle notifications for when the session status has changed and been saved",
+    handler: async () => {
+      notify(
+        `You will ${notifyChanges ? "" : "NOT "}be notified about session status reports`,
+      );
     },
   });
 }
