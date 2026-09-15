@@ -4,7 +4,7 @@ import type { Theme } from "@earendil-works/pi-coding-agent";
 import { MAX_VISIBLE } from "./items";
 import type { PaletteState } from "./types";
 
-const ACTIVE_PREFIX = " ▶ ";
+const ACTIVE_PREFIX = " → ";
 const INACTIVE_PREFIX = "   ";
 
 export function renderPalette(
@@ -27,10 +27,11 @@ export function renderPalette(
   const padTo = (text: string, w: number) =>
     text + " ".repeat(Math.max(0, w - visibleWidth(text)));
 
-  const title = "─ Command Palette ";
+  const title = " Command Palette ";
 
   const rows: string[] = [
-    lPad + b("╭" + title + "─".repeat(Math.max(0, inner - title.length)) + "╮"),
+    lPad +
+      b("╭─" + title + "─".repeat(Math.max(0, inner - title.length - 1)) + "╮"),
     bRow(padTo(" /" + state.query, inner)),
     lPad + b("├" + "─".repeat(inner) + "┤"),
   ];
@@ -41,32 +42,38 @@ export function renderPalette(
     const nm = "  no matches";
     rows.push(bRow(d(nm) + " ".repeat(Math.max(0, inner - nm.length))));
   } else {
-    const kindW = 5;
-    const labelW = inner - 3 - 2 - kindW;
-
     for (let i = 0; i < visible.length; i++) {
       const item = visible[i]!;
       const sel = i === state.selected - state.viewTop;
 
-      const label = truncateToWidth(item.name, labelW);
+      const kind = item.name.startsWith("/skill:") ? "skill" : "cmd";
+      const kindFg = () => (sel ? b(kind) : d(kind));
 
+      let source = "";
+
+      if (sel && item.sourceInfo) {
+        source = d(`(${item.sourceInfo.source}) `);
+      }
+
+      const kindW = visibleWidth(kind);
+      const labelW = inner - 3 - 2 - kindW - visibleWidth(source);
+
+      const label = truncateToWidth(item.name, labelW);
       const lPadStr = getLPadStr(labelW, label);
 
-      const kind = item.name.startsWith("/skill:") ? "skill" : "cmd  ";
+      const plain = `${sel ? ACTIVE_PREFIX : INACTIVE_PREFIX}${label}${lPadStr}  ${source}${kindFg()}`;
 
-      const plain =
-        (sel ? ACTIVE_PREFIX : INACTIVE_PREFIX) + label + lPadStr + "  " + kind;
-
-      rows.push(bRow(sel ? b(plain) : plain.slice(0, -kindW) + d(kind)));
+      rows.push(bRow(sel ? b(plain) : plain));
 
       if (sel) {
-        const content = truncateToWidth(
-          `${INACTIVE_PREFIX} ${item.description}`,
-          labelW,
-        );
+        const content = [
+          truncateToWidth(`${INACTIVE_PREFIX} ${item.description}`, labelW),
+        ];
 
-        const lPadStr = getLPadStr(inner, content);
-        rows.push(bRow(d(content) + lPadStr));
+        content.forEach((c) => {
+          const lPadStr = getLPadStr(inner, c);
+          rows.push(bRow(d(c) + lPadStr));
+        });
       }
     }
   }

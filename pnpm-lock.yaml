@@ -88,6 +88,19 @@ importers:
         specifier: ^7.0.2
         version: 7.0.2
 
+  packages/pi-status-broadcaster:
+    dependencies:
+      '@earendil-works/pi-coding-agent':
+        specifier: '*'
+        version: 0.84.2(ws@8.21.3)
+    devDependencies:
+      '@types/node':
+        specifier: ^26.1.2
+        version: 26.2.0
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+
   packages/pi-todo-list:
     dependencies:
       '@earendil-works/pi-ai':

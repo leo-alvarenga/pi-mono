@@ -1,6 +1,7 @@
 import { SlashCommandInfo } from "@earendil-works/pi-coding-agent";
 
 export type PaletteItem = Omit<SlashCommandInfo, "source" | "sourceInfo"> & {
+  sourceInfo?: SlashCommandInfo["sourceInfo"];
   source: SlashCommandInfo["source"] | "native";
 };
 
