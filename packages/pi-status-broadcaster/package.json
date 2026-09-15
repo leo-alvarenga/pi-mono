@@ -1,0 +1,37 @@
+{
+  "name": "@leo-alvarenga/pi-status-broadcaster",
+  "description": "A pi extension that broadcasts session status to a shared JSON file for external tools to consume",
+  "author": "Leonardo A. Alvarenga",
+  "version": "0.1.0",
+  "license": "MIT",
+  "repository": "github.com/leo-alvarenga/pi-mono",
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc"
+  },
+  "keywords": [
+    "pi-extension",
+    "pi-package",
+    "pi"
+  ],
+  "files": [
+    "extensions",
+    "README.md",
+    "LICENSE"
+  ],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "pi": {
+    "extensions": [
+      "./extensions/index.ts"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.2",
+    "typescript": "^7.0.2"
+  }
+}

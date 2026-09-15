@@ -1,0 +1,21 @@
+const ADJECTIVES = [
+  "brave", "calm", "dark", "eager", "fierce", "gentle", "happy",
+  "icy", "jolly", "kind", "lazy", "mellow", "noisy", "odd", "proud",
+  "quiet", "rapid", "sharp", "tidy", "unique", "vivid", "warm",
+  "xenial", "young", "zealous", "amber", "bold", "clever", "daring",
+  "elegant", "fluffy", "graceful", "hollow", "ivory", "jaded",
+];
+
+const NOUNS = [
+  "alpaca", "badger", "crane", "dingo", "eagle", "ferret", "goose",
+  "heron", "iguana", "jaguar", "koala", "lemur", "moose", "newt",
+  "orca", "panda", "quail", "raven", "stoat", "tapir", "uakari",
+  "viper", "walrus", "xerus", "yak", "zebra", "bison", "cobra",
+  "dhole", "elk", "falcon", "gecko", "hyena", "ibis", "jackal",
+];
+
+export function generateName(): string {
+  const adj = ADJECTIVES[Math.floor(Math.random() * ADJECTIVES.length)];
+  const noun = NOUNS[Math.floor(Math.random() * NOUNS.length)];
+  return `${adj}-${noun}`;
+}
