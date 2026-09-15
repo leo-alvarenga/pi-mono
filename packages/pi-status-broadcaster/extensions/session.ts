@@ -1,3 +1,5 @@
+import { execSync } from "child_process";
+
 import type { ExtensionContext } from "@earendil-works/pi-coding-agent";
 
 import type {
@@ -5,6 +7,7 @@ import type {
   SessionStatus,
   TodoReport,
   TokenReport,
+  TmuxInfo,
 } from "./types";
 
 // This is here for a possible future integration with @leo-alvarenga/pi-todo-list
@@ -31,6 +34,23 @@ function getTokens(ctx: ExtensionContext): TokenReport {
   return { total: usage?.tokens ?? 0, input, output };
 }
 
+function getTmuxInfo(): TmuxInfo | undefined {
+  const pane = process.env.TMUX_PANE;
+  if (!pane) return undefined;
+
+  try {
+    const out = execSync(
+      `tmux display-message -p -t ${pane} '#{session_name}|#{window_index}|#{window_name}|#{pane_index}'`,
+      { encoding: "utf8" },
+    ).trim();
+
+    const [session, window, windowName, paneIdx] = out.split("|");
+    return { session, window, windowName, pane: paneIdx };
+  } catch {
+    return undefined;
+  }
+}
+
 export function buildEntry(
   ctx: ExtensionContext,
   opts: {
@@ -42,6 +62,7 @@ export function buildEntry(
   },
 ): SessionEntry {
   const model = ctx.model;
+  const tmux = getTmuxInfo();
 
   return {
     id: opts.id,
@@ -56,5 +77,6 @@ export function buildEntry(
     tokens: getTokens(ctx),
     lastUpdatedAt: new Date().toISOString(),
     currentModel: model?.name ?? model?.id ?? "unknown",
+    ...(tmux ? { tmux } : {}),
   };
 }

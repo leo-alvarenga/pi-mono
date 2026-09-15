@@ -13,6 +13,13 @@ export type TodoReport = {
   inProgress: number;
 };
 
+export type TmuxInfo = {
+  session: string;
+  window: string;
+  windowName: string;
+  pane: string;
+};
+
 export type SessionEntry = {
   id: string;
   cwd: string;
@@ -24,6 +31,7 @@ export type SessionEntry = {
   todos: TodoReport;
   tokens: TokenReport;
   status: SessionStatus;
+  tmux?: TmuxInfo;
 };
 
 export type FinishedEntry = {
