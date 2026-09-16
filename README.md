@@ -14,6 +14,14 @@ A monorepo of extensions and packages for [pi](https://github.com/earendil-works
 | [`@leo-alvarenga/pi-todo-list`](./packages/pi-todo-list)                   | [![npm](https://img.shields.io/npm/v/@leo-alvarenga/pi-todo-list)](https://www.npmjs.com/package/@leo-alvarenga/pi-todo-list)                   | In-session todo list with slash commands and a TUI widget          |
 | [`@leo-alvarenga/pi-zen-frame`](./packages/pi-zen-frame)                   | [![npm](https://img.shields.io/npm/v/@leo-alvarenga/pi-zen-frame)](https://www.npmjs.com/package/@leo-alvarenga/pi-zen-frame)                   | Minimalist editor renderer and command palette                     |
 
+
+## Libraries
+
+Internal shared libraries used by the packages above. Not pi extensions themselves — consumed as `workspace:^` dependencies.
+
+| Library | Version | Description |
+| ------- | ------- | ----------- |
+| [`@leo-alvarenga/pi-ext-core`](./libs/pi-ext-core) | `0.1.0` | Types, utils, headless runtime, session store, panel widget, subagent runtime factory |
 ## Development
 
 This repo uses [pnpm workspaces](https://pnpm.io/workspaces).
