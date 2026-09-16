@@ -54,7 +54,7 @@ export function registerTodoTool(pi: ExtensionAPI, store: TodoStore): void {
       "When the user says 'complete everything' / 'done with all', use todo_complete_all instead of looping todo update.",
     ],
 
-    async execute(toolCallId, params, _signal, _onUpdate, ctx) {
+    async execute(_, params, _signal, _onUpdate, ctx) {
       const current = store.getState(ctx);
       const result = applyAction(current, params);
 
@@ -119,9 +119,12 @@ export function registerTodoCompleteAllTool(
 
     async execute(_toolCallId, _params, _signal, _onUpdate, ctx) {
       const current = store.getState(ctx);
+
       const n = current.todos.length;
       const cleared: TodoState = { todos: [], nextId: 1 };
+
       store.commit(ctx, cleared);
+
       return {
         content: [
           { type: "text", text: `All ${n} todos completed and cleared` },

@@ -1,7 +1,7 @@
 import type { ExtensionAPI, Theme } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
 
-import { groupByStatus } from "./core";
+import { applyAction, groupByStatus } from "./core";
 import { REPORT_ENTRY } from "./constants";
 import type { TodoStore } from "./state";
 import type { Todo } from "./types";
@@ -39,6 +39,25 @@ export function registerTodosCommand(pi: ExtensionAPI, store: TodoStore): void {
       }
 
       pi.appendEntry(REPORT_ENTRY, { todos: [...store.getState(ctx).todos] });
+    },
+  });
+
+  pi.registerCommand("todos-clear", {
+    description: "Manually clears all todos",
+    handler: async (_args, ctx) => {
+      const state = store.getState(ctx);
+      if (!state.todos.length) return;
+
+      const result = applyAction(state, {
+        action: "clear",
+      });
+
+      if (!result.ok) {
+        ctx.ui.notify("Could not clear todos", "error");
+        return;
+      }
+
+      store.commit(ctx, result.state);
     },
   });
 
