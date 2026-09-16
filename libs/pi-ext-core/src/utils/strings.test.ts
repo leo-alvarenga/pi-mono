@@ -34,7 +34,7 @@ assert.equal(formatDuration(134_000), "2m 14s");
 assert.equal(formatDuration(3_900_000), "1h 5m");
 
 // mapWithConcurrencyLimit: max in-flight never exceeds limit
-{
+(async () => {
   let inFlight = 0;
   let maxInFlight = 0;
   const results = await mapWithConcurrencyLimit(
@@ -50,9 +50,9 @@ assert.equal(formatDuration(3_900_000), "1h 5m");
   );
   assert.ok(maxInFlight <= 2, `maxInFlight was ${maxInFlight}`);
   assert.deepEqual(results, [2, 4, 6, 8, 10, 12]);
-}
 
-// mapWithConcurrencyLimit: empty input
-assert.deepEqual(await mapWithConcurrencyLimit([], 4, async (x) => x), []);
+  // mapWithConcurrencyLimit: empty input
+  assert.deepEqual(await mapWithConcurrencyLimit([], 4, async (x) => x), []);
 
-console.log("pi-ext-core utils OK");
+  console.log("pi-ext-core utils OK");
+})().catch((e) => { console.error(e); process.exit(1); });
