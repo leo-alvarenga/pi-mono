@@ -28,7 +28,7 @@
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "test": "tsx src/utils/strings.test.ts && tsx src/headless/run.test.ts"
+    "test": "tsx src/utils/strings.test.ts && tsx src/headless/run.test.ts && tsx src/session/store.test.ts && tsx src/subagents/runtime.test.ts"
   },
   "peerDependencies": {
     "@earendil-works/pi-ai": "*",
