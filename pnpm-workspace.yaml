@@ -1,5 +1,6 @@
 packages:
   - "packages/*"
+  - "libs/*"
 
 allowBuilds:
   "@google/genai": true
