@@ -1,2 +1,4 @@
-// @leo-alvarenga/pi-ext-core - placeholder; filled incrementally by phases 2-4
-export const PI_EXT_CORE_VERSION = "0.1.0";
+// @leo-alvarenga/pi-ext-core - barrel; filled incrementally by phases 2-4
+export * from "./types";
+export * from "./utils/strings";
+export * from "./utils/concurrency";
