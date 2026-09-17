@@ -10,6 +10,7 @@ export type RunHeadlessAgentOptions = {
   spawnFlagEnv: string;
 
   tools: string[] | null;
+  parentSessionId?: string;
 };
 
 export type HeadlessRunTokenUsage = Required<Omit<TokenUsage, "total">> & {

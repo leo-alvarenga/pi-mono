@@ -15,6 +15,7 @@ export type SubagentRecord = {
   finishedAt?: number;
   questions?: string[];
   status: SubagentStatus;
+  parentSessionId: string;
 };
 
 export type SubagentState = {

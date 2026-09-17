@@ -20,6 +20,7 @@ export function stateStart(
     id: s.nextId,
     status: "running",
     startedAt: Date.now(),
+    parentSessionId: ctx.sessionManager.getSessionId(),
   };
 
   store.commit(ctx, {

@@ -74,7 +74,11 @@ export async function runHeadlessAgent(
         shell: false,
         cwd: opts.cwd,
         stdio: ["ignore", "pipe", "pipe"],
-        env: { ...process.env, [opts.spawnFlagEnv]: "1" },
+        env: {
+          ...process.env,
+          [opts.spawnFlagEnv]: "1",
+          ...(opts.parentSessionId && { PI_PARENT_SESSION_ID: opts.parentSessionId }),
+        },
       });
 
       activeProcesses.add(proc);

@@ -55,6 +55,7 @@ export async function handleSingle(
     spawnFlagEnv: ec.spec.spawnFlagEnv,
     tools: buildAllowlist(ec.spec, params.allowWrite ?? false),
     systemPrompt: buildSystemPrompt(ec.spec, params.allowWrite ?? false),
+    parentSessionId: ec.ctx.sessionManager.getSessionId(),
   });
 
   const needsInput = parseNeedsInput(run.output, ec.spec.needsInput.marker);
@@ -130,6 +131,7 @@ export async function handleParallel(
         spawnFlagEnv: ec.spec.spawnFlagEnv,
         tools: buildAllowlist(ec.spec, t.allowWrite ?? false),
         systemPrompt: buildSystemPrompt(ec.spec, t.allowWrite ?? false),
+        parentSessionId: ec.ctx.sessionManager.getSessionId(),
       });
 
       const needsInput = parseNeedsInput(run.output, ec.spec.needsInput.marker);
