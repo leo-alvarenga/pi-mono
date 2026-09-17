@@ -3,24 +3,13 @@ import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
 
-import type { HeadlessRunResult } from "../types";
+import type { HeadlessRunResult, RunHeadlessAgentOptions } from "./types";
 import { createEventReducer } from "./events";
 import { getPiInvocation } from "./invocation";
 
-export interface RunHeadlessAgentOptions {
-  cwd: string;
-  taskText: string;
-  systemPrompt: string;
-  tools: string[];
-  /** Name of the env flag to set (e.g. "PI_SUBAGENT") to prevent re-entry. */
-  spawnFlagEnv: string;
-  signal?: AbortSignal;
-}
-
-// ponytail: module-level set is per-consumer copy (separate module roots); killAllRunning only kills this extension's children
 const activeProcesses = new Set<ChildProcess>();
 
-/** Signal every still-running headless process spawned by this consumer. Consumer: pi-mini-subagents. */
+/** Signal every still-running headless process spawned by this consumer */
 export function killAllRunning(): void {
   for (const proc of activeProcesses) {
     try {
@@ -37,17 +26,20 @@ async function writePromptTempFile(
   const dir = await fs.promises.mkdtemp(
     path.join(os.tmpdir(), "pi-mini-subagent-"),
   );
+
   const filePath = path.join(dir, "prompt.md");
+
   await fs.promises.writeFile(filePath, prompt, {
     encoding: "utf-8",
     mode: 0o600,
   });
+
   return { dir, filePath };
 }
 
 /**
  * Spawn a transient headless pi subprocess, stream its JSON events, and
- * resolve with the final result once it exits. Consumer: pi-mini-subagents.
+ * resolve with the final result once it exits
  */
 export async function runHeadlessAgent(
   opts: RunHeadlessAgentOptions,
@@ -56,13 +48,16 @@ export async function runHeadlessAgent(
     opts.systemPrompt,
   );
 
+  const toolFlagAndArg: string[] = opts.tools?.length
+    ? ["--tools", opts.tools.join(",")]
+    : [];
+
   const args = [
     "--mode",
     "json",
     "-p",
     "--no-session",
-    "--tools",
-    opts.tools.join(","),
+    ...toolFlagAndArg,
     "--append-system-prompt",
     tmpPath,
     opts.taskText,
@@ -74,12 +69,14 @@ export async function runHeadlessAgent(
   try {
     const exitCode = await new Promise<number>((resolve) => {
       const invocation = getPiInvocation(args);
+
       const proc = spawn(invocation.command, invocation.args, {
-        cwd: opts.cwd,
         shell: false,
+        cwd: opts.cwd,
         stdio: ["ignore", "pipe", "pipe"],
         env: { ...process.env, [opts.spawnFlagEnv]: "1" },
       });
+
       activeProcesses.add(proc);
 
       proc.stdout.on("data", (data: Buffer) => reducer.feed(data.toString()));
@@ -101,10 +98,11 @@ export async function runHeadlessAgent(
 
       if (opts.signal) {
         let killTimer: ReturnType<typeof setTimeout> | undefined;
+
         const kill = () => {
           result.aborted = true;
           proc.kill("SIGTERM");
-          // §8.7: unref so the timer doesn't keep the event loop alive
+
           killTimer = setTimeout(() => {
             try {
               proc.kill("SIGKILL");
@@ -112,13 +110,15 @@ export async function runHeadlessAgent(
               /* already dead */
             }
           }, 5000);
+
           killTimer.unref?.();
         };
+
         if (opts.signal.aborted) {
           kill();
         } else {
           opts.signal.addEventListener("abort", kill, { once: true });
-          // §8.7: remove the abort listener when the run completes normally
+
           proc.on("close", () =>
             opts.signal!.removeEventListener("abort", kill),
           );
@@ -128,6 +128,7 @@ export async function runHeadlessAgent(
 
     result.exitCode = exitCode;
     if (result.aborted) result.stopReason = "aborted";
+
     return result;
   } finally {
     try {

@@ -1,15 +1,20 @@
-/** Uppercase the first character. Consumer: pi-agent-manager, pi-zen-frame. */
+/** Uppercase the first character */
 export function capitalize(s: string): string {
   return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
-/** Truncate a string to a char budget, appending an ellipsis marker. Consumer: pi-mini-subagents. */
-export function truncateChars(text: string, max: number): string {
+/** Truncate a string to a char budget, appending an overrideable ellipsis marker */
+export function truncateChars(
+  text: string,
+  max: number,
+  ellipsisStr = "…",
+): string {
   if (text.length <= max) return text;
-  return `${text.slice(0, max)}…`;
+
+  return `${text.slice(0, max)}${ellipsisStr}`;
 }
 
-/** Truncate to a UTF-8 byte budget. Consumer: pi-mini-subagents. */
+/** Truncate to a UTF-8 byte budget; Useful for multi-byte single-char sequences */
 export function truncateBytes(text: string, maxBytes: number): string {
   if (Buffer.byteLength(text, "utf8") <= maxBytes) return text;
 
@@ -21,14 +26,15 @@ export function truncateBytes(text: string, maxBytes: number): string {
   return `${out}\n\n[Output truncated: ${Buffer.byteLength(text, "utf8") - Buffer.byteLength(out, "utf8")} bytes omitted.]`;
 }
 
-/** Format a token count as a human-readable string. Consumer: pi-mini-subagents. */
+/** Format a token count as a human-readable string */
 export function formatTokens(n: number): string {
   if (n < 1000) return `${n} tokens`;
   if (n < 10000) return `${(n / 1000).toFixed(1)}k tokens`;
+
   return `${Math.round(n / 1000)}k tokens`;
 }
 
-/** Format a millisecond duration as a human-readable string. Consumer: pi-notify. */
+/** Format a millisecond duration as a human-readable string */
 export function formatDuration(ms: number): string {
   const s = Math.round(ms / 1000);
   if (s < 60) return s < 1 ? "<1s" : `${s}s`;

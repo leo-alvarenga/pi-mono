@@ -1,30 +1,21 @@
 import type { ExtensionContext } from "@earendil-works/pi-coding-agent";
 
-export interface SessionBranchEntry {
-  type: string;
-  customType?: string;
-  data?: unknown;
-}
-
-export interface SessionRecordStore<T> {
-  getState(ctx: ExtensionContext): T;
-  commit(ctx: ExtensionContext, next: T): void;
-  replay(ctx: ExtensionContext): void;
-  persistSnapshot(ctx: ExtensionContext): void;
-}
+import type { SessionBranchEntry, SessionRecordStore } from "./types";
 
 /**
- * Generic session-scoped state store keyed by session id.
- * Consumer: pi-mini-subagents (via createSubagentRuntime), pi-todo-list (next).
+ * Generic session-scoped state store keyed by session id
  */
 export function createSessionStore<T>(spec: {
-  entryType: string;
   empty(): T;
-  /** Transform a matching branch entry into state; return undefined to skip. */
+  entryType: string;
+
+  /** Transform a matching branch entry into state; return undefined to skip */
   snapshotOf(entry: SessionBranchEntry): T | undefined;
-  /** Extra replay source (e.g. tool result entries). Unused by subagents. */
+
+  /** Extra replay source (e.g. tool result entries). Unused by subagents */
   toolResultOf?(entry: SessionBranchEntry): T | undefined;
-  /** Called after commit and after replay; use to persist and/or refresh UI. */
+
+  /** Called after commit and after replay; use to persist and/or refresh UI */
   onChange?(next: T, ctx: ExtensionContext): void;
 }): SessionRecordStore<T> {
   const stateBySession = new Map<string, T>();
@@ -51,9 +42,11 @@ export function createSessionStore<T>(spec: {
     for (const entry of ctx.sessionManager.getBranch()) {
       if (entry.type === "custom" && entry.customType === spec.entryType) {
         const snapshot = spec.snapshotOf(entry);
+
         if (snapshot !== undefined) latest = snapshot;
       } else if (spec.toolResultOf) {
         const snapshot = spec.toolResultOf(entry);
+
         if (snapshot !== undefined) latest = snapshot;
       }
     }

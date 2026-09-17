@@ -1,5 +1,6 @@
 import type { ExtensionAPI, Theme } from "@earendil-works/pi-coding-agent";
 import {
+  capitalize,
   createSubagentRuntime,
   formatTokens,
   type SubagentRecord,
@@ -41,9 +42,9 @@ export default function (pi: ExtensionAPI): void {
   if (process.env.PI_SUBAGENT) return;
 
   createSubagentRuntime(pi, {
-    spawnFlagEnv: "PI_SUBAGENT",
     toolName: "mini_subagent",
     toolLabel: "Mini Subagent",
+    spawnFlagEnv: "PI_SUBAGENT",
     toolDescription:
       "Delegate a task to a transient headless subagent (a separate pi process) and get its findings back. " +
       "Modes: single (task) or parallel (tasks array, max 8). Subagents are read-only by default; set allowWrite to let one edit files. " +
@@ -69,27 +70,47 @@ export default function (pi: ExtensionAPI): void {
       readOnly: READ_ONLY_TOOLS,
       writeable: WRITE_TOOLS,
     },
+
     limits: {
-      maxParallelTasks: MAX_PARALLEL_TASKS,
-      maxConcurrency: MAX_CONCURRENCY,
-      perTaskOutputCap: PER_TASK_OUTPUT_CAP,
-      maxStoredOutput: MAX_STORED_OUTPUT,
       maxPanelRows: MAX_PANEL_ROWS,
+      maxConcurrency: MAX_CONCURRENCY,
+      maxStoredOutput: MAX_STORED_OUTPUT,
+      maxParallelTasks: MAX_PARALLEL_TASKS,
+      perTaskOutputCap: PER_TASK_OUTPUT_CAP,
     },
+
     state: { entryType: STATE_ENTRY },
     report: { entryType: REPORT_ENTRY },
+
     panel: {
       widgetKey: WIDGET_KEY,
       toggleChord: PANEL_TOGGLE_CHORD,
       title: "Subagents",
       emptyText: "No subagents yet. Ask the agent to delegate a task!",
     },
+
     rowLine: (r, theme) => getStyledSubagent(r, theme),
-    reportSections: (s) => [
-      { label: "Running", records: s.records.filter((r) => r.status === "running") },
-      { label: "Needs input", records: s.records.filter((r) => r.status === "needs_input") },
-      { label: "Completed", records: s.records.filter((r) => r.status === "completed") },
-      { label: "Failed", records: s.records.filter((r) => r.status === "failed") },
-    ],
+    reportSections: (s) => {
+      const byStatus = s.records.reduce<Record<string, SubagentRecord[]>>(
+        (acc, curr) => {
+          const label = capitalize(curr.status.toLowerCase()).replaceAll(
+            "_",
+            " ",
+          );
+
+          if (!acc[label]?.length) acc[label] = [];
+
+          acc[label].push(curr);
+
+          return acc;
+        },
+        {},
+      );
+
+      return Object.entries(byStatus).map(([label, records]) => ({
+        label,
+        records,
+      }));
+    },
   });
 }

@@ -4,34 +4,17 @@ import type {
   Theme,
 } from "@earendil-works/pi-coding-agent";
 import { truncateToWidth } from "@earendil-works/pi-tui";
-import type { KeyId } from "@earendil-works/pi-tui";
 
-import type { SessionRecordStore } from "../session/store";
+import { PanelWidgetControls, PanelWidgetSpec } from "./types";
 
 /**
  * Create a collapsible TUI panel widget backed by a session store.
- * Collapse state lives in the closure (resets on /reload — intentional).
- * Consumer: pi-mini-subagents (via createSubagentRuntime), pi-todo-list (next).
+ * Collapse state lives in the closure (resets on /reload)
  */
 export function createPanelWidget<T>(
   pi: ExtensionAPI,
-  spec: {
-    widgetKey: string;
-    toggleChord: KeyId;
-    store: SessionRecordStore<T>;
-    isEmpty(s: T): boolean;
-    header(s: T, theme: Theme, isCollapsed: boolean): string;
-    rows(
-      s: T,
-      theme: Theme,
-      opts: { isCollapsed: boolean; maxRows: number },
-    ): string[];
-    maxRows: number;
-    emptyText: string;
-    moreLabel(overflow: number): string;
-  },
-): { refresh(ctx: ExtensionContext): void; register(): void } {
-  // ponytail: closure collapse resets on /reload — preserves existing behavior
+  spec: PanelWidgetSpec<T>,
+): PanelWidgetControls {
   let collapsed = true;
 
   class PanelWidget {
@@ -55,10 +38,7 @@ export function createPanelWidget<T>(
         "  ".repeat(Math.abs(level)) + str;
 
       const lines: string[] = [
-        truncateToWidth(
-          indent(spec.header(s, this.theme, collapsed)),
-          width,
-        ),
+        truncateToWidth(indent(spec.header(s, this.theme, collapsed)), width),
       ];
 
       if (!collapsed) {
@@ -110,10 +90,10 @@ export function createPanelWidget<T>(
 
   function refresh(ctx: ExtensionContext): void {
     if (!ctx.hasUI) return;
+
     ctx.ui.setWidget(
       spec.widgetKey,
-      (_tui, theme) =>
-        new PanelWidget(theme, () => spec.store.getState(ctx)),
+      (_tui, theme) => new PanelWidget(theme, () => spec.store.getState(ctx)),
     );
   }
 
