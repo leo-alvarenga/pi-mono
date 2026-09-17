@@ -8,6 +8,12 @@ import {
   permissionModeFor,
 } from "../permission/evaluate";
 import { TOOL_TO_PERMISSION, extractPattern } from "../permission/mapping";
+import {
+  buildAgentState,
+  findNextAgent,
+  findPreviousAgent,
+  isStepsBudgetExhausted,
+} from "./state";
 import type { AgentConfig, AgentState } from "./types";
 import { agentToLabel } from "../cli/help";
 import { AGENT_CHANGED_EVENT, AGENT_DATA_KEY } from "../constants";
@@ -20,7 +26,7 @@ import { AGENT_CHANGED_EVENT, AGENT_DATA_KEY } from "../constants";
  * - `ask` → confirmation dialog (once / always / reject)
  * - `allow` → pass through
  *
- * "Always" approvals append runtime Rules to a session ruleset (last wins).
+ * "Always" approvals append runtime Rules to a session ruleset (last wins)
  */
 export class AgentManager {
   private readonly agents: AgentConfig[];
@@ -124,30 +130,27 @@ export class AgentManager {
     this.sessionRuleset = [];
     this.syncActiveTools(pi);
 
-    pi.appendEntry(AGENT_DATA_KEY, this.getState());
-    pi.events.emit(AGENT_CHANGED_EVENT, this.getState());
+    pi.appendEntry(AGENT_DATA_KEY, buildAgentState(config, this.guardEnabled));
+    pi.events.emit(
+      AGENT_CHANGED_EVENT,
+      buildAgentState(config, this.guardEnabled),
+    );
 
     return this.turn;
   }
 
   setNextAgent(pi: ExtensionAPI): number {
-    const idx =
-      (this.agents.findIndex((a) => a.name === this.currentAgent) + 1) %
-      this.agents.length;
-    return this.setAgent(this.agents[idx].name, pi);
+    const next = findNextAgent(this.agents, this.currentAgent);
+    return next ? this.setAgent(next.name, pi) : 0;
   }
 
   setPreviousAgent(pi: ExtensionAPI): number {
-    const idx =
-      (this.agents.findIndex((a) => a.name === this.currentAgent) -
-        1 +
-        this.agents.length) %
-      this.agents.length;
-    return this.setAgent(this.agents[idx].name, pi);
+    const prev = findPreviousAgent(this.agents, this.currentAgent);
+    return prev ? this.setAgent(prev.name, pi) : 0;
   }
 
   isStepsExhausted(): boolean {
-    return this.maxSteps != null && this.turn >= this.maxSteps;
+    return isStepsBudgetExhausted(this.turn, this.maxSteps);
   }
 
   setGuardEnabled(enabled: boolean, pi: ExtensionAPI): void {

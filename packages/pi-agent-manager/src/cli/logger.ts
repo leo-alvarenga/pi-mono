@@ -38,6 +38,7 @@ export class Logger {
   private prefix(type: string): string {
     const fg = TYPE_COLORS[type];
     let p = this.bold(LOGGER_PREFIX);
+
     return fg ? this.fg(fg, p) : p;
   }
 }

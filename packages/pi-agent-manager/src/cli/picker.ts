@@ -8,7 +8,7 @@ import { getPermissionBadges, capitalize } from "./help";
 
 /**
  * Open an interactive agent picker (arrows, type-to-filter, enter/esc).
- * Returns the chosen agent name, or null if cancelled.
+ * Returns the chosen agent name, or null if cancelled
  */
 export async function openAgentPicker(
   ctx: ExtensionContext,
@@ -35,11 +35,11 @@ export async function openAgentPicker(
     );
 
     const list = new SelectList(items, Math.min(items.length, 10), {
-      selectedPrefix: (t: string) => theme.fg("accent", t),
-      selectedText: (t: string) => theme.fg("accent", t),
-      description: (t: string) => theme.fg("dim", t),
       scrollInfo: (t: string) => theme.fg("dim", t),
+      description: (t: string) => theme.fg("dim", t),
       noMatch: (t: string) => theme.fg("warning", t),
+      selectedText: (t: string) => theme.fg("accent", t),
+      selectedPrefix: (t: string) => theme.fg("accent", t),
     });
 
     list.onSelect = (item) => done(item.value);
@@ -56,6 +56,7 @@ export async function openAgentPicker(
         0,
       ),
     );
+
     container.addChild(new DynamicBorder((s: string) => theme.fg("accent", s)));
 
     return {

@@ -18,19 +18,22 @@ export function permissionModeFor(
 ): ClaudePermissionMode {
   const merged = rulesets.flat();
   const star = evaluate("*", "*", merged).action;
+
   if (star === "deny") return "plan";
+
   if (star === "allow") {
     return merged.some((r) => r.action === "ask")
       ? "acceptEdits"
       : "bypassPermissions";
   }
+
   return "default";
 }
 
 /**
  * Evaluate a permission request against one or more rulesets.
  * Rulesets are flattened; the **last** matching rule wins.
- * Defaults to `"ask"` when no rule matches.
+ * Defaults to `"ask"` when no rule matches
  */
 export function evaluate(
   permission: string,
@@ -38,18 +41,20 @@ export function evaluate(
   ...rulesets: Ruleset[]
 ): Rule {
   const merged = rulesets.flat();
+
   const match = merged.findLast(
     (rule) =>
       wildcardMatch(permission, rule.permission) &&
       wildcardMatch(pattern, rule.pattern),
   );
+
   return match ?? { permission, pattern: "*", action: "ask" };
 }
 
 /**
  * Find tools whose `*` pattern resolves to `"deny"`. These are physically
  * stripped from the active set. Only `"*"` patterns count here — narrower
- * patterns are enforced at the ask gate.
+ * patterns are enforced at the ask gate
  */
 export function disabled(
   tools: string[],
@@ -57,12 +62,15 @@ export function disabled(
   ...rulesets: Ruleset[]
 ): Set<string> {
   const result = new Set<string>();
+
   for (const tool of tools) {
     const perm = toolToPermission[tool] ?? tool;
+
     if (evaluate(perm, "*", ...rulesets).action === "deny") {
       result.add(tool);
     }
   }
+
   return result;
 }
 
