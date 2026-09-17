@@ -62,7 +62,9 @@ export function createSubagentRuntime(
     maxRows: spec.limits.maxPanelRows,
     toggleChord: spec.panel.toggleChord,
 
-    isEmpty: (s) => s.records.length === 0,
+    isEmpty: (s) =>
+      s.records.length === 0 ||
+      s.records.every((sub) => sub.status === "completed"),
 
     header: (s, theme, isCollapsed) => {
       const running = s.records.filter((r) => r.status === "running").length;
