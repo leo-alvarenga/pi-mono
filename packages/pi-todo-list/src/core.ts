@@ -1,5 +1,6 @@
 import { MAX_TEXT_LENGTH } from "./constants";
 import type { Todo, TodoAction, TodoState, TodoStatus } from "./types";
+import { wouldCreateCycle } from "./query";
 
 export type Patch = {
   text?: string;
@@ -129,37 +130,6 @@ function remove(state: TodoState, id: number): ActionResult {
   };
 }
 
-const blockedSuffix = (t: Todo, todos: Todo[]): string => {
-  const waiting = t.blockedBy.filter((b) => {
-    const bt = todos.find((x) => x.id === b);
-
-    return !bt || bt.status !== "completed";
-  });
-
-  if (waiting.length > 0) {
-    return ` (blocked by ${waiting.map((b) => `#${b}`).join(", ")})`;
-  }
-
-  return "";
-};
-
-function list(state: TodoState): ActionResult {
-  if (state.todos.length === 0) {
-    return { ok: true, state, text: "No todos" };
-  }
-
-  return {
-    state,
-    ok: true,
-    text: state.todos
-      .map(
-        (t) =>
-          `[${t.status === "completed" ? "x" : " "}] #${t.id}: ${t.text}${blockedSuffix(t, state.todos)}`,
-      )
-      .join("\n"),
-  };
-}
-
 function clear(): ActionResult {
   return {
     ok: true,
@@ -207,10 +177,6 @@ function removeMany(state: TodoState, ids: number[]): ActionResult {
   };
 }
 
-/**
- * Apply a tool action against a copy of the state.
- * Returns the new state only when validation passes; the caller commits it.
- */
 export function applyAction(
   state: TodoState,
   params: {
@@ -246,57 +212,24 @@ export function applyAction(
       return remove(state, params.id);
 
     case "list":
-      return list(state);
+      return { ...list(state), ok: true, state };
 
     case "clear":
-      return clear();
+      return clear() as any;
   }
 }
 
-/**
- * True if `changedId` can reach itself by following blockedBy edges
- * (direct, or through a chain) — i.e. the update would create a cycle.
- */
-export function wouldCreateCycle(todos: Todo[], changedId: number): boolean {
-  const adj = new Map<number, number[]>();
-  for (const t of todos) adj.set(t.id, [...t.blockedBy]);
+function list(state: TodoState): Pick<ActionResult, "text"> {
+  if (state.todos.length === 0) {
+    return { text: "No todos" };
+  }
 
-  const done = new Set<number>();
-  const visiting = new Set<number>();
-
-  const dfs = (id: number): boolean => {
-    if (visiting.has(id)) return true;
-    if (done.has(id)) return false;
-
-    visiting.add(id);
-
-    for (const dep of adj.get(id) ?? []) {
-      if (dfs(dep)) return true;
-    }
-
-    visiting.delete(id);
-    done.add(id);
-
-    return false;
+  return {
+    text: state.todos
+      .map(
+        (t) =>
+          `[${t.status === "completed" ? "x" : " "}] #${t.id}: ${t.text}`,
+      )
+      .join("\n"),
   };
-
-  return dfs(changedId);
-}
-
-export function groupByStatus(todos: Todo[]): {
-  completed: Todo[];
-  inProgress: Todo[];
-  pending: Todo[];
-} {
-  const completed: Todo[] = [];
-  const inProgress: Todo[] = [];
-  const pending: Todo[] = [];
-
-  for (const t of todos) {
-    if (t.status === "completed") completed.push(t);
-    else if (t.status === "in-progress") inProgress.push(t);
-    else pending.push(t);
-  }
-
-  return { completed, inProgress, pending };
 }
