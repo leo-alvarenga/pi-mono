@@ -1,5 +1,6 @@
 import type { Theme } from "@earendil-works/pi-coding-agent";
 import type { KeyId } from "@earendil-works/pi-tui";
+import type { BubblewrapOptions } from "../types";
 
 export type SubagentStatus = "running" | "completed" | "failed" | "needs_input";
 
@@ -31,6 +32,7 @@ export type SubagentDetails = {
 export type SubagentSpec = {
   /** Env flag name set on child processes to prevent re-entry (e.g. "PI_SUBAGENT") */
   spawnFlagEnv: string;
+  bwrap?: BubblewrapOptions;
 
   toolName: string;
   toolLabel: string;

@@ -1,4 +1,4 @@
-import type { TokenUsage } from "../types";
+import type { BubblewrapOptions, TokenUsage } from "../types";
 
 export type RunHeadlessAgentOptions = {
   cwd: string;
@@ -11,6 +11,7 @@ export type RunHeadlessAgentOptions = {
 
   tools: string[] | null;
   parentSessionId?: string;
+  bwrap?: BubblewrapOptions;
 };
 
 export type HeadlessRunTokenUsage = Required<Omit<TokenUsage, "total">> & {

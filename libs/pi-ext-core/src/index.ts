@@ -1,5 +1,7 @@
 // @leo-alvarenga/pi-ext-core
 export * from "./types";
+export * from "./utils/time";
+export * from "./utils/bwrap";
 export * from "./utils/strings";
 export * from "./utils/concurrency";
 

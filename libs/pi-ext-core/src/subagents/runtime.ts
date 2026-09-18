@@ -113,10 +113,10 @@ export function createSubagentRuntime(
 
       if (hasSingle) {
         return handleSingle(ec, {
-          task: params.task!,
           cwd: params.cwd,
-          allowWrite: params.allowWrite,
+          task: params.task!,
           answers: params.answers,
+          allowWrite: params.allowWrite,
         });
       }
 

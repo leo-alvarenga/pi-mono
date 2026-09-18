@@ -51,6 +51,7 @@ export async function handleSingle(
   const run = await runHeadlessAgent({
     taskText,
     signal: ec.signal,
+    bwrap: { ...ec.spec.bwrap, allowWrite: params.allowWrite ?? false },
     cwd: params.cwd ?? ec.ctx.cwd,
     spawnFlagEnv: ec.spec.spawnFlagEnv,
     tools: buildAllowlist(ec.spec, params.allowWrite ?? false),
@@ -127,6 +128,7 @@ export async function handleParallel(
       const run = await runHeadlessAgent({
         taskText,
         signal: ec.signal,
+        bwrap: { ...ec.spec.bwrap, allowWrite: t.allowWrite ?? false },
         cwd: t.cwd ?? ec.ctx.cwd,
         spawnFlagEnv: ec.spec.spawnFlagEnv,
         tools: buildAllowlist(ec.spec, t.allowWrite ?? false),

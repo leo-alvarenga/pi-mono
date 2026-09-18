@@ -1,4 +1,4 @@
-import { spawn, type ChildProcess } from "node:child_process";
+import type { ChildProcess } from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
@@ -6,6 +6,7 @@ import * as path from "node:path";
 import type { HeadlessRunResult, RunHeadlessAgentOptions } from "./types";
 import { createEventReducer } from "./events";
 import { getPiInvocation } from "./invocation";
+import { spawnWithBubblewrap } from "../utils/bwrap";
 
 const activeProcesses = new Set<ChildProcess>();
 
@@ -70,22 +71,29 @@ export async function runHeadlessAgent(
     const exitCode = await new Promise<number>((resolve) => {
       const invocation = getPiInvocation(args);
 
-      const proc = spawn(invocation.command, invocation.args, {
-        shell: false,
-        cwd: opts.cwd,
-        stdio: ["ignore", "pipe", "pipe"],
-        env: {
-          ...process.env,
-          [opts.spawnFlagEnv]: "1",
-          ...(opts.parentSessionId && { PI_PARENT_SESSION_ID: opts.parentSessionId }),
+      const proc = spawnWithBubblewrap(
+        invocation.command,
+        invocation.args,
+        {
+          shell: false,
+          cwd: opts.cwd,
+          stdio: ["ignore", "pipe", "pipe"],
+          env: {
+            ...process.env,
+            [opts.spawnFlagEnv]: "1",
+            ...(opts.parentSessionId && {
+              PI_PARENT_SESSION_ID: opts.parentSessionId,
+            }),
+          },
         },
-      });
+        opts.bwrap,
+      );
 
       activeProcesses.add(proc);
 
-      proc.stdout.on("data", (data: Buffer) => reducer.feed(data.toString()));
+      proc.stdout!.on("data", (data: Buffer) => reducer.feed(data.toString()));
 
-      proc.stderr.on("data", (data: Buffer) => {
+      proc.stderr!.on("data", (data: Buffer) => {
         result.stderr += data.toString();
       });
 
