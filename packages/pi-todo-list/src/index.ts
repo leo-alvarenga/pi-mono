@@ -2,14 +2,13 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 
 import { registerTodosCommand } from "./command";
 import { STATE_ENTRY, WIDGET_KEY } from "./constants";
-import { TodoStore } from "./state";
+import { createTodoStore } from "./state";
 import { registerTodoTool, registerTodoCompleteAllTool } from "./tool";
 import { registerTodoWidget } from "./widget";
 
 export default function (pi: ExtensionAPI): void {
-  const store = new TodoStore(
-    (snapshot) => pi.appendEntry(STATE_ENTRY, snapshot),
-    undefined,
+  const store = createTodoStore((snapshot) =>
+    pi.appendEntry(STATE_ENTRY, snapshot),
   );
 
   const panelControls = registerTodoWidget(pi, store);

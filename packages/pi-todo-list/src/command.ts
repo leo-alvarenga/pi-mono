@@ -4,8 +4,8 @@ import { Text } from "@earendil-works/pi-tui";
 import { applyAction } from "./core";
 import { groupByStatus } from "./query";
 import { REPORT_ENTRY } from "./constants";
-import type { TodoStore } from "./state";
-import type { Todo } from "./types";
+import type { SessionRecordStore } from "@leo-alvarenga/pi-ext-core";
+import type { Todo, TodoState } from "./types";
 import { getStyledTodo } from "./utils";
 
 const renderList = (todos: Todo[], theme: Theme): string => {
@@ -30,7 +30,10 @@ const renderList = (todos: Todo[], theme: Theme): string => {
   return lines.join("\n");
 };
 
-export function registerTodosCommand(pi: ExtensionAPI, store: TodoStore): void {
+export function registerTodosCommand(
+  pi: ExtensionAPI,
+  store: SessionRecordStore<TodoState>,
+): void {
   pi.registerCommand("todos", {
     description: "Show all todos grouped by status",
     handler: async (_args, ctx) => {

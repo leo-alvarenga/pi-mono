@@ -1,45 +1,25 @@
 import type { ExtensionContext } from "@earendil-works/pi-coding-agent";
 
-import { createSessionStore, SessionRecordStore } from "@leo-alvarenga/pi-ext-core";
+import {
+  createSessionStore,
+  type SessionRecordStore,
+} from "@leo-alvarenga/pi-ext-core";
 
 import { STATE_ENTRY } from "./constants";
-import type { TodoDetails, TodoState } from "./types";
+import type { TodoState } from "./types";
 
-export class TodoStore {
-  private store: SessionRecordStore<TodoState>;
-
-  constructor(
-    private readonly persist: (snapshot: TodoState) => void,
-    private readonly onRefresh?: (ctx: ExtensionContext) => void,
-  ) {
-    this.store = createSessionStore<TodoState>({
-      empty: () => ({ todos: [], nextId: 1 }),
-      entryType: STATE_ENTRY,
-      snapshotOf: (entry) => {
-        if (entry.type === "custom" && entry.customType === STATE_ENTRY) {
-          return entry.data as TodoState | undefined;
-        }
-      },
-      onChange: (state, ctx) => {
-        this.persist(state);
-        this.onRefresh?.(ctx);
-      },
-    });
-  }
-
-  getState(ctx: ExtensionContext): TodoState {
-    return this.store.getState(ctx);
-  }
-
-  commit(ctx: ExtensionContext, state: TodoState): void {
-    this.store.commit(ctx, state);
-  }
-
-  replay(ctx: ExtensionContext): void {
-    this.store.replay(ctx);
-  }
-
-  persistSnapshot(ctx: ExtensionContext): void {
-    this.store.persistSnapshot(ctx);
-  }
+/** Session-scoped todo state, committed to the `todos.state` custom entry. */
+export function createTodoStore(
+  persist: (snapshot: TodoState) => void,
+  onRefresh?: (ctx: ExtensionContext) => void,
+): SessionRecordStore<TodoState> {
+  return createSessionStore<TodoState>({
+    empty: () => ({ todos: [], nextId: 1 }),
+    entryType: STATE_ENTRY,
+    snapshotOf: (entry) => entry.data as TodoState | undefined,
+    onChange: (state, ctx) => {
+      persist(state);
+      onRefresh?.(ctx);
+    },
+  });
 }

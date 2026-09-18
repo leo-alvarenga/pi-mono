@@ -5,7 +5,7 @@ import { Type } from "typebox";
 
 import { STATUSES } from "./constants";
 import { applyAction } from "./core";
-import type { TodoStore } from "./state";
+import type { SessionRecordStore } from "@leo-alvarenga/pi-ext-core";
 import type { TodoDetails, TodoState } from "./types";
 
 const TodoParams = Type.Object({
@@ -38,7 +38,10 @@ const TodoParams = Type.Object({
   ),
 });
 
-export function registerTodoTool(pi: ExtensionAPI, store: TodoStore): void {
+export function registerTodoTool(
+  pi: ExtensionAPI,
+  store: SessionRecordStore<TodoState>,
+): void {
   pi.registerTool({
     name: "todo",
     label: "Todo",
@@ -106,7 +109,7 @@ export function registerTodoTool(pi: ExtensionAPI, store: TodoStore): void {
 
 export function registerTodoCompleteAllTool(
   pi: ExtensionAPI,
-  store: TodoStore,
+  store: SessionRecordStore<TodoState>,
 ): void {
   pi.registerTool({
     name: "todo_complete_all",

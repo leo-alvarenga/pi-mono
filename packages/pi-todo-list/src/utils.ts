@@ -1,63 +1,14 @@
 import { Theme } from "@earendil-works/pi-coding-agent";
-import { truncateToWidth } from "@earendil-works/pi-tui";
+import { PANEL_STATE_ICON } from "@leo-alvarenga/pi-ext-core";
 
-import { Todo, TodoStatus } from "./types";
-import { MAX_PANEL_ROWS, PANEL_STATE_ICON, STATUS_STYLES } from "./constants";
+import type { Todo, TodoStatus } from "./types";
+import { MAX_PANEL_ROWS, STATUS_STYLES } from "./constants";
 
-export function getStyledTodoList(
+/** Panel header: collapsed/expanded icon plus per-status counts. */
+export function getHeader(
   todos: Todo[],
   th: Theme,
-  width: number,
-  isCollapsed?: boolean,
-): string[] {
-  const indent = (str: string, level = 1) => "  ".repeat(Math.abs(level)) + str;
-
-  const lines: string[] = [
-    truncateToWidth(
-      indent(getStyledTodoListHeader(todos, th, isCollapsed)),
-      width,
-    ),
-  ];
-
-  if (!isCollapsed) {
-    lines.push("");
-
-    if (todos.length === 0) {
-      lines.push(
-        truncateToWidth(
-          indent(th.fg("dim", "No todos yet. Ask the agent to add some!"), 2),
-          width,
-        ),
-      );
-    } else {
-      const visible = todos.slice(0, MAX_PANEL_ROWS);
-
-      for (const t of visible) {
-        lines.push(
-          truncateToWidth(indent(getStyledTodo(t, todos, th), 2), width),
-        );
-      }
-
-      if (todos.length > visible.length) {
-        lines.push(
-          truncateToWidth(
-            indent(th.fg("dim", `… +${todos.length - visible.length} more`), 3),
-            width,
-          ),
-        );
-      }
-    }
-  }
-
-  lines.push("");
-
-  return lines;
-}
-
-export function getStyledTodoListHeader(
-  todos: Todo[],
-  th: Theme,
-  isCollapsed?: boolean,
+  isCollapsed: boolean,
 ): string {
   const count = todos.reduce<Record<TodoStatus, number>>(
     (acc, t) => {
@@ -67,27 +18,50 @@ export function getStyledTodoListHeader(
     { pending: 0, "in-progress": 0, completed: 0 },
   );
 
-  const collapseState = isCollapsed ? "collapsed" : "expanded";
-
-  const statuses: TodoStatus[] = ["pending", "in-progress", "completed"];
-
-  const counter = statuses
+  const counter = (["pending", "in-progress", "completed"] as TodoStatus[])
     .map((s) => {
-      const { icon, color } = STATUS_STYLES[s] ?? STATUS_STYLES.pending;
+      const { icon, color = "text" } =
+        STATUS_STYLES[s] ?? STATUS_STYLES.pending;
 
       return th.fg(color, `${icon}${count[s] ?? 0}`);
     })
     .join(th.fg("dim", " / "));
 
-  return th.fg(
-    "accent",
-    `${PANEL_STATE_ICON[collapseState]}  Todos - ${counter}`,
-  );
+  const state = isCollapsed ? "collapsed" : "expanded";
+
+  return th.fg("accent", `${PANEL_STATE_ICON[state]} 󰄲 Todos - ${counter}`);
 }
 
+export function getSortedTodos(todos: Todo[]): Todo[] {
+  if (todos.length <= MAX_PANEL_ROWS) return todos;
+
+  const weights: Record<TodoStatus, number> = {
+    pending: 0,
+    completed: 2,
+    "in-progress": 1,
+  };
+
+  const sorted = todos.sort((a, b) => {
+    const wa = weights[a.status];
+    const wb = weights[b.status];
+
+    if (wa === wb) return a.id - b.id;
+
+    return wa - wb;
+  });
+
+  return sorted;
+}
+
+/** One panel/report row for a todo. */
 export function getStyledTodo(t: Todo, todos: Todo[], th: Theme): string {
-  const { icon, fg, bold, strikethrough, color } =
-    STATUS_STYLES[t.status] ?? STATUS_STYLES.pending;
+  const {
+    fg,
+    bold,
+    icon,
+    strikethrough,
+    color = "text",
+  } = STATUS_STYLES[t.status] ?? STATUS_STYLES.pending;
 
   const check = th.fg(color, icon);
   const id = th.fg("accent", `#${t.id}`);

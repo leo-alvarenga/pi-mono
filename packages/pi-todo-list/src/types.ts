@@ -1,15 +1,6 @@
-import { ThemeColor } from "@earendil-works/pi-coding-agent";
 import { STATUSES } from "./constants";
 
 export type TodoStatus = (typeof STATUSES)[number];
-
-export type TodoStatusUi = {
-  icon: string;
-  fg: ThemeColor;
-  bold?: boolean;
-  color: ThemeColor;
-  strikethrough?: boolean;
-};
 
 export interface Todo {
   id: number;
