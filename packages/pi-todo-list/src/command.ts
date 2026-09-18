@@ -1,7 +1,8 @@
 import type { ExtensionAPI, Theme } from "@earendil-works/pi-coding-agent";
 import { Text } from "@earendil-works/pi-tui";
 
-import { applyAction, groupByStatus } from "./core";
+import { applyAction } from "./core";
+import { groupByStatus } from "./query";
 import { REPORT_ENTRY } from "./constants";
 import type { TodoStore } from "./state";
 import type { Todo } from "./types";

@@ -20,16 +20,6 @@ export class TodoStore {
           return entry.data as TodoState | undefined;
         }
       },
-      toolResultOf: (entry) => {
-        if (
-          entry.type === "message" &&
-          entry.message.role === "toolResult" &&
-          entry.message.toolName === "todo"
-        ) {
-          const d = entry.message.details as TodoDetails | undefined;
-          if (d && !d.error) return { todos: d.todos, nextId: d.nextId };
-        }
-      },
       onChange: (state, ctx) => {
         this.persist(state);
         this.onRefresh?.(ctx);

@@ -219,7 +219,7 @@ export function applyAction(
   }
 }
 
-function list(state: TodoState): Pick<ActionResult, "text"> {
+function list(state: TodoState): { text: string } {
   if (state.todos.length === 0) {
     return { text: "No todos" };
   }
