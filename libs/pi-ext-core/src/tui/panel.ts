@@ -43,10 +43,12 @@ export function createPanelWidget<T>(
 
       if (!collapsed) {
         lines.push("");
+
         const all = spec.rows(s, this.theme, {
           isCollapsed: false,
           maxRows: spec.maxRows,
         });
+
         if (all.length === 0) {
           lines.push(
             truncateToWidth(
@@ -56,9 +58,11 @@ export function createPanelWidget<T>(
           );
         } else {
           const visible = all.slice(0, spec.maxRows);
+
           for (const row of visible) {
             lines.push(truncateToWidth(indent(row, 2), width));
           }
+
           if (all.length > visible.length) {
             lines.push(
               truncateToWidth(

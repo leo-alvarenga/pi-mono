@@ -70,6 +70,7 @@ export function createSubagentRuntime(
       const running = s.records.filter((r) => r.status === "running").length;
       const done = s.records.length - running;
       const icon = isCollapsed ? "󰅂" : "󰅀";
+
       return theme.fg(
         "accent",
         `${icon}   ${spec.panel.title} | ${running} running / ${done} done`,
