@@ -25,20 +25,24 @@ import {
 
 function getStyledSubagent(r: SubagentRecord, th: Theme): string {
   const task = r.task.replace(/\s*[\r\n]+\s*/g, " ");
+
   const style = STATUS_STYLES[r.status] ?? STATUS_STYLES.completed;
   let line = `${th.fg(style.fg, style.icon)} ${th.fg("accent", `#${r.id}`)} ${th.fg(style.fg, task)}`;
+
   if (r.status === "completed" && r.tokens) {
     line += th.fg("dim", ` · ${formatTokens(r.tokens)}`);
   }
+
   if (r.status === "failed") line += th.fg("dim", " · failed");
   if (r.status === "needs_input") line += th.fg("dim", " · needs input");
   if (r.allowWrite) line += th.fg("warning", " ✎");
+
   return line;
 }
 
 export default function (pi: ExtensionAPI): void {
   // Child subagent processes inherit PI_SUBAGENT=1; they must not be able to
-  // spawn sub-subagents, so the tool/widget/command never register there.
+  // spawn sub-subagents, so the tool/widget/command never register there
   if (process.env.PI_SUBAGENT) return;
 
   createSubagentRuntime(pi, {
@@ -83,9 +87,9 @@ export default function (pi: ExtensionAPI): void {
     report: { entryType: REPORT_ENTRY },
 
     panel: {
+      title: "  Subagents",
       widgetKey: WIDGET_KEY,
       toggleChord: PANEL_TOGGLE_CHORD,
-      title: "Subagents",
       emptyText: "No subagents yet. Ask the agent to delegate a task!",
     },
 
