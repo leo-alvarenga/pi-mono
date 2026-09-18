@@ -1,10 +1,12 @@
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import type {
+  ExtensionAPI,
+  ExtensionContext,
+} from "@earendil-works/pi-coding-agent";
 
-import { AGENT_DATA_KEY } from "./constants";
-import { BUILT_IN_AGENTS, DEFAULT_AGENT } from "./agent/builtin";
+import { BUILT_IN_AGENTS } from "./agent/builtin";
 import { createAgentManager } from "./agent/manager";
 import { loadAgentShortcuts, loadUserAgents } from "./agent/config";
-import { createLogger, Logger } from "./cli/logger";
+import { Logger } from "./cli/logger";
 import { capitalize } from "./cli/help";
 import type { AgentManager } from "./agent/manager";
 
@@ -16,7 +18,7 @@ export interface SetupContext {
   logger: Logger;
 }
 
-export async function bootstrap(pi: ExtensionAPI): Promise<SetupContext> {
+export async function bootstrap(_: ExtensionAPI): Promise<SetupContext> {
   const { agents: userAgents, errors: configErrors } = await loadUserAgents();
   const userNames = new Set(userAgents.map((a) => a.name));
   const agents = [
@@ -52,20 +54,14 @@ export function notifySwitch(
   ctx: ExtensionContext,
   agentManager: AgentManager,
 ): void {
-  const { color, name } = agentManager.getCurrentAgentConfig();
-  const logger = ctx.logger; // Assuming logger is available on ctx
+  const { name } = agentManager.getCurrentAgentConfig();
 
-  if (logger) {
-    logger.log(
-      `Agent → ${logger.fg(color || "accent", capitalize(name))}`,
+  ctx.ui.notify(`Agent → ${capitalize(name)}`, "info");
+
+  if (!ctx.isIdle()) {
+    ctx.ui.notify(
+      "Switch takes effect after the current interaction completes",
       "info",
     );
-
-    if (!ctx.isIdle()) {
-      logger.log(
-        "Switch takes effect after the current interaction completes",
-        "info",
-      );
-    }
   }
 }

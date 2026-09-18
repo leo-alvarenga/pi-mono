@@ -36,8 +36,8 @@ const allowlistSpec = {
 }
 
 // write allowlist includes replace and write
-assert.ok(buildAllowlist(allowlistSpec, true).includes("replace"));
-assert.ok(buildAllowlist(allowlistSpec, true).includes("write"));
+assert.ok(buildAllowlist(allowlistSpec, true)!.includes("replace"));
+assert.ok(buildAllowlist(allowlistSpec, true)!.includes("write"));
 
 // contract constants
 assert.equal(STATE_ENTRY, "subagents.state");

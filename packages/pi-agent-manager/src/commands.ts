@@ -1,7 +1,7 @@
+import type { KeyId } from "@earendil-works/pi-tui";
 import type {
   ExtensionAPI,
   ExtensionCommandContext,
-  KeyId,
 } from "@earendil-works/pi-coding-agent";
 
 import { AGENT_SHORTCUT_IDS } from "./constants";
