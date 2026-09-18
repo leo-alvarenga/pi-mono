@@ -48,7 +48,7 @@ jobs:
                 continue
               fi
 
-              MATRIX=$(echo "$MATRIX" | jq --arg name "$NAME" --arg version "$VERSION" \
+              MATRIX=$(echo "$MATRIX" | jq -c --arg name "$NAME" --arg version "$VERSION" \
                 '. + [{"name": $name, "version": $version}]')
             done < <(git diff --name-only HEAD~1 HEAD -- '**/package.json' | grep -v node_modules)
           fi
