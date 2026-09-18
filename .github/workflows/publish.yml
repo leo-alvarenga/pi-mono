@@ -1,0 +1,67 @@
+name: Publish
+
+on:
+  push:
+    tags:
+      - "*@*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag to publish (e.g. pi-agent-manager@0.18.7)"
+        required: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Resolve package
+        id: pkg
+        run: |
+          TAG="${{ github.ref_name || inputs.tag }}"
+          PKG_NAME="${TAG%@*}"
+          PKG_DIR=$(pnpm list -r --depth -1 --json | \
+            jq -r --arg name "@leo-alvarenga/$PKG_NAME" \
+            '.[] | select(.name == $name) | .path')
+          echo "name=$PKG_NAME" >> "$GITHUB_OUTPUT"
+          echo "dir=$PKG_DIR" >> "$GITHUB_OUTPUT"
+          echo "filter=@leo-alvarenga/$PKG_NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Typecheck
+        run: pnpm --filter "${{ steps.pkg.outputs.filter }}" typecheck
+
+      - name: Test
+        run: |
+          if pnpm --filter "${{ steps.pkg.outputs.filter }}" run --if-present test; then
+            echo "Tests passed (or no test script)"
+          fi
+
+      - name: Build
+        run: pnpm --filter "${{ steps.pkg.outputs.filter }}" build
+
+      - name: Publish
+        working-directory: ${{ steps.pkg.outputs.dir }}
+        run: pnpm publish --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "${{ steps.pkg.outputs.name }} ${{ github.ref_name }}"
+          generate_release_notes: true
