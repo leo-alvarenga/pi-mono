@@ -61,7 +61,23 @@ export function isBubblewrapAvailable(resetCache?: boolean) {
     _bwrapCache.lastCheck = new Date();
 
     _bwrapCache.available =
-      spawnSync("bwrap", ["--version"], { stdio: "ignore" }).status === 0;
+      spawnSync(
+        "bwrap",
+        [
+          "--ro-bind",
+          "/",
+          "/",
+          "--dev",
+          "/dev",
+          "--proc",
+          "/proc",
+          "--bind",
+          "/tmp",
+          "/tmp",
+          "true",
+        ],
+        { stdio: "ignore" },
+      ).status === 0;
   }
 
   return _bwrapCache.available || false;
