@@ -68,18 +68,19 @@ export function isBubblewrapAvailable(resetCache?: boolean) {
 }
 
 /**
- * Spawns a process with bubblewrap
+ * Spawns a process with bubblewrap, with fallback on runtime spawn failures
  *
- * **Note:** This function will proceed to spawn a regular process if bubblewrap is not available.
- * This behavior can be changed by setting the `throwIfNotAvailable` option to `true`.
+ * **Note:** This function attempts to spawn with bubblewrap for sandboxing.
+ * If bubblewrap is unavailable or fails at runtime (e.g., user namespace permissions),
+ * it will fall back to regular spawn unless `throwIfNotAvailable` is true.
  *
  * @param command The command to run
  * @param args The arguments to pass to the command
  * @param spawnOpts The options to pass to the spawn function
- * @param bwrapOpts The options to pass to bubblewrapo
- * @returns The child process
- *
- * */
+ * @param bwrapOpts The options to pass to bubblewrap
+ * @returns The child process (or a fallback if bwrap fails at runtime)
+ * @throws Error if bwrap is unavailable and throwIfNotAvailable is true
+ */
 export function spawnWithBubblewrap(
   command: string,
   args: string[],
@@ -100,5 +101,33 @@ export function spawnWithBubblewrap(
     bwrapOpts.bwrapArgs ??
     buildDefaultBwrapArgs(cwd, bwrapOpts.allowWrite ?? false);
 
-  return spawn("bwrap", [...bwrapArgs, "--", command, ...args], spawnOpts);
+  let proc: ChildProcess;
+
+  // if proc fails, return fallbackProc
+  let fallbackProc: undefined | ChildProcess = undefined;
+
+  try {
+    proc = spawn("bwrap", [...bwrapArgs, "--", command, ...args], spawnOpts);
+  } catch (err) {
+    // Synchronous spawn error (e.g., bwrap binary issues)
+    if (bwrapOpts.throwIfNotAvailable) {
+      throw new Error(
+        `bwrap spawn failed: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
+
+    return spawn(command, args, spawnOpts);
+  }
+
+  // Handle runtime spawn failures (e.g., user namespace permission denied)
+  proc.once("error", (err) => {
+    if (bwrapOpts.throwIfNotAvailable) throw err;
+
+    fallbackProc = spawn(command, args, spawnOpts);
+
+    // Signal fallback occurred (headless/run can track this)
+    (proc as any)._bwrapFallback = fallbackProc;
+  });
+
+  return fallbackProc ?? proc;
 }

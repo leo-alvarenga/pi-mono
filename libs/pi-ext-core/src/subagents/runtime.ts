@@ -73,7 +73,7 @@ export function createSubagentRuntime(
 
       return theme.fg(
         "accent",
-        `${icon}   ${spec.panel.title} | ${running} running / ${done} done`,
+        `${icon}  ${spec.panel.title} | ${running} running / ${done} done`,
       );
     },
 

@@ -7,6 +7,7 @@ import type { HeadlessRunResult, RunHeadlessAgentOptions } from "./types";
 import { createEventReducer } from "./events";
 import { getPiInvocation } from "./invocation";
 import { spawnWithBubblewrap } from "../utils/bwrap";
+import { attachProcessListeners } from "../utils/process";
 
 const activeProcesses = new Set<ChildProcess>();
 
@@ -103,9 +104,20 @@ export async function runHeadlessAgent(
         resolve(code ?? 0);
       });
 
-      proc.on("error", () => {
-        activeProcesses.delete(proc);
-        resolve(1);
+      attachProcessListeners(proc, {
+        onStdout: (data: Buffer) => reducer.feed(data.toString()),
+        onStderr: (data: Buffer) => {
+          result.stderr += data.toString();
+        },
+        onClose: (code: number | null) => {
+          activeProcesses.delete(proc);
+          reducer.end();
+          resolve(code ?? 0);
+        },
+        onError: () => {
+          activeProcesses.delete(proc);
+          resolve(1);
+        },
       });
 
       if (opts.signal) {
