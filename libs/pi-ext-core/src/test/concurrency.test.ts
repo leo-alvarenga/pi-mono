@@ -3,7 +3,11 @@ import { mapWithConcurrencyLimit } from "../utils/concurrency";
 
 describe("mapWithConcurrencyLimit", () => {
   it("output order matches input order", async () => {
-    const result = await mapWithConcurrencyLimit([3, 1, 2], 2, async (x) => x * 10);
+    const result = await mapWithConcurrencyLimit(
+      [3, 1, 2],
+      2,
+      async (x) => x * 10,
+    );
     expect(result).toEqual([30, 10, 20]);
   });
   it("empty input resolves to [] without hanging", async () => {

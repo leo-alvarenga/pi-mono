@@ -4,7 +4,9 @@ import { DEFAULT_SETTINGS } from "../config/constants";
 
 describe("normalize", () => {
   it("valid editorFrame string is passed through", () => {
-    expect(normalize({ editorFrame: "minimalist" }).editorFrame).toBe("minimalist");
+    expect(normalize({ editorFrame: "minimalist" }).editorFrame).toBe(
+      "minimalist",
+    );
   });
   it("non-string editorFrame falls back to blocky", () => {
     expect(normalize({ editorFrame: 42 }).editorFrame).toBe("blocky");

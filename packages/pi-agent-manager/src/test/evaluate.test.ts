@@ -4,7 +4,9 @@ import type { Ruleset } from "../permission/types";
 
 describe("evaluate", () => {
   it("last-match-wins: later ruleset overrides earlier", () => {
-    const rs1: Ruleset = [{ permission: "read", pattern: "*", action: "allow" }];
+    const rs1: Ruleset = [
+      { permission: "read", pattern: "*", action: "allow" },
+    ];
     const rs2: Ruleset = [{ permission: "read", pattern: "*", action: "deny" }];
     expect(evaluate("read", "file.ts", rs1, rs2).action).toBe("deny");
   });

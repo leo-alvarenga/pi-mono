@@ -21,7 +21,12 @@ describe("spawn-guard (PI_SUBAGENT env var)", () => {
     const touched: string[] = [];
     const mockPi = new Proxy(
       {},
-      { get: (_, key) => { touched.push(String(key)); return () => {}; } },
+      {
+        get: (_, key) => {
+          touched.push(String(key));
+          return () => {};
+        },
+      },
     );
 
     // same guard logic as index.ts
@@ -40,7 +45,12 @@ describe("spawn-guard (PI_SUBAGENT env var)", () => {
     const touched: string[] = [];
     const mockPi = new Proxy(
       {},
-      { get: (_, key) => { touched.push(String(key)); return () => {}; } },
+      {
+        get: (_, key) => {
+          touched.push(String(key));
+          return () => {};
+        },
+      },
     );
 
     const runFactory = (pi: unknown) => {

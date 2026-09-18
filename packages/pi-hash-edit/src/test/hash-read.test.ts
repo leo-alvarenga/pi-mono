@@ -7,11 +7,18 @@ import { hashRead } from "../hash";
 const files: string[] = [];
 
 afterEach(() => {
-  files.splice(0).forEach((p) => { try { unlinkSync(p); } catch {} });
+  files.splice(0).forEach((p) => {
+    try {
+      unlinkSync(p);
+    } catch {}
+  });
 });
 
 function tmp(content: string): string {
-  const p = join(tmpdir(), `hash-read-${Date.now()}-${Math.random().toString(36).slice(2)}.txt`);
+  const p = join(
+    tmpdir(),
+    `hash-read-${Date.now()}-${Math.random().toString(36).slice(2)}.txt`,
+  );
   writeFileSync(p, content, "utf8");
   files.push(p);
   return p;
@@ -19,7 +26,9 @@ function tmp(content: string): string {
 
 describe("hashRead", () => {
   it("missing file throws ENOENT", () => {
-    expect(() => hashRead("/tmp/pi-test-does-not-exist-xyz123.txt")).toThrow("ENOENT");
+    expect(() => hashRead("/tmp/pi-test-does-not-exist-xyz123.txt")).toThrow(
+      "ENOENT",
+    );
   });
   it("no range → all lines returned", () => {
     const p = tmp("a\nb\nc");

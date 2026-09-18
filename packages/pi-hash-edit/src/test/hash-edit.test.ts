@@ -7,11 +7,18 @@ import { getLineHash, hashEdit } from "../hash";
 const files: string[] = [];
 
 afterEach(() => {
-  files.splice(0).forEach((p) => { try { unlinkSync(p); } catch {} });
+  files.splice(0).forEach((p) => {
+    try {
+      unlinkSync(p);
+    } catch {}
+  });
 });
 
 function tmp(content: string): string {
-  const p = join(tmpdir(), `hash-edit-${Date.now()}-${Math.random().toString(36).slice(2)}.txt`);
+  const p = join(
+    tmpdir(),
+    `hash-edit-${Date.now()}-${Math.random().toString(36).slice(2)}.txt`,
+  );
   writeFileSync(p, content, "utf8");
   files.push(p);
   return p;

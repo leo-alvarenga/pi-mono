@@ -3,7 +3,8 @@ import { wildcardMatch } from "../permission/wildcard";
 
 describe("wildcardMatch", () => {
   it("* matches zero chars", () => expect(wildcardMatch("", "*")).toBe(true));
-  it("* matches multiple chars", () => expect(wildcardMatch("anything/at/all", "*")).toBe(true));
+  it("* matches multiple chars", () =>
+    expect(wildcardMatch("anything/at/all", "*")).toBe(true));
   it("? matches exactly one char", () => {
     expect(wildcardMatch("a", "?")).toBe(true);
     expect(wildcardMatch("", "?")).toBe(false);

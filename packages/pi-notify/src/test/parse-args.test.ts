@@ -14,8 +14,14 @@ describe("parseArgs", () => {
     expect(parseArgs("off ", true)).toEqual({ kind: "set", next: false });
   });
   it("'status' → query current state", () => {
-    expect(parseArgs("status", true)).toEqual({ kind: "status", enabled: true });
-    expect(parseArgs("status", false)).toEqual({ kind: "status", enabled: false });
+    expect(parseArgs("status", true)).toEqual({
+      kind: "status",
+      enabled: true,
+    });
+    expect(parseArgs("status", false)).toEqual({
+      kind: "status",
+      enabled: false,
+    });
   });
   it("unknown input → invalid", () => {
     expect(parseArgs("gibberish", true).kind).toBe("invalid");

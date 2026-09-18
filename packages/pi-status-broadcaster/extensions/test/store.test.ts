@@ -6,11 +6,19 @@ const REPORT_PATH = "/tmp/pi-status-broadcaster/status.json";
 const tmpFile = `${REPORT_PATH}.${process.pid}.tmp`;
 
 beforeEach(() => {
-  [REPORT_PATH, tmpFile].forEach((p) => { try { unlinkSync(p); } catch {} });
+  [REPORT_PATH, tmpFile].forEach((p) => {
+    try {
+      unlinkSync(p);
+    } catch {}
+  });
 });
 
 afterEach(() => {
-  [REPORT_PATH, tmpFile].forEach((p) => { try { unlinkSync(p); } catch {} });
+  [REPORT_PATH, tmpFile].forEach((p) => {
+    try {
+      unlinkSync(p);
+    } catch {}
+  });
 });
 
 describe("store", () => {

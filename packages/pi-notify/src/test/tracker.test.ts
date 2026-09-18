@@ -13,7 +13,11 @@ function fakeNotifier(): { calls: string[][]; notifier: Notifier } {
 describe("RunTracker", () => {
   it("disabled tracker fires no notification", () => {
     const { calls, notifier } = fakeNotifier();
-    const t = new RunTracker(() => false, notifier, () => "/tmp/proj");
+    const t = new RunTracker(
+      () => false,
+      notifier,
+      () => "/tmp/proj",
+    );
     t.begin();
     t.settle("abc123");
     expect(calls).toHaveLength(0);
@@ -21,7 +25,11 @@ describe("RunTracker", () => {
 
   it("enabled tracker fires exactly one notification on settle", () => {
     const { calls, notifier } = fakeNotifier();
-    const t = new RunTracker(() => true, notifier, () => "/tmp/myrepo");
+    const t = new RunTracker(
+      () => true,
+      notifier,
+      () => "/tmp/myrepo",
+    );
     t.begin();
     t.settle("3f9c2a81");
     expect(calls).toHaveLength(1);
@@ -31,7 +39,11 @@ describe("RunTracker", () => {
 
   it("notification title includes session label", () => {
     const { calls, notifier } = fakeNotifier();
-    const t = new RunTracker(() => true, notifier, () => "/tmp/work");
+    const t = new RunTracker(
+      () => true,
+      notifier,
+      () => "/tmp/work",
+    );
     t.begin();
     t.settle("session-label");
     expect(calls[0][0]).toContain("session-label");
@@ -39,7 +51,11 @@ describe("RunTracker", () => {
 
   it("notification body matches cwd basename", () => {
     const { calls, notifier } = fakeNotifier();
-    const t = new RunTracker(() => true, notifier, () => "/home/user/my-project");
+    const t = new RunTracker(
+      () => true,
+      notifier,
+      () => "/home/user/my-project",
+    );
     t.begin();
     t.settle("x");
     expect(calls[0][1]).toContain("my-project");
@@ -47,14 +63,22 @@ describe("RunTracker", () => {
 
   it("settle without begin is silent", () => {
     const { calls, notifier } = fakeNotifier();
-    const t = new RunTracker(() => true, notifier, () => "/tmp/proj");
+    const t = new RunTracker(
+      () => true,
+      notifier,
+      () => "/tmp/proj",
+    );
     t.settle("abc");
     expect(calls).toHaveLength(0);
   });
 
   it("double settle fires exactly once", () => {
     const { calls, notifier } = fakeNotifier();
-    const t = new RunTracker(() => true, notifier, () => "/tmp/proj");
+    const t = new RunTracker(
+      () => true,
+      notifier,
+      () => "/tmp/proj",
+    );
     t.begin();
     t.settle("abc");
     t.settle("abc");

@@ -3,8 +3,12 @@ import { classifyResult } from "../subagents/result";
 
 describe("classifyResult", () => {
   it("needsInput=true → needs_input regardless of exit code", () => {
-    expect(classifyResult({ exitCode: 0, needsInput: true })).toBe("needs_input");
-    expect(classifyResult({ exitCode: 1, needsInput: true })).toBe("needs_input");
+    expect(classifyResult({ exitCode: 0, needsInput: true })).toBe(
+      "needs_input",
+    );
+    expect(classifyResult({ exitCode: 1, needsInput: true })).toBe(
+      "needs_input",
+    );
   });
   it("exitCode≠0 → failed", () => {
     expect(classifyResult({ exitCode: 1, needsInput: false })).toBe("failed");
@@ -15,6 +19,8 @@ describe("classifyResult", () => {
     ).toBe("failed");
   });
   it("exitCode=0, no special reason → completed", () => {
-    expect(classifyResult({ exitCode: 0, needsInput: false })).toBe("completed");
+    expect(classifyResult({ exitCode: 0, needsInput: false })).toBe(
+      "completed",
+    );
   });
 });
