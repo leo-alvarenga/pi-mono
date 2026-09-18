@@ -108,6 +108,16 @@ export function spawnWithBubblewrap(
 
   try {
     proc = spawn("bwrap", [...bwrapArgs, "--", command, ...args], spawnOpts);
+
+    // Handle runtime spawn failures (e.g., user namespace permission denied)
+    proc.once("error", () => {
+      if (bwrapOpts.throwIfNotAvailable) return;
+
+      fallbackProc = spawn(command, args, spawnOpts);
+
+      // Signal fallback occurred (headless/run can track this)
+      (proc as any)._bwrapFallback = fallbackProc;
+    });
   } catch (err) {
     // Synchronous spawn error (e.g., bwrap binary issues)
     if (bwrapOpts.throwIfNotAvailable) {
@@ -118,16 +128,6 @@ export function spawnWithBubblewrap(
 
     return spawn(command, args, spawnOpts);
   }
-
-  // Handle runtime spawn failures (e.g., user namespace permission denied)
-  proc.once("error", (err) => {
-    if (bwrapOpts.throwIfNotAvailable) throw err;
-
-    fallbackProc = spawn(command, args, spawnOpts);
-
-    // Signal fallback occurred (headless/run can track this)
-    (proc as any)._bwrapFallback = fallbackProc;
-  });
 
   return fallbackProc ?? proc;
 }
