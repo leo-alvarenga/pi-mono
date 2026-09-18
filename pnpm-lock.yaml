@@ -48,6 +48,9 @@ importers:
       '@earendil-works/pi-tui':
         specifier: ^0.84.0
         version: 0.84.2
+      '@leo-alvarenga/pi-ext-core':
+        specifier: workspace:^
+        version: link:../../libs/pi-ext-core
       yaml:
         specifier: ^2.9.0
         version: 2.9.0
@@ -143,6 +146,9 @@ importers:
       '@earendil-works/pi-tui':
         specifier: '*'
         version: 0.84.2
+      '@leo-alvarenga/pi-ext-core':
+        specifier: workspace:^
+        version: link:../../libs/pi-ext-core
       typebox:
         specifier: '*'
         version: 1.3.7
