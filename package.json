@@ -6,7 +6,8 @@
     "typecheck": "pnpm -r typecheck",
     "test": "pnpm -r test",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "sync-versions": "bash ci/sync-versions.sh"
   },
   "devDependencies": {
     "prettier": "^3.9.6"
