@@ -10,7 +10,8 @@
   },
   "scripts": {
     "build": "tsc",
-    "typecheck": "tsc"
+    "typecheck": "tsc",
+    "test": "vitest run"
   },
   "keywords": [
     "pi-extension",
@@ -19,6 +20,7 @@
   ],
   "files": [
     "extensions",
+    "!extensions/test",
     "docs",
     "README.md",
     "LICENSE"
@@ -42,6 +44,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^3.2.4"
   }
 }

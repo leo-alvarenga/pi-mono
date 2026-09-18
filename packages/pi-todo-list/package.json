@@ -15,10 +15,10 @@
   ],
   "files": [
     "src",
+    "!src/test",
     "skills",
     "README.md",
-    "LICENSE",
-    "!src/*.test.ts"
+    "LICENSE"
   ],
   "peerDependencies": {
     "@earendil-works/pi-ai": "*",
@@ -31,7 +31,8 @@
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "pi": {
     "extensions": [
@@ -40,7 +41,7 @@
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "tsx": "^4.19.0",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^3.2.4"
   }
 }

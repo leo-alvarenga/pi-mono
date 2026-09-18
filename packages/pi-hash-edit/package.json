@@ -15,6 +15,7 @@
   ],
   "files": [
     "src",
+    "!src/test",
     "skills",
     "README.md",
     "LICENSE"
@@ -25,7 +26,8 @@
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
   },
   "pi": {
     "extensions": [
@@ -37,6 +39,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.1.2",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^3.2.4"
   }
 }

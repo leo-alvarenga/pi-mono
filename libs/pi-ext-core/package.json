@@ -14,6 +14,7 @@
   ],
   "files": [
     "src",
+    "!src/test",
     "README.md",
     "LICENSE"
   ],
@@ -29,7 +30,7 @@
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
-    "test": "tsx src/utils/strings.test.ts && tsx src/headless/run.test.ts && tsx src/session/store.test.ts && tsx src/subagents/runtime.test.ts"
+    "test": "vitest run"
   },
   "peerDependencies": {
     "@earendil-works/pi-ai": "*",
@@ -40,7 +41,7 @@
   },
   "devDependencies": {
     "@types/node": "^22",
-    "tsx": "^4.19",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^3.2.4"
   }
 }
