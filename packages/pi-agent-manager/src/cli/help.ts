@@ -2,9 +2,9 @@ import type { Action, Rule } from "../permission/types";
 import type { AgentConfig } from "../agent/types";
 import type { Logger } from "./logger";
 
-export function capitalize(str: string): string {
-  return str.charAt(0).toUpperCase() + str.slice(1);
-}
+import { capitalize } from "@leo-alvarenga/pi-ext-core";
+
+export { capitalize };
 
 export function agentToLabel(agent: AgentConfig): string {
   return capitalize(agent.name).replace(/(_|-)/g, " ");
