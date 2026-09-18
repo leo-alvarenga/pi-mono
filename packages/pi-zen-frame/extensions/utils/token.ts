@@ -1,21 +1,18 @@
 import { ExtensionContext } from "@earendil-works/pi-coding-agent";
+import type { TokenUsage } from "@leo-alvarenga/pi-ext-core";
 
-export type TokenUsage = TokenThroughput & {
+/** Token usage plus the context-window figures the panel renders. */
+export type ContextUsage = TokenUsage & {
   tokens: number;
   window: number;
   percent: number;
 };
 
-export type TokenThroughput = {
-  input: number;
-  output: number;
-};
-
 type EntryUsage = {
-  usage?: TokenThroughput;
+  usage?: TokenUsage;
 };
 
-function getUsageFromEntries(ctx: ExtensionContext): TokenThroughput {
+function getUsageFromEntries(ctx: ExtensionContext): TokenUsage {
   let input = 0,
     output = 0;
 
@@ -34,7 +31,7 @@ function getUsageFromEntries(ctx: ExtensionContext): TokenThroughput {
   return { input, output };
 }
 
-export function getUsage(ctx?: ExtensionContext): TokenUsage | null {
+export function getUsage(ctx?: ExtensionContext): ContextUsage | null {
   if (!ctx) return null;
 
   const usage = ctx.getContextUsage();

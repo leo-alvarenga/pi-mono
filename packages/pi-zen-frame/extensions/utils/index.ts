@@ -8,7 +8,7 @@ import { THEME_COLORS } from "../config/constants";
 export * from "./agent";
 export * from "./git";
 export * from "./path";
-export * from "./string";
+export { capitalize } from "@leo-alvarenga/pi-ext-core";
 
 export function isThemeColor(value: string): value is ThemeColor {
   return value in THEME_COLORS;

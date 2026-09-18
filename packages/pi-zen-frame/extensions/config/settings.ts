@@ -20,7 +20,7 @@ function loadSettingsFile(): Promise<string> {
 }
 
 /** Validate a raw (possibly malformed) config against the schema shapes */
-function normalize(raw: unknown): Settings {
+export function normalize(raw: unknown): Settings {
   if (!raw || typeof raw !== "object") return DEFAULT_SETTINGS;
 
   const num = (v: unknown, fallback: number): number =>
