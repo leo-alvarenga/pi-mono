@@ -2,17 +2,67 @@ name: Publish
 
 on:
   push:
-    tags:
-      - "*@*"
+    branches: [main]
+    paths:
+      - "**/package.json"
+      - "!**/node_modules/**"
   workflow_dispatch:
     inputs:
-      tag:
-        description: "Tag to publish (e.g. pi-agent-manager@0.18.7)"
-        required: true
+      package:
+        description: "Package to publish, e.g. @leo-alvarenga/pi-agent-manager@0.18.7. Leave empty to auto-detect from last commit."
+        required: false
 
 jobs:
-  publish:
+  detect:
     runs-on: ubuntu-latest
+    outputs:
+      matrix: ${{ steps.detect.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect packages to publish
+        id: detect
+        run: |
+          MATRIX='[]'
+
+          if [ -n "${{ inputs.package }}" ]; then
+            INPUT="${{ inputs.package }}"
+            VERSION="${INPUT##*@}"
+            NAME="${INPUT%@*}"
+            MATRIX=$(jq -nc --arg name "$NAME" --arg version "$VERSION" \
+              '[{"name": $name, "version": $version}]')
+          else
+            while IFS= read -r FILE; do
+              [ -z "$FILE" ] && continue
+              DIR=$(dirname "$FILE")
+              [ "$DIR" = "." ] && continue
+
+              NAME=$(jq -r '.name' "$FILE")
+              VERSION=$(jq -r '.version' "$FILE")
+
+              PUBLISHED=$(npm view "${NAME}@${VERSION}" version 2>/dev/null || true)
+              if [ "$PUBLISHED" = "$VERSION" ]; then
+                echo "Skipping $NAME@$VERSION — already on npm"
+                continue
+              fi
+
+              MATRIX=$(echo "$MATRIX" | jq --arg name "$NAME" --arg version "$VERSION" \
+                '. + [{"name": $name, "version": $version}]')
+            done < <(git diff --name-only HEAD~1 HEAD -- '**/package.json' | grep -v node_modules)
+          fi
+
+          echo "matrix=$MATRIX" >> "$GITHUB_OUTPUT"
+
+  publish:
+    needs: detect
+    if: needs.detect.outputs.matrix != '' && needs.detect.outputs.matrix != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        package: ${{ fromJson(needs.detect.outputs.matrix) }}
+      fail-fast: false
     permissions:
       contents: write
     steps:
@@ -30,31 +80,32 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      - name: Resolve package
+      - name: Resolve package directory
         id: pkg
         run: |
-          TAG="${{ github.ref_name || inputs.tag }}"
-          PKG_NAME="${TAG%@*}"
-          PKG_DIR=$(pnpm list -r --depth -1 --json | \
-            jq -r --arg name "@leo-alvarenga/$PKG_NAME" \
+          DIR=$(pnpm list -r --depth -1 --json | \
+            jq -r --arg name "${{ matrix.package.name }}" \
             '.[] | select(.name == $name) | .path')
-          echo "name=$PKG_NAME" >> "$GITHUB_OUTPUT"
-          echo "dir=$PKG_DIR" >> "$GITHUB_OUTPUT"
-          echo "filter=@leo-alvarenga/$PKG_NAME" >> "$GITHUB_OUTPUT"
+          echo "dir=$DIR" >> "$GITHUB_OUTPUT"
 
       - name: Typecheck
-        run: pnpm --filter "${{ steps.pkg.outputs.filter }}" typecheck
+        run: pnpm --filter "${{ matrix.package.name }}" typecheck
 
       - name: Test
-        run: |
-          if pnpm --filter "${{ steps.pkg.outputs.filter }}" run --if-present test; then
-            echo "Tests passed (or no test script)"
-          fi
+        run: pnpm --filter "${{ matrix.package.name }}" run --if-present test
 
       - name: Build
-        run: pnpm --filter "${{ steps.pkg.outputs.filter }}" build
+        run: pnpm --filter "${{ matrix.package.name }}" build
 
-      - name: Publish
+      - name: Tag and push
+        run: |
+          TAG="${{ matrix.package.name }}@${{ matrix.package.version }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "$TAG"
+          git push origin "$TAG"
+
+      - name: Publish to npm
         working-directory: ${{ steps.pkg.outputs.dir }}
         run: pnpm publish --no-git-checks --access public
         env:
@@ -63,5 +114,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: "${{ steps.pkg.outputs.name }} ${{ github.ref_name }}"
+          tag_name: "${{ matrix.package.name }}@${{ matrix.package.version }}"
+          name: "${{ matrix.package.name }} ${{ matrix.package.version }}"
           generate_release_notes: true
