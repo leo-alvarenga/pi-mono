@@ -17,7 +17,7 @@ Restart pi or run `/reload`.
 
 ## Usage
 
-1. `hash_read path [startLine] [endLine]` → lines as `[a1f2] 42 | const x = 10;`
+1. `hash_read path [startLine] [endLine]` → lines as `[a1f2] 42 | const x = 10;` (`endLine` is inclusive and must be greater than `startLine`; omit both to read the whole file)
 2. `hash_edit path startHash endHash newContent` → replaces the block between the two hashes
 
 A hash mismatch returns:

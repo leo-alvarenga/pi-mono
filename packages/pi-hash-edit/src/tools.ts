@@ -37,7 +37,8 @@ export function registerHashTools(pi: ExtensionAPI): void {
       endLine: Type.Optional(
         Type.Integer({
           minimum: 1,
-          description: "1-indexed line to stop at (inclusive).",
+          description:
+            "1-indexed line to stop at (inclusive). Must be greater than startLine.",
         }),
       ),
     }),

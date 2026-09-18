@@ -25,7 +25,8 @@ export function hashRead(
   const end =
     endLine === undefined ? lines.length : Math.min(lines.length, endLine);
 
-  if (start >= end) {
+  // endLine is inclusive, so a range must span at least two lines
+  if ((endLine !== undefined && (startLine ?? 1) >= endLine) || start >= end) {
     throw new Error(
       `Invalid range: startLine ${startLine ?? 1} is at or after endLine ${endLine ?? lines.length}.`,
     );
