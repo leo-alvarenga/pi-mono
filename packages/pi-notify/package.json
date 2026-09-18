@@ -1,6 +1,6 @@
 {
   "name": "@leo-alvarenga/pi-notify",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Desktop notification + sound when a Pi prompt settles: D-Bus popup on Linux, opt-in",
   "license": "MIT",
   "repository": "github.com/leo-alvarenga/pi-mono",
@@ -24,7 +24,11 @@
   ],
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*",
-    "@earendil-works/pi-tui": "*"
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*"
+  },
+  "dependencies": {
+    "@leo-alvarenga/pi-ext-core": "workspace:^"
   },
   "scripts": {
     "build": "tsc --noEmit",

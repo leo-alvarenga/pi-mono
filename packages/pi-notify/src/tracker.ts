@@ -1,16 +1,8 @@
 import { basename } from "node:path";
 
+import { formatDuration } from "@leo-alvarenga/pi-ext-core";
+
 import type { Notifier } from "./notifier";
-
-export function formatDuration(ms: number): string {
-  const s = Math.round(ms / 1000);
-  if (s < 60) return s < 1 ? "<1s" : `${s}s`;
-
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ${s % 60}s`;
-
-  return `${Math.floor(m / 60)}h ${m % 60}m`;
-}
 
 export class RunTracker {
   private running = false;
