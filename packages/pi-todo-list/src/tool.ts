@@ -88,20 +88,30 @@ export function registerTodoTool(
       let text =
         theme.fg("toolTitle", theme.bold("todo ")) +
         theme.fg("muted", args.action);
+
       if (args.text) text += ` ${theme.fg("dim", `"${args.text}"`)}`;
-      if (args.id !== undefined)
+
+      if (args.id !== undefined) {
         text += ` ${theme.fg("accent", `#${args.id}`)}`;
+      }
+
       return new Text(text, 0, 0);
     },
 
     renderResult(result, _options, theme, _context) {
       const details = result.details as TodoDetails | undefined;
-      if (details?.error)
+
+      if (details?.error) {
         return new Text(theme.fg("error", `Error: ${details.error}`), 0, 0);
+      }
+
       const text = result.content[0];
       const msg = text?.type === "text" ? text.text : "";
-      if (details?.action === "list")
+
+      if (details?.action === "list") {
         return new Text(theme.fg("muted", msg), 0, 0);
+      }
+
       return new Text(theme.fg("success", "✓ ") + theme.fg("muted", msg), 0, 0);
     },
   });
@@ -133,9 +143,9 @@ export function registerTodoCompleteAllTool(
           { type: "text", text: `All ${n} todos completed and cleared` },
         ],
         details: {
-          action: "clear",
-          todos: [],
           nextId: 1,
+          todos: [],
+          action: "clear",
         } satisfies TodoDetails,
       };
     },
