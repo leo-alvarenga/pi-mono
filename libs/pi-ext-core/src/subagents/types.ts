@@ -1,4 +1,5 @@
 import type { Theme } from "@earendil-works/pi-coding-agent";
+import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
 import type { KeyId } from "@earendil-works/pi-tui";
 import type { BubblewrapOptions } from "../types";
 
@@ -22,7 +23,8 @@ export type SubagentRecord = {
 export type SubagentState = {
   nextId: number;
   records: SubagentRecord[];
-  shouldInjectPrompt: boolean;
+  operatorModel?: string;
+  operatorThinking?: ThinkingLevel;
 };
 
 export type SubagentDetails = {
@@ -31,38 +33,40 @@ export type SubagentDetails = {
 };
 
 export type SubagentSpec = {
-  /** Env flag name set on child processes to prevent re-entry (e.g. "PI_SUBAGENT") */
-  spawnFlagEnv: string;
-  bwrap?: BubblewrapOptions;
+  tool: {
+    name: string;
+    label: string;
+    description: string;
+  };
 
-  toolName: string;
-  toolLabel: string;
-  promptSnippet: string;
-  toolDescription: string;
-  promptGuidelines: string[];
+  spawn: {
+    flagEnv: string;
+    bwrap?: BubblewrapOptions;
+  };
 
-  /** Subagent usage endorsement options; when enabled, inject in the prompt endorment messages to nudge models to use subagents */
-  subagentUsageEndorsement?: {
-    /** Whether to show to endorse the subagent usage */
+  prompt: {
+    snippet: string;
+    guidelines: string[];
+    instructions: {
+      always: string;
+      readOnly: string;
+      writeAllowed: string;
+    };
+    needsInput: {
+      marker: string;
+      /** Full suffix block appended to system prompt (includes the marker template). */
+      suffix: string;
+    };
+  };
+
+  /** Nudges the orchestrator model to delegate work to subagents via system prompt injection */
+  endorsement?: {
     enabled?: boolean;
-
-    /** The initial state of the endorsement (when enabled) */
-    initialState?: boolean;
-
-    /** The endorsement prompt to override the default */
     promptOverride?: string;
   };
 
-  promptInstructions: {
-    always: string;
-    readOnly: string;
-    writeAllowed: string;
-  };
-
-  needsInput: {
-    marker: string;
-    /** Full suffix block appended to system prompt (includes the marker template). */
-    suffix: string;
+  orchestratorMode?: {
+    enabled?: boolean;
   };
 
   /** Tool allowlist; If left empty, readOnly enforcement is done via prompt guard-rails only **/
@@ -80,8 +84,10 @@ export type SubagentSpec = {
     maxWritesPerSubagent: number;
   };
 
-  state: { entryType: string };
-  report: { entryType: string };
+  entries: {
+    state: string;
+    report: string;
+  };
 
   panel: {
     widgetKey: string;

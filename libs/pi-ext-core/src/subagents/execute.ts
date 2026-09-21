@@ -2,6 +2,7 @@ import type {
   AgentToolResult,
   ExtensionContext,
 } from "@earendil-works/pi-coding-agent";
+import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
 
 import { runHeadlessAgent } from "../headless/run";
 import type { SessionRecordStore } from "../session/types";
@@ -23,6 +24,8 @@ type ExecContext = {
   spec: SubagentSpec;
   ctx: ExtensionContext;
   signal?: AbortSignal;
+  operatorModel?: string;
+  operatorThinking?: ThinkingLevel;
 };
 
 type TaskParams = {
@@ -51,15 +54,20 @@ export async function handleSingle(
   const run = await runHeadlessAgent({
     taskText,
     signal: ec.signal,
-    bwrap: { ...ec.spec.bwrap, allowWrite: params.allowWrite ?? false },
+    bwrap: { ...ec.spec.spawn.bwrap, allowWrite: params.allowWrite ?? false },
     cwd: params.cwd ?? ec.ctx.cwd,
-    spawnFlagEnv: ec.spec.spawnFlagEnv,
+    spawnFlagEnv: ec.spec.spawn.flagEnv,
     tools: buildAllowlist(ec.spec, params.allowWrite ?? false),
     systemPrompt: buildSystemPrompt(ec.spec, params.allowWrite ?? false),
     parentSessionId: ec.ctx.sessionManager.getSessionId(),
+    model: ec.operatorModel,
+    thinking: ec.operatorThinking,
   });
 
-  const needsInput = parseNeedsInput(run.output, ec.spec.needsInput.marker);
+  const needsInput = parseNeedsInput(
+    run.output,
+    ec.spec.prompt.needsInput.marker,
+  );
 
   const status = classifyResult({
     exitCode: run.exitCode,
@@ -99,19 +107,16 @@ export async function handleParallel(
 
   const makeDetails = (): SubagentDetails => ({
     mode: "parallel",
-    records: [...results],
+    records: results.map((r) => ({ ...r })),
   });
 
   const emit = () => {
-    const running = results.filter((r) => r.status === "running").length;
-    const done = results.length - running;
-
     onUpdate?.({
       details: makeDetails(),
       content: [
         {
           type: "text",
-          text: `Parallel: ${done}/${results.length} done, ${running} running…`,
+          text: `Running ${results.filter((r) => r.status === "running").length} / ${results.length}…`,
         },
       ],
     });
@@ -128,15 +133,20 @@ export async function handleParallel(
       const run = await runHeadlessAgent({
         taskText,
         signal: ec.signal,
-        bwrap: { ...ec.spec.bwrap, allowWrite: t.allowWrite ?? false },
+        bwrap: { ...ec.spec.spawn.bwrap, allowWrite: t.allowWrite ?? false },
         cwd: t.cwd ?? ec.ctx.cwd,
-        spawnFlagEnv: ec.spec.spawnFlagEnv,
+        spawnFlagEnv: ec.spec.spawn.flagEnv,
         tools: buildAllowlist(ec.spec, t.allowWrite ?? false),
         systemPrompt: buildSystemPrompt(ec.spec, t.allowWrite ?? false),
         parentSessionId: ec.ctx.sessionManager.getSessionId(),
+        model: ec.operatorModel,
+        thinking: ec.operatorThinking,
       });
 
-      const needsInput = parseNeedsInput(run.output, ec.spec.needsInput.marker);
+      const needsInput = parseNeedsInput(
+        run.output,
+        ec.spec.prompt.needsInput.marker,
+      );
 
       const status = classifyResult({
         exitCode: run.exitCode,

@@ -59,6 +59,8 @@ export async function runHeadlessAgent(
     "json",
     "-p",
     "--no-session",
+    ...(opts.model ? ["--model", opts.model] : []),
+    ...(opts.thinking ? ["--thinking", opts.thinking] : []),
     ...toolFlagAndArg,
     "--append-system-prompt",
     tmpPath,
@@ -92,66 +94,23 @@ export async function runHeadlessAgent(
 
       activeProcesses.add(proc);
 
-      proc.stdout!.on("data", (data: Buffer) => reducer.feed(data.toString()));
-
-      proc.stderr!.on("data", (data: Buffer) => {
-        result.stderr += data.toString();
-      });
-
-      proc.on("close", (code: number | null) => {
-        activeProcesses.delete(proc);
-        reducer.end();
-        resolve(code ?? 0);
-      });
-
       attachProcessListeners(proc, {
-        onStdout: (data: Buffer) => reducer.feed(data.toString()),
-        onStderr: (data: Buffer) => {
-          result.stderr += data.toString();
-        },
-        onClose: (code: number | null) => {
-          activeProcesses.delete(proc);
+        onStdout: (data) => reducer.feed(data.toString()),
+        onStderr: (data) => { result.stderr += data.toString(); },
+        onClose: (code) => {
           reducer.end();
-          resolve(code ?? 0);
-        },
-        onError: () => {
           activeProcesses.delete(proc);
-          resolve(1);
+          resolve(code ?? 1);
         },
       });
 
-      if (opts.signal) {
-        let killTimer: ReturnType<typeof setTimeout> | undefined;
-
-        const kill = () => {
-          result.aborted = true;
-          proc.kill("SIGTERM");
-
-          killTimer = setTimeout(() => {
-            try {
-              proc.kill("SIGKILL");
-            } catch {
-              /* already dead */
-            }
-          }, 5000);
-
-          killTimer.unref?.();
-        };
-
-        if (opts.signal.aborted) {
-          kill();
-        } else {
-          opts.signal.addEventListener("abort", kill, { once: true });
-
-          proc.on("close", () =>
-            opts.signal!.removeEventListener("abort", kill),
-          );
-        }
-      }
+      opts.signal?.addEventListener("abort", () => {
+        result.aborted = true;
+        proc.kill("SIGTERM");
+      });
     });
 
     result.exitCode = exitCode;
-    if (result.aborted) result.stopReason = "aborted";
 
     return result;
   } finally {

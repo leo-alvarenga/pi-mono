@@ -1,3 +1,4 @@
+import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
 import type { BubblewrapOptions, TokenUsage } from "../types";
 
 export type RunHeadlessAgentOptions = {
@@ -12,6 +13,8 @@ export type RunHeadlessAgentOptions = {
   tools: string[] | null;
   parentSessionId?: string;
   bwrap?: BubblewrapOptions;
+  model?: string;
+  thinking?: ThinkingLevel;
 };
 
 export type HeadlessRunTokenUsage = Required<Omit<TokenUsage, "total">> & {

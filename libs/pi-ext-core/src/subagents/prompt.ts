@@ -1,15 +1,21 @@
 import type { SubagentSpec } from "./types";
 
 export function buildSystemPrompt(
-  spec: Pick<SubagentSpec, "promptInstructions" | "needsInput">,
+  spec: Pick<SubagentSpec, "prompt" | "orchestratorMode">,
   allowWrite: boolean,
 ): string {
-  let prompt = spec.promptInstructions.always;
+  const { instructions, needsInput } = spec.prompt;
+  let prompt = instructions.always;
 
-  if (!allowWrite) prompt += `\n\n${spec.promptInstructions.readOnly}`;
-  else prompt += `\n\n${spec.promptInstructions.writeAllowed}`;
+  if (!allowWrite) prompt += `\n\n${instructions.readOnly}`;
+  else prompt += `\n\n${instructions.writeAllowed}`;
 
-  return `${prompt}\n\n${spec.needsInput.suffix}`;
+  if (spec.orchestratorMode?.enabled) {
+    prompt +=
+      "\n\nWork efficiently. Complete the task directly without excessive reasoning chains.";
+  }
+
+  return `${prompt}\n\n${needsInput.suffix}`;
 }
 
 export function buildAllowlist(

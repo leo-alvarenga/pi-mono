@@ -13,6 +13,6 @@ describe("protocol constants (public contract: must not silently drift)", () => 
   it("REPORT_ENTRY", () => expect(REPORT_ENTRY).toBe("subagents.report"));
   it("WIDGET_KEY", () => expect(WIDGET_KEY).toBe("subagents"));
   it("PANEL_TOGGLE_CHORD", () => expect(PANEL_TOGGLE_CHORD).toBe("alt+s"));
-  it("MAX_PARALLEL_TASKS", () => expect(MAX_PARALLEL_TASKS).toBe(8));
-  it("MAX_CONCURRENCY", () => expect(MAX_CONCURRENCY).toBe(4));
+  it("MAX_PARALLEL_TASKS", () => expect(MAX_PARALLEL_TASKS).toBe(12));
+  it("MAX_CONCURRENCY", () => expect(MAX_CONCURRENCY).toBe(8));
 });

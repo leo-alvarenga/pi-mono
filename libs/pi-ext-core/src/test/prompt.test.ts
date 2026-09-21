@@ -2,14 +2,18 @@ import { describe, it, expect } from "vitest";
 import { buildSystemPrompt, buildAllowlist } from "../subagents/prompt";
 
 const spec = {
-  promptInstructions: {
-    always: "You are a transient subagent.",
-    readOnly: "Only read and explore. Do not modify anything.",
-    writeAllowed: "You may edit files if strictly necessary.",
-  },
-  needsInput: {
-    marker: "NEEDS_INPUT:",
-    suffix: "If you need more info:\nNEEDS_INPUT:\n- <question>",
+  prompt: {
+    instructions: {
+      always: "You are a transient subagent.",
+      readOnly: "Only read and explore. Do not modify anything.",
+      writeAllowed: "You may edit files if strictly necessary.",
+    },
+    needsInput: {
+      marker: "NEEDS_INPUT:",
+      suffix: "If you need more info:\nNEEDS_INPUT:\n- <question>",
+    },
+    snippet: "",
+    guidelines: [],
   },
   allowlists: {
     readOnly: ["read", "grep", "find", "ls"],
