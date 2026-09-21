@@ -70,14 +70,6 @@ Tool parameters:
 `Alt+S` toggles the panel. If your terminal intercepts that chord, pick a free
 one and change `PANEL_TOGGLE_CHORD` in `src/constants.ts`.
 
-## Skill
-
-The package ships a sample `subagent` skill (`skills/subagent/SKILL.md`),
-auto-loaded by pi. It teaches the agent when to delegate to `mini_subagent`,
-how to write self-contained tasks, and when to keep work in the main context.
-To install it manually (e.g. without the extension), copy that `SKILL.md` into
-`~/.pi/agent/skills/subagent/`.
-
 ## License
 
 MIT — see [LICENSE](LICENSE). Copyright (c) 2026 Leonardo A. Alvarenga.

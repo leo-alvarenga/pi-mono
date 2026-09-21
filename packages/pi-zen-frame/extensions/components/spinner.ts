@@ -13,10 +13,7 @@ export const spinnerSegment: SegmentDef = {
     let phase = d.spinnerPhase ?? "thinking";
 
     // No frame.colors key for the spinner; accent only.
-    const spinner = theme.fg(
-      d.accentColor,
-      ` ${d.spinnerFrame} `,
-    );
+    const spinner = theme.fg(d.accentColor, ` ${d.spinnerFrame} `);
     if (phase === "idle") return spinner;
 
     return spinner + theme.fg("muted", `${phase} `);

@@ -14,7 +14,9 @@ export * from "./session/types";
 export * from "./session/store";
 
 export * from "./tui/types";
+export * from "./tui/keys";
 export * from "./tui/panel";
+export * from "./tui/picker";
 
 export * from "./subagents/types";
 export * from "./subagents/prompt";

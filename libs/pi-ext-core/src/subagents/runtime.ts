@@ -2,10 +2,8 @@ import type {
   AgentToolResult,
   ExtensionAPI,
 } from "@earendil-works/pi-coding-agent";
-import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
 import { Text } from "@earendil-works/pi-tui";
 
-import { killAllRunning } from "../headless/run";
 import { createSessionStore } from "../session/store";
 import { createPanelWidget } from "../tui/panel";
 import type { PanelWidgetControls } from "../tui/types";
@@ -19,19 +17,8 @@ import type {
   SubagentSpec,
   SubagentState,
 } from "./types";
-
-const DELEGATION_TAG_START = "## DELEGATION RULES:";
-const DELEGATION_TAG_END = "## END DELEGATION RULES";
-
-const VALID_THINKING_LEVELS: readonly string[] = [
-  "off",
-  "minimal",
-  "low",
-  "medium",
-  "high",
-  "xhigh",
-  "max",
-];
+import { registerSubagentCommands } from "./commands";
+import { hookEvents } from "./events";
 
 /** Register the subagent tool, command, panel, and session event handlers;
  *
@@ -45,11 +32,6 @@ export function createSubagentRuntime(
   let panel: PanelWidgetControls | undefined;
 
   const isOrchestrator = spec.orchestratorMode?.enabled;
-
-  const supportedCmdArgs = [
-    "list",
-    ...(isOrchestrator ? ["set-operator-model"] : []),
-  ];
 
   const store = createSessionStore<SubagentState>({
     entryType: spec.entries.state,
@@ -210,75 +192,7 @@ export function createSubagentRuntime(
     },
   });
 
-  pi.registerCommand(spec.tool.name, {
-    description: isOrchestrator
-      ? "Show all subagents grouped by status, or configure operator model"
-      : "Show all subagents grouped by status",
-    getArgumentCompletions: async () =>
-      supportedCmdArgs.map((value) => ({ label: value, value })),
-    handler: async (args, ctx) => {
-      if (!ctx.hasUI) {
-        ctx.ui.notify(`/${spec.tool.name} requires interactive mode`, "error");
-
-        return;
-      }
-
-      if (args.startsWith("set-operator-model")) {
-        if (!isOrchestrator) {
-          ctx.ui.notify(
-            `Supported arguments: ${supportedCmdArgs.join(", ")}`,
-            "error",
-          );
-          return;
-        }
-
-        const parts = args.trim().split(/\s+/).slice(1);
-        const [model, thinking] = parts;
-
-        if (!model) {
-          ctx.ui.notify(
-            "Usage: set-operator-model <model> [thinking-level]",
-            "error",
-          );
-          return;
-        }
-
-        if (thinking && !VALID_THINKING_LEVELS.includes(thinking)) {
-          ctx.ui.notify(
-            `Invalid thinking level "${thinking}". Valid: ${VALID_THINKING_LEVELS.join(", ")}`,
-            "error",
-          );
-          return;
-        }
-
-        const state = store.getState(ctx);
-        store.commit(ctx, {
-          ...state,
-          operatorModel: model,
-          operatorThinking: thinking as ThinkingLevel | undefined,
-        });
-
-        ctx.ui.notify(
-          `Operator model: ${model}${thinking ? ` · thinking: ${thinking}` : ""}`,
-          "info",
-        );
-        return;
-      }
-
-      if (args !== "list" && args !== "") {
-        ctx.ui.notify(
-          `Supported arguments: ${supportedCmdArgs.join(", ")}`,
-          "error",
-        );
-
-        return;
-      }
-
-      pi.appendEntry(spec.entries.report, {
-        records: [...store.getState(ctx).records],
-      });
-    },
-  });
+  registerSubagentCommands(pi, store, spec, isOrchestrator);
 
   pi.registerEntryRenderer<{ records: SubagentRecord[] }>(
     spec.entries.report,
@@ -294,45 +208,5 @@ export function createSubagentRuntime(
       ),
   );
 
-  if (spec.endorsement?.enabled) {
-    pi.on("before_agent_start", async (event, ctx) => {
-      let basePrompt = event.systemPrompt || "";
-
-      const regex = new RegExp(
-        `${DELEGATION_TAG_START}[\\s\\S]*?${DELEGATION_TAG_END}\\n?`,
-        "g",
-      );
-      basePrompt = basePrompt.replace(regex, "").trim();
-
-      const state = store.getState(ctx);
-      const operatorNote =
-        isOrchestrator && state.operatorModel
-          ? `\n- OPERATOR MODEL: Operator subagents use ${state.operatorModel}${state.operatorThinking ? ` (thinking: ${state.operatorThinking})` : ""}. Assign them bounded, focused tasks.`
-          : "";
-
-      const defaultPrompt = `${DELEGATION_TAG_START}
-## Orchestrator Rules of Engagement
-- You are an orchestrator of subagents. Spawning subagents is almost always the right and laziest move.
-- Your go to move should be to delegate work to subagents, unless you have a compelling reason not to OR you are not sure the current work would benefit from parellelization.
-- Additionally, if the prompt includes keywords like "refactor", "scout", or "audit", you should always delegate work to subagents.
-- CODEBASE EXPLORATION: Default to spawning read-only subagents via ${spec.tool.name} for searches, greps, and multi-file analysis to prevent context window pollution.
-  - This also includes scenarios where you want to understand the codebase, even if you don't need/want to read it to its full extent
-- WRITE PLANNING: When making changes across 4 or more files, write a concise execution plan first.
-- PARALLEL DELEGATION: Delegate file modifications evenly to write-enabled subagents (allowWrite: true). Limit each subagent to a maximum of ${spec.limits.maxWritesPerSubagent} target files per invocation.${operatorNote}
-${DELEGATION_TAG_END}`;
-
-      return {
-        systemPrompt: `${basePrompt}\n\n${spec.endorsement?.promptOverride ?? defaultPrompt}`,
-      };
-    });
-  }
-
-  pi.on("session_start", (_event, ctx) => store.replay(ctx));
-  pi.on("session_tree", (_event, ctx) => store.replay(ctx));
-  pi.on("session_before_compact", (_event, ctx) => store.persistSnapshot(ctx));
-
-  pi.on("session_shutdown", (_event, ctx) => {
-    killAllRunning();
-    if (ctx.hasUI) ctx.ui.setWidget(spec.panel.widgetKey, undefined);
-  });
+  hookEvents(pi, store, spec, isOrchestrator);
 }

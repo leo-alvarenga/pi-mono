@@ -1,4 +1,7 @@
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
+import type {
+  ExtensionAPI,
+  ExtensionContext,
+} from "@earendil-works/pi-coding-agent";
 
 import {
   AGENT_DATA_KEY,
@@ -32,7 +35,12 @@ export function registerEvents(
 
     // Use SessionRecordStore to restore AgentState
     const store = require("@leo-alvarenga/pi-ext-core").createSessionStore({
-      empty: () => ({ currentAgent: "default", currentAgentLabel: "", currentAgentConfig: null, guardEnabled: false }),
+      empty: () => ({
+        currentAgent: "default",
+        currentAgentLabel: "",
+        currentAgentConfig: null,
+        guardEnabled: false,
+      }),
       entryType: AGENT_DATA_KEY,
       snapshotOf: (entry: any) => entry.data as Partial<AgentState> | undefined,
     });
@@ -121,8 +129,7 @@ export function registerEvents(
     }
 
     const args = (event as unknown as Record<string, unknown>).args as
-      | Record<string, unknown>
-      | undefined;
+      Record<string, unknown> | undefined;
 
     if (!agentManager.requiresConfirmation(event.toolName, args ?? {})) {
       return;

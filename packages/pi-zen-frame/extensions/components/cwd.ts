@@ -13,15 +13,10 @@ export const cwdSegment: SegmentDef = {
 
     if (d.gitBranch) {
       let git = ` ${icons.gitBranch} ${d.gitBranch}`;
-      text +=
-        theme.fg("dim", " ·") +
-        theme.fg(d.accentColor, git);
+      text += theme.fg("dim", " ·") + theme.fg(d.accentColor, git);
 
       if (d.gitDirty > 0) {
-        text += theme.fg(
-          "error",
-          ` ${icons.gitDirty} ${d.gitDirty}`,
-        );
+        text += theme.fg("error", ` ${icons.gitDirty} ${d.gitDirty}`);
       }
     }
 

@@ -96,7 +96,9 @@ export async function runHeadlessAgent(
 
       attachProcessListeners(proc, {
         onStdout: (data) => reducer.feed(data.toString()),
-        onStderr: (data) => { result.stderr += data.toString(); },
+        onStderr: (data) => {
+          result.stderr += data.toString();
+        },
         onClose: (code) => {
           reducer.end();
           activeProcesses.delete(proc);

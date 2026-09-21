@@ -227,8 +227,7 @@ function list(state: TodoState): { text: string } {
   return {
     text: state.todos
       .map(
-        (t) =>
-          `[${t.status === "completed" ? "x" : " "}] #${t.id}: ${t.text}`,
+        (t) => `[${t.status === "completed" ? "x" : " "}] #${t.id}: ${t.text}`,
       )
       .join("\n"),
   };

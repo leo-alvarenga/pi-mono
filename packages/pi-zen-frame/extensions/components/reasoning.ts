@@ -15,9 +15,6 @@ export const reasoningSegment: SegmentDef = {
     const token = (THINKING_TOKEN[d.thinkingLevel] ??
       "thinkingText") as ThemeColor;
 
-    return theme.fg(
-      token,
-      ` ${icons.thinking} ${d.thinkingLevel} `,
-    );
+    return theme.fg(token, ` ${icons.thinking} ${d.thinkingLevel} `);
   },
 };
