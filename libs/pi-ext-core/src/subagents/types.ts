@@ -22,6 +22,7 @@ export type SubagentRecord = {
 export type SubagentState = {
   nextId: number;
   records: SubagentRecord[];
+  shouldInjectPrompt: boolean;
 };
 
 export type SubagentDetails = {
@@ -39,6 +40,18 @@ export type SubagentSpec = {
   promptSnippet: string;
   toolDescription: string;
   promptGuidelines: string[];
+
+  /** Subagent usage endorsement options; when enabled, inject in the prompt endorment messages to nudge models to use subagents */
+  subagentUsageEndorsement?: {
+    /** Whether to show to endorse the subagent usage */
+    enabled?: boolean;
+
+    /** The initial state of the endorsement (when enabled) */
+    initialState?: boolean;
+
+    /** The endorsement prompt to override the default */
+    promptOverride?: string;
+  };
 
   promptInstructions: {
     always: string;
@@ -64,6 +77,7 @@ export type SubagentSpec = {
     maxStoredOutput: number;
     maxParallelTasks: number;
     perTaskOutputCap: number;
+    maxWritesPerSubagent: number;
   };
 
   state: { entryType: string };

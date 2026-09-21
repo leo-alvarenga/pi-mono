@@ -19,6 +19,9 @@ import type {
   SubagentState,
 } from "./types";
 
+const DELEGATION_TAG_START = "## DELEGATION RULES:";
+const DELEGATION_TAG_END = "## END DELEGATION RULES";
+
 /** Register the subagent tool, command, panel, and session event handlers;
  *
  *  This is a subagent runtime factory; If you are building your own subagent solution based on this lib,
@@ -30,9 +33,21 @@ export function createSubagentRuntime(
 ): void {
   let panel: PanelWidgetControls | undefined;
 
+  const supportedCmdArgs = [
+    "list",
+    ...(spec.subagentUsageEndorsement?.enabled ? ["toggle"] : []),
+  ];
+
   const store = createSessionStore<SubagentState>({
     entryType: spec.state.entryType,
-    empty: () => ({ records: [], nextId: 1 }),
+
+    empty: () => ({
+      nextId: 1,
+      records: [],
+      shouldInjectPrompt: spec.subagentUsageEndorsement?.enabled
+        ? (spec.subagentUsageEndorsement?.initialState ?? false)
+        : false,
+    }),
 
     onChange: (snapshot, ctx) => {
       if (snapshot.records.length > 0) {
@@ -47,8 +62,11 @@ export function createSubagentRuntime(
 
       return d
         ? {
-            records: d.records.filter((r) => r.status !== "running"),
             nextId: d.nextId,
+            records: d.records.filter((r) => r.status !== "running"),
+            shouldInjectPrompt: spec.subagentUsageEndorsement?.enabled
+              ? (d.shouldInjectPrompt ?? false)
+              : false,
           }
         : undefined;
     },
@@ -57,8 +75,8 @@ export function createSubagentRuntime(
   panel = createPanelWidget<SubagentState>(pi, {
     store,
     emptyText: spec.panel.emptyText,
-    moreLabel: (n) => `… +${n} more`,
     widgetKey: spec.panel.widgetKey,
+    moreLabel: (n) => `… +${n} more`,
     maxRows: spec.limits.maxPanelRows,
     toggleChord: spec.panel.toggleChord,
 
@@ -182,11 +200,40 @@ export function createSubagentRuntime(
     },
   });
 
-  pi.registerCommand(spec.toolName + "s", {
-    description: "Show all subagents grouped by status",
-    handler: async (_args, ctx) => {
+  pi.registerCommand(spec.toolName, {
+    description: "Show all subagents grouped by status, or toggle endorsement",
+    getArgumentCompletions: async () =>
+      supportedCmdArgs.map((value) => ({ label: value, value })),
+    handler: async (args, ctx) => {
       if (!ctx.hasUI) {
         ctx.ui.notify(`/${spec.toolName}s requires interactive mode`, "error");
+
+        return;
+      }
+
+      if (args === "toggle") {
+        if (!spec.subagentUsageEndorsement?.enabled) {
+          return;
+        }
+
+        const state = store.getState(ctx);
+        store.commit(ctx, {
+          ...state,
+          shouldInjectPrompt: !state.shouldInjectPrompt,
+        });
+
+        ctx.ui.notify(
+          `Models will now ${state.shouldInjectPrompt ? "not " : ""}inject in the prompt`,
+          "info",
+        );
+
+        return;
+      } else if (args !== "list") {
+        ctx.ui.notify(
+          `Supported arguments: ${supportedCmdArgs.join(", ")}`,
+          "error",
+        );
+
         return;
       }
 
@@ -209,6 +256,38 @@ export function createSubagentRuntime(
         0,
       ),
   );
+
+  if (spec.subagentUsageEndorsement?.enabled) {
+    pi.on("before_agent_start", async (event, ctx) => {
+      if (!store.getState(ctx).shouldInjectPrompt) return;
+
+      let basePrompt = event.systemPrompt || "";
+
+      const regex = new RegExp(
+        `${DELEGATION_TAG_START}[\\s\\S]*?${DELEGATION_TAG_END}\\n?`,
+        "g",
+      );
+      basePrompt = basePrompt.replace(regex, "").trim();
+
+      const systemPrompt = `
+${basePrompt}
+
+${DELEGATION_TAG_START},
+## Orchestrator Rules of Engagement
+- You are an orchestrator of subagents. Spawning subagents is almost always the right and laziest move.
+- Your go to move should be to delegate work to subagents, unless you have a compelling reason not to OR you are not sure the current work would benefit from parellelization.
+- Additionally, if the prompt includes keywords like "refactor", "scout", or "audit", you should always delegate work to subagents.
+- CODEBASE EXPLORATION: Default to spawning read-only subagents via ${spec.toolName} for searches, greps, and multi-file analysis to prevent context window pollution.
+  - This also includes scenarios where you want to understand the codebase, even if you don't need/want to read it to its full extent
+- WRITE PLANNING: When making changes across 4 or more files, write a concise execution plan first.
+- PARALLEL DELEGATION: Delegate file modifications evenly to write-enabled subagents (allowWrite: true). Limit each subagent to a maximum of ${spec.limits.maxWritesPerSubagent} target files per invocation.
+${DELEGATION_TAG_END}`;
+
+      return {
+        systemPrompt,
+      };
+    });
+  }
 
   pi.on("session_start", (_event, ctx) => store.replay(ctx));
   pi.on("session_tree", (_event, ctx) => store.replay(ctx));

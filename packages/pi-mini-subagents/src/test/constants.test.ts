@@ -8,7 +8,7 @@ import {
   MAX_CONCURRENCY,
 } from "../constants";
 
-describe("protocol constants (public contract — must not silently drift)", () => {
+describe("protocol constants (public contract: must not silently drift)", () => {
   it("STATE_ENTRY", () => expect(STATE_ENTRY).toBe("subagents.state"));
   it("REPORT_ENTRY", () => expect(REPORT_ENTRY).toBe("subagents.report"));
   it("WIDGET_KEY", () => expect(WIDGET_KEY).toBe("subagents"));
