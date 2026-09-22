@@ -31,7 +31,7 @@
     "typebox": "*"
   },
   "dependencies": {
-    "@leo-alvarenga/pi-ext-core": "workspace:^"
+    "@leo-alvarenga/pi-ext-core": "workspace:*"
   },
   "pi": {
     "extensions": [

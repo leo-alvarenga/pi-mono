@@ -26,7 +26,7 @@
     "typebox": "*"
   },
   "dependencies": {
-    "@leo-alvarenga/pi-ext-core": "workspace:^"
+    "@leo-alvarenga/pi-ext-core": "workspace:*"
   },
   "scripts": {
     "build": "tsc --noEmit",

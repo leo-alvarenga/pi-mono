@@ -1,6 +1,6 @@
 {
   "name": "@leo-alvarenga/pi-ext-core",
-  "version": "0.4.3",
+  "version": "0.5.0",
   "description": "Shared building blocks for pi extensions: types, utils, headless agent runtime, session store, panel widget, and subagent runtime",
   "license": "MIT",
   "repository": "github.com/leo-alvarenga/pi-mono",
