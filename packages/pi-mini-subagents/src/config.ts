@@ -96,7 +96,7 @@ export const SUBAGENTS_SPEC: SubagentSpec = {
   },
 
   panel: {
-    title: "  Subagents",
+    title: "  Subagents",
     widgetKey: WIDGET_KEY,
     toggleChord: PANEL_TOGGLE_CHORD,
     emptyText: "No subagents yet. Ask the agent to delegate a task!",
