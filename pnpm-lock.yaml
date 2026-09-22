@@ -49,7 +49,7 @@ importers:
         specifier: ^0.84.0
         version: 0.84.2
       '@leo-alvarenga/pi-ext-core':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../libs/pi-ext-core
       yaml:
         specifier: ^2.9.0
@@ -96,7 +96,7 @@ importers:
         specifier: '*'
         version: 0.84.2
       '@leo-alvarenga/pi-ext-core':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../libs/pi-ext-core
       typebox:
         specifier: '*'
@@ -121,7 +121,7 @@ importers:
         specifier: '*'
         version: 0.84.2
       '@leo-alvarenga/pi-ext-core':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../libs/pi-ext-core
       typebox:
         specifier: '*'
@@ -165,7 +165,7 @@ importers:
         specifier: '*'
         version: 0.84.2
       '@leo-alvarenga/pi-ext-core':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../libs/pi-ext-core
       typebox:
         specifier: '*'
@@ -190,7 +190,7 @@ importers:
         specifier: '*'
         version: 0.84.2
       '@leo-alvarenga/pi-ext-core':
-        specifier: workspace:^
+        specifier: workspace:*
         version: link:../../libs/pi-ext-core
       typebox:
         specifier: '*'
