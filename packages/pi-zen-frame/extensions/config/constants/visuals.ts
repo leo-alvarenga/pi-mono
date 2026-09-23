@@ -1,6 +1,15 @@
 import type { ThemeColor } from "@earendil-works/pi-coding-agent";
 import type { FrameIcons, SpinnerPhase } from "../types";
 
+export const LOGO_LINES = [
+  "█████████  ",
+  "███   ███  ",
+  "██████     ",
+  "███     ███",
+];
+
+export const LOGO_COLOR: ThemeColor = "text";
+
 /** Spinner animation frames per phase (pi-editor-shell style) */
 export const SPINNER_FRAMES: Record<SpinnerPhase, string[]> = {
   idle: ["⠃", "⠞", "⡵", "⠿", "⢹", "⠄"],

@@ -43,7 +43,7 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
   // Fallback accent color for frame border and active segments
   "accentColor": "accent",
 
-  // Editor-frame renderer by registered name (built-in: "blocky", "minimalist")
+  // Editor-frame renderer by registered name (built-in: "blocky", "linear", "minimalist")
   "editorFrame": "blocky",
 
   "header": {
@@ -88,14 +88,14 @@ Configuration is loaded from `~/.pi/agent/pi-zen-frame.json`. All properties are
 
 The editor frame shows status indicators in two rows below the editor:
 
-| Location           | Segment        | Description                                                                                                                                         |
-| ------------------ | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Editor band (left) | **agent mode** | Active agent indicator pill from `pi-agent-manager`                                                                                                 |
-|                    | **model**      | Active model name and provider                                                                                                                      |
-|                    | **reasoning**  | Current reasoning effort level, tinted with pi thinking tokens                                                                                      |
-|                    | **spinner**    | Active phase indicator (`thinking`, `outputting`, `toolcall`, `exec`); replaces the row while streaming when `showSpinner` is enabled (default off) |
-| Footer (left)      | **cwd**        | Shortened path, active Git branch, and uncommitted file counts                                                                                      |
-| Footer (right)     | **ctx**        | Context usage percentage and token counts with color alerts                                                                                         |
+| Location       | Segment        | Description                                                                                                                                         |
+| -------------- | -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Top            | **agent mode** | Active agent indicator pill from `pi-agent-manager`                                                                                                 |
+|                | **model**      | Active model name and provider                                                                                                                      |
+|                | **reasoning**  | Current reasoning effort level, tinted with pi thinking tokens                                                                                      |
+|                | **spinner**    | Active phase indicator (`thinking`, `outputting`, `toolcall`, `exec`); replaces the row while streaming when `showSpinner` is enabled (default off) |
+| Footer (left)  | **cwd**        | Shortened path, active Git branch, and uncommitted file counts                                                                                      |
+| Footer (right) | **ctx**        | Context usage percentage and token counts with color alerts                                                                                         |
 
 ---
 

@@ -1,29 +1,30 @@
 import {
   CustomEditor,
-  ThemeColor,
   type ExtensionAPI,
 } from "@earendil-works/pi-coding-agent";
 
-import type { SpinnerPhase } from "../config/types";
-import type { ExternalData, FrameData } from "../components/types";
-import type { EditorFrameRenderOptions } from "../renderers/types";
+import type { SpinnerPhase } from "../../config/types";
+import type { ExternalData, FrameData } from "../../components/types";
+import type {
+  EditorFrameRenderer,
+  EditorFrameRenderOptions,
+} from "../../renderers/types";
 
 import {
   handlePaletteInput,
   loadPaletteItems,
   renderPalette,
   type PaletteState,
-} from "./palette";
-import { renderEditorFrame } from "./render";
-import { SpinnerController } from "./spinner";
+} from "../palette";
+import { SpinnerController } from "../spinner";
+import { renderLinearFrame } from "./render";
 
-export class BlockyEditor extends CustomEditor {
+export class LinearEditor extends CustomEditor implements EditorFrameRenderer {
   private pi: ExtensionAPI;
   private opts: EditorFrameRenderOptions;
-  private provider: (pi: ExtensionAPI) => ExternalData;
-
   private spinner = new SpinnerController();
   private paletteState: PaletteState | null = null;
+  private provider: (pi: ExtensionAPI) => ExternalData;
 
   constructor(
     pi: ExtensionAPI,
@@ -32,22 +33,10 @@ export class BlockyEditor extends CustomEditor {
     ...args: ConstructorParameters<typeof CustomEditor>
   ) {
     super(...args);
+
     this.pi = pi;
     this.opts = opts;
     this.provider = provider;
-  }
-
-  setSpinner(phase: SpinnerPhase | null): void {
-    if (phase) {
-      this.spinner.start(phase, () => this.tui.requestRender());
-    } else {
-      this.spinner.stop();
-      this.tui.requestRender();
-    }
-  }
-
-  stopSpinner(): void {
-    this.spinner.stop();
   }
 
   refresh(): void {
@@ -56,8 +45,20 @@ export class BlockyEditor extends CustomEditor {
 
   openPalette(): void {
     const all = loadPaletteItems(this.pi);
-
     this.paletteState = { query: "", all, items: all, selected: 0, viewTop: 0 };
+    this.tui.requestRender();
+  }
+
+  setSpinner(phase: SpinnerPhase | null): void {
+    if (phase) {
+      this.spinner.start(phase, () => this.tui.requestRender());
+    } else {
+      this.spinner.stop();
+    }
+  }
+
+  stopSpinner(): void {
+    this.spinner.stop();
     this.tui.requestRender();
   }
 
@@ -68,11 +69,11 @@ export class BlockyEditor extends CustomEditor {
     }
 
     const result = handlePaletteInput(this.paletteState, data);
-
     if (result.submit) {
       this.paletteState = null;
       this.setText(result.submit);
       super.handleInput("\r");
+
       return;
     }
 
@@ -80,30 +81,20 @@ export class BlockyEditor extends CustomEditor {
     this.tui.requestRender();
   }
 
-  render(width: number): string[] {
+  override render(width: number): string[] {
     if (this.paletteState) {
       const ext = this.provider(this.pi);
-      if (ext.theme) {
-        return renderPalette(this.paletteState, width, ext.theme);
-      }
+      if (ext.theme) return renderPalette(this.paletteState, width, ext.theme);
     }
 
-    const frame = this.opts.frame;
-
-    const padX = Math.min(2, Math.max(0, Math.floor(width / 2)));
+    const { frame } = this.opts;
     const marginX = Math.min(1, Math.max(0, Math.floor(width / 2)));
-
     const contentWidth = width - marginX * 2;
-    const innerWidth = width - padX * 2 - marginX * 2;
 
-    if (innerWidth < 8) return super.render(width);
+    if (contentWidth < (frame.minWidth ?? 20)) return super.render(width);
 
     const ext = this.provider(this.pi);
-
-    // No theme (non-TUI) or frame disabled or too narrow → plain editor.
-    if (!ext.theme || !frame.enable || contentWidth < (frame.minWidth ?? 20)) {
-      return super.render(width);
-    }
+    if (!ext.theme || !frame.enable) return super.render(width);
 
     const d: FrameData = {
       cwd: ext.cwd,
@@ -120,17 +111,11 @@ export class BlockyEditor extends CustomEditor {
       accentColor: this.opts.accentColor,
     };
 
-    let prefix = "┃";
-    const prefixColor: ThemeColor =
-      ext.agentMode?.color ?? this.opts.accentColor ?? "text";
-    prefix = ext.theme.fg(prefixColor, prefix);
-
-    return renderEditorFrame(
+    return renderLinearFrame(
       (innerWidth) => super.render(innerWidth),
       this.opts,
       ext,
       d,
-      prefix,
       width,
     );
   }

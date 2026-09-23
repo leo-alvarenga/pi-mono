@@ -1,12 +1,12 @@
-import { DEFAULT_ICONS } from "../config/constants";
-import { composeBand, fitInfoRow, isBorderRow } from "../components/frame";
-import { segmentsFor } from "../components/registry";
+import { DEFAULT_ICONS } from "../../config/constants";
+import { composeBand, fitInfoRow, isBorderRow } from "../../components/frame";
+import { segmentsFor } from "../../components/registry";
 import type {
   ExternalData,
   FrameData,
   SegmentContext,
-} from "../components/types";
-import type { EditorFrameRenderOptions } from "../renderers/types";
+} from "../../components/types";
+import type { EditorFrameRenderOptions } from "../../renderers/types";
 
 export function renderEditorFrame(
   getInnerLines: (innerWidth: number) => string[],

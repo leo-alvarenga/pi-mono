@@ -4,10 +4,9 @@
  * getEditorFrame/getHeader
  */
 import type { EditorFrameFactory, HeaderRendererFactory } from "./types";
-import { createHeader } from "../components/header";
-import { BlockyEditor } from "../editor/blocky-editor";
-import { MinimalistEditor } from "../editor/minimalist-editor";
-import { CustomEditor } from "@earendil-works/pi-coding-agent";
+
+import { BlockyEditor, LinearEditor, MinimalistEditor } from "../editor";
+import { createBoxHeader } from "../headers";
 
 const editorFrames = new Map<string, EditorFrameFactory>();
 const headers = new Map<string, HeaderRendererFactory>();
@@ -47,4 +46,10 @@ registerEditorFrame(
     new MinimalistEditor(pi, provider, opts, ...args),
 );
 
-registerHeader("basic", createHeader);
+registerEditorFrame(
+  "linear",
+  (pi, provider, opts, ...args) =>
+    new LinearEditor(pi, provider, opts, ...args),
+);
+
+registerHeader("box", createBoxHeader);

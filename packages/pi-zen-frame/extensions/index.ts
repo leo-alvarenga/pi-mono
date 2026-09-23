@@ -31,27 +31,27 @@ import type { Settings, SpinnerPhase } from "./config/types";
 import type { AgentMode, AgentState, ExternalData } from "./components/types";
 import { getEditorFrame, getHeader } from "./renderers/registry";
 import type { EditorFrameRenderer } from "./renderers/types";
-import {
-  capitalize,
-  readAgentModeFromSession,
-  readGit,
-  type GitInfo,
-} from "./utils";
+import { capitalize, getData, type GitInfo } from "./utils";
 import { type HeaderEnv } from "./components/header";
 import { getUsage } from "./utils/token";
 
-let editor: EditorFrameRenderer | null = null;
-let currentCtx: ExtensionContext | null = null;
 let settings: Settings = DEFAULT_SETTINGS;
+
+let editor: EditorFrameRenderer | null = null;
 let spinnerPhase: SpinnerPhase | null = null;
-let agentMode: AgentMode = null;
+
+let currentCtx: ExtensionContext | null = null;
+
 let notifyEnabled = false;
+let agentMode: AgentMode = null;
+
 let git: GitInfo = {
   branch: undefined,
   dirty: 0,
 };
-let workingMessageTimer: ReturnType<typeof setInterval> | null = null;
+
 let workingMessageBag: string[] = [];
+let workingMessageTimer: ReturnType<typeof setInterval> | null = null;
 
 /** Pop a random message; reshuffles when the pool is exhausted (no back-to-back repeats). */
 function nextWorkingMessage(): string {
@@ -91,15 +91,15 @@ function provideExternal(pi: ExtensionAPI): ExternalData {
   return {
     agentMode,
     spinnerPhase,
+    notifyEnabled,
     cwd: ctx?.cwd ?? "",
     gitDirty: git.dirty,
-    gitBranch: git.branch,
     theme: ctx?.ui.theme,
+    gitBranch: git.branch,
     context: getUsage(ctx ?? undefined),
     thinkingLevel: pi.getThinkingLevel(),
     modelName: model?.name ?? model?.id ?? "Unknown",
     modelProvider: capitalize(model?.provider ?? "unknown"),
-    notifyEnabled,
   };
 }
 
@@ -116,10 +116,19 @@ function paletteKeys(): string[] {
       readFileSync(join(getAgentDir(), "keybindings.json"), "utf8"),
     ) as Record<string, unknown>;
     const v = raw[PALETTE_SHORTCUT_ID];
+
     if (typeof v === "string") return [v];
     if (Array.isArray(v) && v.every((k) => typeof k === "string")) return v;
   } catch {}
+
   return [PALETTE_DEFAULT_KEY];
+}
+
+function refreshData(ctx: ExtensionContext) {
+  const data = getData(ctx);
+
+  git = data.git;
+  agentMode = data.agentMode;
 }
 
 // ── extension entry ──────────────────────────────────────────────────────
@@ -155,14 +164,17 @@ export default async function (pi: ExtensionAPI) {
   pi.events.on(PI_NOTIFY_TOGGLE_EVENT, (event) => {
     const enabled = (event as { enabled?: unknown } | undefined)?.enabled;
     if (typeof enabled === "boolean") notifyEnabled = enabled;
+
     editor?.refresh();
   });
 
-  pi.on("session_start", async (_event, ctx) => {
-    currentCtx = ctx;
-    agentMode = readAgentModeFromSession(ctx) || agentMode;
+  pi.on("turn_end", async (_, ctx) => {
+    refreshData(ctx);
+  });
 
-    git = readGit(ctx.cwd);
+  pi.on("session_start", async (_event, ctx) => {
+    refreshData(ctx);
+    currentCtx = ctx;
 
     ctx.ui.setWorkingIndicator({
       intervalMs: 80,
@@ -183,7 +195,7 @@ export default async function (pi: ExtensionAPI) {
 
     if (settings.header?.enable) {
       const headerFactory =
-        getHeader(settings.header.type ?? "basic") ?? getHeader("basic")!;
+        getHeader(settings.header.type ?? "box") ?? getHeader("box")!;
       ctx.ui.setHeader((_tui, theme) =>
         headerFactory(_tui, theme, pi, settings, getHeaderEnv),
       );

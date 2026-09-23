@@ -3,11 +3,11 @@ import { WORKING_MESSAGES } from "./messages";
 
 export const DEFAULT_SETTINGS: Settings = {
   accentColor: "accent",
-  editorFrame: "blocky",
+  editorFrame: "linear",
 
   header: {
+    type: "box",
     enable: false,
-    type: "basic",
   },
 
   workingMessage: {

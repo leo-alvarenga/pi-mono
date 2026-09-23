@@ -48,7 +48,7 @@ export interface FrameSettings {
 export interface HeaderSettings {
   enable: boolean;
 
-  /** Header renderer by registered name. Default "basic". */
+  /** Header renderer by registered name. Default "box" */
   type?: string;
 }
 

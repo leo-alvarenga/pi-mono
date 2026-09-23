@@ -3,19 +3,19 @@ import {
   type ExtensionAPI,
 } from "@earendil-works/pi-coding-agent";
 
-import type { SpinnerPhase } from "../config/types";
-import type { ExternalData } from "../components/types";
+import type { SpinnerPhase } from "../../config/types";
+import type { ExternalData } from "../../components/types";
 import type {
   EditorFrameRenderer,
   EditorFrameRenderOptions,
-} from "../renderers/types";
+} from "../../renderers/types";
 
 import {
   handlePaletteInput,
   loadPaletteItems,
   renderPalette,
   type PaletteState,
-} from "./palette";
+} from "../palette";
 
 export class MinimalistEditor
   extends CustomEditor
