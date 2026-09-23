@@ -7,12 +7,29 @@ import type { PaletteState } from "./types";
 const ACTIVE_PREFIX = " → ";
 const INACTIVE_PREFIX = "   ";
 
+function getMaxWidth(width: number, offset: number): number {
+  let modifier = 0.8;
+
+  if (width >= 120) {
+    modifier = 0.6;
+  } else if (width >= 100) {
+    modifier = 0.7;
+  } else if (width >= 80) {
+    modifier = 0.8;
+  } else if (width >= 60) {
+    modifier = 0.9;
+  }
+
+  const maxSize = Math.floor(Math.max(0, width - offset) * modifier);
+  return Math.max(36, maxSize);
+}
+
 export function renderPalette(
   state: PaletteState,
   width: number,
   theme: Theme,
 ): string[] {
-  const boxW = Math.min(68, Math.max(36, width - 4));
+  const boxW = getMaxWidth(width, 4);
 
   const inner = boxW - 2;
   const lPad = " ".repeat(Math.max(0, Math.floor((width - boxW) / 2)));

@@ -1,4 +1,4 @@
-import { matchesKey } from "@earendil-works/pi-tui";
+import { Key, matchesKey } from "@earendil-works/pi-tui";
 
 import { filterPalette, MAX_VISIBLE } from "./items";
 import type { PaletteState } from "./types";
@@ -14,17 +14,23 @@ export function handlePaletteInput(
   state: PaletteState,
   data: string,
 ): PaletteInputResult {
-  if (matchesKey(data, "escape")) {
+  if (matchesKey(data, Key.esc)) {
     return { next: null, submit: null };
   }
 
+  const item = state.items[state.selected];
   if (data === "\r" || data === "\n") {
-    const item = state.items[state.selected];
-
     return { next: null, submit: item ? item.name : null };
   }
 
-  if (data === "\x7f" || data === "\b") {
+  if (matchesKey(data, Key.tab)) {
+    return {
+      submit: null,
+      next: { ...state, query: item.name.replace("/", "") },
+    };
+  }
+
+  if (matchesKey(data, Key.backspace) || matchesKey(data, Key.delete)) {
     if (state.query.length > 0) {
       const query = state.query.slice(0, -1);
 
@@ -48,7 +54,10 @@ export function handlePaletteInput(
     const selected = Math.max(0, state.selected - 1);
     const viewTop = selected < state.viewTop ? selected : state.viewTop;
 
-    return { next: { ...state, selected, viewTop }, submit: null };
+    return {
+      submit: null,
+      next: { ...state, selected, viewTop },
+    };
   }
 
   if (matchesKey(data, "down")) {
@@ -62,7 +71,10 @@ export function handlePaletteInput(
       viewTop = selected - MAX_VISIBLE + 1;
     }
 
-    return { next: { ...state, selected, viewTop }, submit: null };
+    return {
+      submit: null,
+      next: { ...state, selected, viewTop },
+    };
   }
 
   if (data.length === 1 && data >= " ") {
@@ -70,7 +82,6 @@ export function handlePaletteInput(
 
     return {
       submit: null,
-
       next: {
         ...state,
         query,
