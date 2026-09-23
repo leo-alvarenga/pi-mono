@@ -8,9 +8,9 @@ describe("normalize", () => {
       "minimalist",
     );
   });
-  it("non-string editorFrame falls back to blocky", () => {
-    expect(normalize({ editorFrame: 42 }).editorFrame).toBe("blocky");
-    expect(normalize({ editorFrame: null }).editorFrame).toBe("blocky");
+  it("non-string editorFrame falls back to linear", () => {
+    expect(normalize({ editorFrame: 42 }).editorFrame).toBe("linear");
+    expect(normalize({ editorFrame: null }).editorFrame).toBe("linear");
   });
   it("negative number for frame.minWidth falls back to default", () => {
     const s = normalize({ frame: { minWidth: -5 } });

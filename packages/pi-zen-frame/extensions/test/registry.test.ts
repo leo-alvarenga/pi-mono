@@ -6,14 +6,14 @@ import {
 } from "../renderers/registry";
 
 describe("registry built-ins", () => {
-  it("blocky editor frame is registered at load", () => {
-    expect(getEditorFrame("blocky")).toBeDefined();
+  it("linear editor frame is registered at load", () => {
+    expect(getEditorFrame("linear")).toBeDefined();
   });
   it("minimalist editor frame is registered at load", () => {
     expect(getEditorFrame("minimalist")).toBeDefined();
   });
-  it("basic header renderer is registered at load", () => {
-    expect(getHeader("basic")).toBeDefined();
+  it("box header renderer is registered at load", () => {
+    expect(getHeader("box")).toBeDefined();
   });
 });
 
