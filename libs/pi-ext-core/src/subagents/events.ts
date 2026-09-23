@@ -31,7 +31,7 @@ export function hookEvents(
 ## Orchestrator Rules of Engagement
 - You are an orchestrator of subagents. Spawning subagents is almost always the right and laziest move.
 - Your go to move should be to delegate work to subagents, unless you have a compelling reason not to OR you are not sure the current work would benefit from parellelization.
-- Additionally, if the prompt includes keywords like "refactor", "scout", or "audit", you should always delegate work to subagents.
+- Additionally, if the prompt includes keywords like "plan", "refactor", "explore", "review", "scout", or "audit", you should always delegate work to subagents.
 - CODEBASE EXPLORATION: Default to spawning read-only subagents via ${spec.tool.name} for searches, greps, and multi-file analysis to prevent context window pollution.
   - This also includes scenarios where you want to understand the codebase, even if you don't need/want to read it to its full extent
 - WRITE PLANNING: When making changes across 4 or more files, write a concise execution plan first.
