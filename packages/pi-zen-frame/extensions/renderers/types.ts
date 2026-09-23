@@ -7,7 +7,8 @@ import type {
 } from "@earendil-works/pi-coding-agent";
 import type { FrameSettings, Settings, SpinnerPhase } from "../config/types";
 import type { ExternalData } from "../components/types";
-import type { HeaderEnv } from "../components/header";
+
+import type { HeaderEnv } from "../headers";
 
 /** What pi's TUI needs from any header implementation */
 export interface HeaderRenderer {

@@ -32,7 +32,7 @@ import type { AgentMode, AgentState, ExternalData } from "./components/types";
 import { getEditorFrame, getHeader } from "./renderers/registry";
 import type { EditorFrameRenderer } from "./renderers/types";
 import { capitalize, getData, type GitInfo } from "./utils";
-import { type HeaderEnv } from "./components/header";
+import { type HeaderEnv } from "./headers";
 import { getUsage } from "./utils/token";
 
 let settings: Settings = DEFAULT_SETTINGS;

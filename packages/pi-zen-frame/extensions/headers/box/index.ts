@@ -14,6 +14,7 @@ import {
 import type { Settings } from "../../config/types";
 import { fitFrameRow } from "../../components/frame";
 import { getShortCwd, splitRow, wrapLines } from "../../utils";
+import { HeaderEnv } from "../types";
 
 /** Below which terminal width the box is skipped (plain logo) */
 const MIN_BOX_WIDTH = 20;
@@ -22,16 +23,6 @@ const LEFT_COL_RATIO = 0.4; // logo column width / total width
 const HEADING = "Welcome back!";
 const SUBHEADING =
   "Ready for your next session? Terminal warm, context clean, tools ready to execute";
-
-/** Live env snapshot the header renders in the right column */
-export interface HeaderEnv {
-  cwd: string;
-  gitDirty: number;
-  gitBranch: string | undefined;
-
-  /** Combined display name, e.g. `"Model (Provider)"` (provider embedded) */
-  modelName: string | undefined;
-}
 
 const RANDOM_TIP =
   HEADER_TIPS[Math.floor(Math.random() * HEADER_TIPS.length)]?.text ?? "";
