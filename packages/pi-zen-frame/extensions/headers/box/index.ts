@@ -7,6 +7,7 @@ import type {
 
 import {
   DEFAULT_ICONS,
+  GREETINGS,
   HEADER_TIPS,
   LOGO_COLOR,
   LOGO_LINES,
@@ -20,7 +21,7 @@ import { HeaderEnv } from "../types";
 const MIN_BOX_WIDTH = 20;
 const LEFT_COL_RATIO = 0.4; // logo column width / total width
 
-const HEADING = "Welcome back!";
+const HEADING = GREETINGS[Math.floor(Math.random() * GREETINGS.length)]!;
 const SUBHEADING =
   "Ready for your next session? Terminal warm, context clean, tools ready to execute";
 

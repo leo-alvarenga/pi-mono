@@ -6,7 +6,7 @@
 import type { EditorFrameFactory, HeaderRendererFactory } from "./types";
 
 import { BlockyEditor, LinearEditor, MinimalistEditor } from "../editor";
-import { createBoxHeader } from "../headers";
+import { createBoxHeader, createZenHeader } from "../headers";
 
 const editorFrames = new Map<string, EditorFrameFactory>();
 const headers = new Map<string, HeaderRendererFactory>();
@@ -53,3 +53,4 @@ registerEditorFrame(
 );
 
 registerHeader("box", createBoxHeader);
+registerHeader("zen", createZenHeader);

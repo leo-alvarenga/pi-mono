@@ -195,7 +195,7 @@ export default async function (pi: ExtensionAPI) {
 
     if (settings.header?.enable) {
       const headerFactory =
-        getHeader(settings.header.type ?? "box") ?? getHeader("box")!;
+        getHeader(settings.header.type ?? "zen") ?? getHeader("zen")!;
       ctx.ui.setHeader((_tui, theme) =>
         headerFactory(_tui, theme, pi, settings, getHeaderEnv),
       );

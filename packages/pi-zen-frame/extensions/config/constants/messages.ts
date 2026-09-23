@@ -174,3 +174,16 @@ export const HEADER_TIPS: BannerTip[] = [
     text: "For multi-file changes, ask for a plan first (files touched + order) and approve it before any edits — cheap insurance against wrong-direction refactors",
   },
 ];
+
+export const GREETINGS: string[] = [
+  "Welcome back!",
+  "Ready when you are",
+  "New moment, new beginning",
+  "The present is yours",
+  "Stillness before the work",
+  "Breathe. Then begin",
+  "Here and now",
+  "Empty mind, open hands",
+  "The path continues",
+  "Begin with intention",
+];

@@ -6,7 +6,7 @@ export const DEFAULT_SETTINGS: Settings = {
   editorFrame: "linear",
 
   header: {
-    type: "box",
+    type: "zen",
     enable: false,
   },
 

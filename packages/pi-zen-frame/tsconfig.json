@@ -1,16 +1,16 @@
 {
   "compilerOptions": {
+    "types": [],
+    "strict": true,
     "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "bundler",
+    "composite": true,
     "declaration": true,
-    "declarationMap": true,
     "skipLibCheck": true,
-    "strict": true,
-    "types": [],
     "outDir": "dist/types",
     "rootDir": "extensions",
-    "composite": true
+    "declarationMap": true,
+    "moduleResolution": "bundler"
   },
   "include": ["extensions"]
 }

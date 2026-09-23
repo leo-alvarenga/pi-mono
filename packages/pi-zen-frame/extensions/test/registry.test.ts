@@ -12,8 +12,8 @@ describe("registry built-ins", () => {
   it("minimalist editor frame is registered at load", () => {
     expect(getEditorFrame("minimalist")).toBeDefined();
   });
-  it("box header renderer is registered at load", () => {
-    expect(getHeader("box")).toBeDefined();
+  it("zen header renderer is registered at load", () => {
+    expect(getHeader("zen")).toBeDefined();
   });
 });
 
