@@ -59,11 +59,14 @@ export const SUBAGENTS_SPEC: SubagentSpec = {
     guidelines: [
       "Subagents are read-only unless you set allowWrite: true.",
       "If a result asks for input, answer the questions (ask the user if needed) and re-call with `answers` — do not guess.",
+      "For any task requiring parallel execution or medium to large data gathering: delegate to a subagent, instruct it to use those tools, and get only the report back — never let batch/multi-output tools run directly in your session.",
     ],
     instructions: {
       always: "You are a transient subagent. Complete the task, then stop",
       readOnly:
-        "You may only READ and EXPLORE. Do not modify files or run mutating commands.",
+        "You may only READ and EXPLORE. Do not modify files or run mutating commands. " +
+        "When gathering data, prefer batch or parallel tools available in your session over sequential reads — " +
+        "they keep raw output out of your context and let you return only the derived answer.",
       writeAllowed:
         "You may edit files ONLY if strictly necessary, preferring hash-anchored operations (replace/insert) over rewriting.",
     },

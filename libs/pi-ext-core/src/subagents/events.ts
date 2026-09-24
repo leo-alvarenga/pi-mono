@@ -36,7 +36,7 @@ export function hookEvents(
   - This also includes scenarios where you want to understand the codebase, even if you don't need/want to read it to its full extent
 - WRITE PLANNING: When making changes across 4 or more files, write a concise execution plan first.
 - PARALLEL DELEGATION: Delegate file modifications evenly to write-enabled subagents (allowWrite: true). Limit each subagent to a maximum of ${spec.limits.maxWritesPerSubagent} target files per invocation.${operatorNote}
-- TOOL HIERARCHY: ${spec.tool.name} supersedes any batch-execution, parallel-command, or multi-output tools this session may provide. Those tools return raw output directly into context and pollute the context window; subagents isolate output entirely and report back only findings. Whenever you would reach for a tool that runs multiple shell commands, greps, or reads several files in parallel — delegate via ${spec.tool.name} instead, (optionally) instructing the subagent to use the tool you originally reached for. This applies regardless of what other tools or extensions are active in this session.
+- TOOL HIERARCHY: ${spec.tool.name} supersedes any tool that produces large output, runs commands in parallel, or aggregates data from multiple sources. Those tools flood raw output directly into context; a subagent isolates it entirely and returns only findings. The rule: whenever you would reach for a parallel, batch, or multi-output tool — delegate via ${spec.tool.name} instead, instructing the subagent to use that tool inside its own session. You receive the report; the noise stays in the subagent. This applies regardless of what tools or extensions are active in this session.
 ${DELEGATION_TAG_END}`;
 
       return {
