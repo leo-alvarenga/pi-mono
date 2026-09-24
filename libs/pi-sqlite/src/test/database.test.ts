@@ -72,8 +72,10 @@ describe("SqliteDatabase", () => {
   });
 
   it("update matching rows", () => {
-    db.insert("users", { id: 1, name: "Alice", score: 9.5, active: true });
-    db.update("users", { name: "Alicia" }, { id: 1 });
+    const data = { id: 1, name: "Alice", score: 9.5, active: true };
+    db.insert("users", data);
+    db.update<typeof data>("users", { name: "Alicia" }, { id: 1 });
+
     expect(db.select<User>("users", { id: 1 })[0].name).toBe("Alicia");
   });
 
@@ -126,7 +128,7 @@ describe("SqliteDatabase", () => {
       db.transaction((db) => {
         db.insert("users", { id: 1, name: "Alice", score: 9.5, active: true });
         throw new Error("abort");
-      })
+      }),
     ).toThrow("abort");
     expect(db.count("users")).toBe(0);
   });
@@ -160,7 +162,9 @@ describe("SqliteDatabase", () => {
   });
 
   it("insert accepts a uuid factory function", () => {
-    db.createTable("items", { properties: { id: { type: "string" }, label: { type: "string" } } } as any);
+    db.createTable("items", {
+      properties: { id: { type: "string" }, label: { type: "string" } },
+    } as any);
     db.insert("items", (uuid) => ({ id: uuid, label: "test" }));
     const rows = db.select<{ id: string; label: string }>("items");
     expect(rows).toHaveLength(1);
