@@ -1,15 +1,29 @@
-import { DatabaseSync } from "node:sqlite";
+import { DatabaseSync, DatabaseSyncOptions } from "node:sqlite";
 import type { TObject } from "typebox";
 
 import { schemaToCreateTable } from "./schema";
-import type { TableSchema, ColumnInfo, SelectOpts } from "./schema";
-import { buildWhere, serialize, validateIdentifier } from "./query-helpers";
+import type {
+  TableSchema,
+  ColumnInfo,
+  SelectOpts,
+  ValueOrFunction,
+} from "./schema";
+import {
+  buildWhere,
+  getResolvedRow,
+  serialize,
+  validateIdentifier,
+} from "./query-helpers";
 
 export class SqliteDatabase {
   private db: DatabaseSync;
 
-  constructor(dbPath: string, schemas: TableSchema[] = []) {
-    this.db = new DatabaseSync(dbPath);
+  constructor(
+    dbPath: string,
+    schemas: TableSchema[] = [],
+    sqliteOverrides?: Partial<DatabaseSyncOptions>,
+  ) {
+    this.db = new DatabaseSync(dbPath, sqliteOverrides ?? {});
     this.db.exec("PRAGMA journal_mode=WAL");
 
     for (const { tableName, schema } of schemas) {
@@ -17,7 +31,15 @@ export class SqliteDatabase {
     }
   }
 
+  open(): void {
+    if (this.db.isOpen) return;
+
+    this.db.open();
+  }
+
   close(): void {
+    if (!this.db.isOpen) return;
+
     this.db.close();
   }
 
@@ -56,20 +78,27 @@ export class SqliteDatabase {
 
   // --- CRUD ---
 
-  insert<T extends object>(tableName: string, row: T): void {
+  /**
+   * Inserts a row and returns the last inserted row id
+   * @param tableName
+   * @param row Row to insert. Can be a function that returns a row based on a random UUID or the row itself
+   * @returns rowid
+   */
+  insert<T extends object>(tableName: string, row: ValueOrFunction<T>) {
     validateIdentifier(tableName);
 
-    const keys = Object.keys(row);
+    const value = getResolvedRow(row);
+    const keys = Object.keys(value);
     keys.forEach(validateIdentifier);
 
     const placeholders = keys.map(() => "?").join(", ");
-    const values = Object.values(row).map(serialize);
+    const values = Object.values(value).map(serialize);
 
-    this.db
+    return this.db
       .prepare(
         `INSERT INTO ${tableName} (${keys.join(", ")}) VALUES (${placeholders})`,
       )
-      .run(...(values as any[]));
+      .run(...(values as any[])).lastInsertRowid;
   }
 
   update<T extends object>(
@@ -135,6 +164,50 @@ export class SqliteDatabase {
       .get(...(values as any[])) as { count: number };
 
     return row.count;
+  }
+
+  /**
+   * Executes a function in a transaction. Rolls back on error.
+   * @param fn Function to execute in a transaction; receives helpers to create, rollback, and release savepoints
+   * @returns Result of the function
+   */
+  transaction<R>(
+    fn: (
+      db: SqliteDatabase,
+      createSavepoint: (name?: string) => string,
+      rollbackSavepoint: (name: string) => void,
+      releaseSavepoint: (name: string) => void,
+    ) => R,
+  ): R {
+    let sp_count = 0;
+    this.db.exec("BEGIN TRANSACTION");
+
+    try {
+      const result = fn(
+        this,
+
+        (name = `savepoint_${++sp_count}_${Date.now()}`) => {
+          this.db.exec(`SAVEPOINT ${name}`);
+          return name;
+        },
+
+        (name) => {
+          this.db.exec(`ROLLBACK TO ${name}`);
+        },
+
+        (name) => {
+          this.db.exec(`RELEASE ${name}`);
+        },
+      );
+
+      this.db.exec("COMMIT TRANSACTION");
+
+      return result;
+    } catch (err) {
+      this.db.exec("ROLLBACK TRANSACTION");
+
+      throw err;
+    }
   }
 
   raw<T = unknown>(sql: string, params: unknown[] = []): T[] {

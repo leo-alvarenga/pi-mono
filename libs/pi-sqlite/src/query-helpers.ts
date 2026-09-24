@@ -1,4 +1,4 @@
-import { OrderBy } from "./schema";
+import { OrderBy, ValueOrFunction } from "./schema";
 
 export function validateIdentifier(name?: string) {
   if (!name || !/^[a-zA-Z_][a-zA-Z0-9_]*$/.test(name)) {
@@ -49,4 +49,12 @@ export function buildOrderBy(orderBy?: OrderBy | OrderBy[]) {
   });
 
   return order.map((o) => `${o.column} ${o.direction}`).join(", ");
+}
+
+export function getResolvedRow<T extends object>(row: ValueOrFunction<T>): T {
+  if (typeof row === "function") {
+    return row(crypto.randomUUID());
+  }
+
+  return row;
 }

@@ -1,6 +1,6 @@
 {
   "name": "@leo-alvarenga/pi-sqlite",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Lightweight SQLite wrapper for pi extensions with TypeBox schema migration",
   "license": "MIT",
   "repository": "github.com/leo-alvarenga/pi-mono",

@@ -1,5 +1,7 @@
 import type { TObject } from "typebox";
 
+export type ValueOrFunction<T> = T | ((uuid: string) => T);
+
 export type OrderByDirection = "ASC" | "DESC";
 
 export type OrderBy = {
