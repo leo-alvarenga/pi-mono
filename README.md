@@ -21,6 +21,7 @@ Internal shared libraries used by the packages above. Not pi extensions themselv
 | Library                                            | Version                                                                                                                     | Description                                                                           |
 | -------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
 | [`@leo-alvarenga/pi-ext-core`](./libs/pi-ext-core) | [![npm](https://img.shields.io/npm/v/@leo-alvarenga/pi-ext-core)](https://www.npmjs.com/package/@leo-alvarenga/pi-ext-core) | Types, utils, headless runtime, session store, panel widget, subagent runtime factory |
+| [`@leo-alvarenga/pi-sqlite`](./libs/pi-sqlite)     | [![npm](https://img.shields.io/npm/v/@leo-alvarenga/pi-sqlite)](https://www.npmjs.com/package/@leo-alvarenga/pi-sqlite)     | Lightweight SQLite wrapper with TypeBox schema migration and WAL concurrency    |
 
 ## Development
 

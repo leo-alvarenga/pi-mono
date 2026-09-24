@@ -1,0 +1,47 @@
+{
+  "name": "@leo-alvarenga/pi-sqlite",
+  "version": "0.1.0",
+  "description": "Lightweight SQLite wrapper for pi extensions with TypeBox schema migration",
+  "license": "MIT",
+  "repository": "github.com/leo-alvarenga/pi-mono",
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=22.5"
+  },
+  "keywords": [
+    "pi-extension",
+    "pi-package",
+    "pi",
+    "sqlite"
+  ],
+  "files": [
+    "src",
+    "!src/test",
+    "README.md",
+    "LICENSE"
+  ],
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "require": "./src/index.ts",
+      "default": "./src/index.ts"
+    }
+  },
+  "types": "./src/index.ts",
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "typebox": "*"
+  },
+  "devDependencies": {
+    "@types/node": "^22",
+    "typescript": "^7.0.2",
+    "vitest": "^3.2.4"
+  }
+}
