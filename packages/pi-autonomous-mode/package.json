@@ -1,6 +1,6 @@
 {
   "name": "@leo-alvarenga/pi-autonomous-mode",
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Durable autonomous supervisor extension for Pi",
   "license": "MIT",
   "repository": "github.com/leo-alvarenga/pi-mono",
