@@ -49,12 +49,13 @@ export function registerTodoTool(
     description:
       "Manage the session todo list. Actions: add (text or texts), update (id, optional status/text/blockedBy), remove (id or ids), list, clear",
     promptSnippet:
-      "Manage the session todo list: add/update/remove/list/clear tasks",
+      "Always track the work (exploration, execution or otherwise) using the todo tools. Manage the session todo list: add/update/remove/list/clear tasks",
     promptGuidelines: [
       "Always track the work using the todo tools.",
-      "Record each item the user wants tracked with todo add.",
-      "Keep todos current: todo update to completed as you finish items, todo remove for dropped ones.",
+      "Logically group the work that should be done into several separate tasks, in order to keep the list manageable.",
+      "Keep todos current: mark items as in progress you start working on them, mark them as completed as you finish them, and remove them for dropped ones.",
       "When the user says 'complete everything' / 'done with all', use todo_complete_all instead of looping todo update.",
+      "Ensure to always make what you need to achieve next and what is being done currently explict to the user; Prefer to report your progress using todo.",
     ],
 
     async execute(_, params, _signal, _onUpdate, ctx) {
