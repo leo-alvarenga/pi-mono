@@ -39,15 +39,26 @@ function getStyledSubagent(r: SubagentRecord, th: Theme): string {
   return line;
 }
 
+const SUBAGENTS_TOOL: SubagentSpec["tool"] = {
+  name: "mini_subagents",
+  label: "Mini Subagents",
+  description:
+    "Delegate a task to a transient headless subagent (a separate pi process) and get its findings back. " +
+    "Modes: single (task) or parallel (tasks array, max 8). Subagents are read-only by default; set allowWrite to let one edit files. " +
+    "If a subagent reports it needs input (NEEDS_INPUT), answer the questions and call again with `answers`.",
+};
+
+const SUBAGENTS_LIMITS: SubagentSpec["limits"] = {
+  maxPanelRows: MAX_PANEL_ROWS,
+  maxConcurrency: MAX_CONCURRENCY,
+  maxStoredOutput: MAX_STORED_OUTPUT,
+  maxParallelTasks: MAX_PARALLEL_TASKS,
+  perTaskOutputCap: PER_TASK_OUTPUT_CAP,
+  maxWritesPerSubagent: MAX_WRITES_PER_SUBAGENT,
+};
+
 export const SUBAGENTS_SPEC: SubagentSpec = {
-  tool: {
-    name: "mini_subagents",
-    label: "Mini Subagents",
-    description:
-      "Delegate a task to a transient headless subagent (a separate pi process) and get its findings back. " +
-      "Modes: single (task) or parallel (tasks array, max 8). Subagents are read-only by default; set allowWrite to let one edit files. " +
-      "If a subagent reports it needs input (NEEDS_INPUT), answer the questions and call again with `answers`.",
-  },
+  tool: SUBAGENTS_TOOL,
 
   spawn: {
     flagEnv: "PI_SUBAGENT",
@@ -60,6 +71,16 @@ export const SUBAGENTS_SPEC: SubagentSpec = {
       "Subagents are read-only unless you set allowWrite: true.",
       "If a result asks for input, answer the questions (ask the user if needed) and re-call with `answers` — do not guess.",
       "For any task requiring parallel execution or medium to large data gathering: delegate to a subagent, instruct it to use those tools, and get only the report back — never let batch/multi-output tools run directly in your session.",
+
+      "## Orchestrator Rules of Engagement",
+      "You are an orchestrator of subagents. Spawning subagents is almost always the right and laziest move.",
+      "Your go to move should be to delegate work to subagents, unless you have a compelling reason not to OR you are not sure the current work would benefit from parellelization.",
+      `Additionally, if the prompt includes keywords like "plan", "refactor", "explore", "review", "scout", or "audit", you should always delegate work to subagents.`,
+      `CODEBASE EXPLORATION: Default to spawning read-only subagents via ${SUBAGENTS_TOOL.name} for searches, greps, and multi-file analysis to prevent context window pollution.`,
+      "\tThis also includes scenarios where you want to understand the codebase, even if you don't need/want to read it to its full extent",
+      "WRITE PLANNING: When making changes across 4 or more files, write a concise execution plan first.",
+      `PARALLEL DELEGATION: Delegate file modifications evenly to write-enabled subagents (allowWrite: true). Limit each subagent to a maximum of ${SUBAGENTS_LIMITS.maxWritesPerSubagent} target files per invocation.`,
+      `TOOL HIERARCHY: ${SUBAGENTS_TOOL.name} supersedes any tool that produces large output, runs commands in parallel, or aggregates data from multiple sources. Those tools flood raw output directly into context; a subagent isolates it entirely and returns only findings. The rule: whenever you would reach for a parallel, batch, or multi-output tool — delegate via ${SUBAGENTS_TOOL.name} instead, instructing the subagent to use that tool inside its own session. You receive the report; the noise stays in the subagent. This applies regardless of what tools or extensions are active in this session.`,
     ],
     instructions: {
       always: "You are a transient subagent. Complete the task, then stop",
@@ -84,14 +105,7 @@ export const SUBAGENTS_SPEC: SubagentSpec = {
     enabled: true,
   },
 
-  limits: {
-    maxPanelRows: MAX_PANEL_ROWS,
-    maxConcurrency: MAX_CONCURRENCY,
-    maxStoredOutput: MAX_STORED_OUTPUT,
-    maxParallelTasks: MAX_PARALLEL_TASKS,
-    perTaskOutputCap: PER_TASK_OUTPUT_CAP,
-    maxWritesPerSubagent: MAX_WRITES_PER_SUBAGENT,
-  },
+  limits: SUBAGENTS_LIMITS,
 
   entries: {
     state: STATE_ENTRY,
