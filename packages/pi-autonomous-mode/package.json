@@ -1,0 +1,30 @@
+{
+  "name": "@leo-alvarenga/pi-autonomous-mode",
+  "version": "0.1.0",
+  "description": "Durable autonomous supervisor extension for Pi",
+  "license": "MIT",
+  "repository": "github.com/leo-alvarenga/pi-mono",
+  "publishConfig": { "access": "public" },
+  "keywords": ["pi-extension", "pi-package", "pi"],
+  "files": ["src", "!src/test", "README.md", "LICENSE"],
+  "pi": { "extensions": ["./src/index.ts"] },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-ai": "*",
+    "@earendil-works/pi-tui": "*",
+    "typebox": "*",
+    "@leo-alvarenga/pi-mini-subagents": "*"
+  },
+  "dependencies": {
+    "@leo-alvarenga/pi-ext-core": "workspace:*",
+    "@leo-alvarenga/pi-sqlite": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^7.0.2"
+  }
+}
