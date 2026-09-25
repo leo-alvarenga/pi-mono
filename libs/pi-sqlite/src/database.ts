@@ -9,6 +9,7 @@ import type {
   ValueOrFunction,
 } from "./schema";
 import {
+  buildOrderBy,
   buildWhere,
   getResolvedRow,
   serialize,
@@ -140,7 +141,7 @@ export class SqliteDatabase {
     let sql = `SELECT * FROM ${tableName}${clause}`;
 
     if (opts?.orderBy) {
-      sql += ` ORDER BY ${opts.orderBy}`;
+      sql += ` ORDER BY ${buildOrderBy(opts.orderBy)}`;
     }
 
     if (opts?.limit != null) {
