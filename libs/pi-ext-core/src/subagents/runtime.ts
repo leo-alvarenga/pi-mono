@@ -208,5 +208,5 @@ export function createSubagentRuntime(
       ),
   );
 
-  hookEvents(pi, store, spec, isOrchestrator);
+  hookEvents(pi, store, spec);
 }

@@ -59,12 +59,6 @@ export type SubagentSpec = {
     };
   };
 
-  /** Nudges the orchestrator model to delegate work to subagents via system prompt injection */
-  endorsement?: {
-    enabled?: boolean;
-    promptOverride?: string;
-  };
-
   orchestratorMode?: {
     enabled?: boolean;
   };
