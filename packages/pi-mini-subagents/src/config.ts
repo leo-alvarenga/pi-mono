@@ -97,10 +97,6 @@ export const SUBAGENTS_SPEC: SubagentSpec = {
     },
   },
 
-  endorsement: {
-    enabled: true,
-  },
-
   orchestratorMode: {
     enabled: true,
   },
