@@ -10,11 +10,14 @@ export type RunHeadlessAgentOptions = {
   /** Name of the env flag to set (e.g. "PI_SUBAGENT") to prevent re-entry */
   spawnFlagEnv: string;
 
+  /** If set, the pi process will create a new session (meaning you may be able to resume it or connect to it afterwards); Default is false */
+  withSession?: boolean;
+
+  model?: string;
   tools: string[] | null;
   parentSessionId?: string;
-  bwrap?: BubblewrapOptions;
-  model?: string;
   thinking?: ThinkingLevel;
+  bwrap?: BubblewrapOptions;
 };
 
 export type HeadlessRunTokenUsage = Required<Omit<TokenUsage, "total">> & {

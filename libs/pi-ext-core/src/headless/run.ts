@@ -58,7 +58,7 @@ export async function runHeadlessAgent(
     "--mode",
     "json",
     "-p",
-    "--no-session",
+    ...(opts.withSession ? [] : ["--no-session"]),
     ...(opts.model ? ["--model", opts.model] : []),
     ...(opts.thinking ? ["--thinking", opts.thinking] : []),
     ...toolFlagAndArg,
