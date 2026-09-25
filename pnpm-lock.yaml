@@ -81,6 +81,37 @@ importers:
         specifier: ^3.2.4
         version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(yaml@2.9.0)
 
+  packages/pi-autonomous-mode:
+    dependencies:
+      '@earendil-works/pi-ai':
+        specifier: '*'
+        version: 0.84.2(ws@8.21.3)
+      '@earendil-works/pi-coding-agent':
+        specifier: '*'
+        version: 0.84.2(ws@8.21.3)
+      '@earendil-works/pi-tui':
+        specifier: '*'
+        version: 0.84.2
+      '@leo-alvarenga/pi-ext-core':
+        specifier: workspace:*
+        version: link:../../libs/pi-ext-core
+      '@leo-alvarenga/pi-mini-subagents':
+        specifier: '*'
+        version: 0.2.16(@earendil-works/pi-agent-core@0.84.2(ws@8.21.3))(@earendil-works/pi-ai@0.84.2(ws@8.21.3))(@earendil-works/pi-coding-agent@0.84.2(ws@8.21.3))(@earendil-works/pi-tui@0.84.2)(typebox@1.3.7)
+      '@leo-alvarenga/pi-sqlite':
+        specifier: workspace:*
+        version: link:../../libs/pi-sqlite
+      typebox:
+        specifier: '*'
+        version: 1.3.7
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.1
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+
   packages/pi-hash-edit:
     dependencies:
       '@earendil-works/pi-coding-agent':
@@ -531,6 +562,23 @@ packages:
 
   '@jridgewell/sourcemap-codec@1.6.0':
     resolution: {integrity: sha512-T7jf+5zgsZHwNJ4lvQ7/aezbyk0nNX+zJVWpmHA7VYsEx7a7qr5Rg5IbtJFqkgze5Y2sruq1RUY8Q837Od7iFw==}
+
+  '@leo-alvarenga/pi-ext-core@0.5.3':
+    resolution: {integrity: sha512-cizrArx82oumwbm6/V38nKIuQ96AwrXjPL4ShFjftrnjOTCgd+CJNdCt72+2Bz4+hZqPAh50Sgnw27Lv9yAJYA==}
+    peerDependencies:
+      '@earendil-works/pi-agent-core': '*'
+      '@earendil-works/pi-ai': '*'
+      '@earendil-works/pi-coding-agent': '*'
+      '@earendil-works/pi-tui': '*'
+      typebox: '*'
+
+  '@leo-alvarenga/pi-mini-subagents@0.2.16':
+    resolution: {integrity: sha512-hxnCfWj0x3/dst8S1ow7tHDRcyLDduzWYKTUTVrrVPx76li3UTTf+BICzruQPrPPx0H8d1uJq7daU8nfNqNteQ==}
+    peerDependencies:
+      '@earendil-works/pi-ai': '*'
+      '@earendil-works/pi-coding-agent': '*'
+      '@earendil-works/pi-tui': '*'
+      typebox: '*'
 
   '@mariozechner/clipboard-darwin-arm64@0.3.9':
     resolution: {integrity: sha512-BfgV7vCEWZwJwZJw03r6bP5+tf0iI/ANuQYCxi9RNn7FrWB3yzGuMKCrNLRl6V761vXRdL8+OqZ0wd4TqlsNOQ==}
@@ -1865,6 +1913,24 @@ snapshots:
       - utf-8-validate
 
   '@jridgewell/sourcemap-codec@1.6.0': {}
+
+  '@leo-alvarenga/pi-ext-core@0.5.3(@earendil-works/pi-agent-core@0.84.2(ws@8.21.3))(@earendil-works/pi-ai@0.84.2(ws@8.21.3))(@earendil-works/pi-coding-agent@0.84.2(ws@8.21.3))(@earendil-works/pi-tui@0.84.2)(typebox@1.3.7)':
+    dependencies:
+      '@earendil-works/pi-agent-core': 0.84.2(ws@8.21.3)
+      '@earendil-works/pi-ai': 0.84.2(ws@8.21.3)
+      '@earendil-works/pi-coding-agent': 0.84.2(ws@8.21.3)
+      '@earendil-works/pi-tui': 0.84.2
+      typebox: 1.3.7
+
+  '@leo-alvarenga/pi-mini-subagents@0.2.16(@earendil-works/pi-agent-core@0.84.2(ws@8.21.3))(@earendil-works/pi-ai@0.84.2(ws@8.21.3))(@earendil-works/pi-coding-agent@0.84.2(ws@8.21.3))(@earendil-works/pi-tui@0.84.2)(typebox@1.3.7)':
+    dependencies:
+      '@earendil-works/pi-ai': 0.84.2(ws@8.21.3)
+      '@earendil-works/pi-coding-agent': 0.84.2(ws@8.21.3)
+      '@earendil-works/pi-tui': 0.84.2
+      '@leo-alvarenga/pi-ext-core': 0.5.3(@earendil-works/pi-agent-core@0.84.2(ws@8.21.3))(@earendil-works/pi-ai@0.84.2(ws@8.21.3))(@earendil-works/pi-coding-agent@0.84.2(ws@8.21.3))(@earendil-works/pi-tui@0.84.2)(typebox@1.3.7)
+      typebox: 1.3.7
+    transitivePeerDependencies:
+      - '@earendil-works/pi-agent-core'
 
   '@mariozechner/clipboard-darwin-arm64@0.3.9':
     optional: true
