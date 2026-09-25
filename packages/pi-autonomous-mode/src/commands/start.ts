@@ -1,13 +1,18 @@
 import * as fs from "node:fs";
-import type { ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
+import type {
+  ExtensionAPI,
+  ExtensionCommandContext,
+} from "@earendil-works/pi-coding-agent";
 import type { SessionRecordStore } from "@leo-alvarenga/pi-ext-core";
 
 import type { AutonomousState } from "../types";
+import { buildResearcherPrompt } from "../supervisor/researcher-prompt";
 
 export async function handleStart(
   args: string,
   ctx: ExtensionCommandContext,
   store: SessionRecordStore<AutonomousState>,
+  pi: ExtensionAPI,
 ): Promise<void> {
   const goalFilePath = args.trim();
   if (!goalFilePath) {
@@ -28,8 +33,14 @@ export async function handleStart(
     activeGoalTitle: null,
   });
 
-  ctx.ui.notify(
-    "Autonomous mode: RESEARCHER phase started. The Supervisor will analyze the goal and ask clarifying questions before planning.",
-    "info",
-  );
+  try {
+    pi.sendUserMessage(
+      buildResearcherPrompt(fs.readFileSync(goalFilePath, "utf8")),
+    );
+  } catch {
+    ctx.ui.notify(
+      "Autonomous mode: RESEARCHER phase started. The Supervisor will analyze the goal and ask clarifying questions before planning.",
+      "info",
+    );
+  }
 }

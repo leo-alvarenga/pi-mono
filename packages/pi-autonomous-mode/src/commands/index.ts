@@ -9,6 +9,8 @@ import { handleStatus } from "./status";
 import { handleList } from "./list";
 import { handleAbort } from "./abort";
 
+const SUBCOMMANDS = ["start", "resume", "status", "list", "abort"];
+
 export function registerAutonomousCommand(
   pi: ExtensionAPI,
   store: SessionRecordStore<AutonomousState>,
@@ -17,13 +19,20 @@ export function registerAutonomousCommand(
     description:
       "Autonomous supervisor: start <file> | resume <id> | status | list | abort",
 
+    async getArgumentCompletions(prefix: string) {
+      return SUBCOMMANDS.filter((s) => s.startsWith(prefix)).map((s) => ({
+        label: s,
+        value: s,
+      }));
+    },
+
     handler: async (args, ctx) => {
       const [subcommand, ...rest] = (args ?? "").trim().split(/\s+/);
       const tail = rest.join(" ");
 
       switch (subcommand) {
         case "start":
-          return handleStart(tail, ctx, store);
+          return handleStart(tail, ctx, store, pi);
 
         case "resume":
           return handleResume(tail, ctx, store);
