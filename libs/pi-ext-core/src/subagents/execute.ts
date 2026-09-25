@@ -54,14 +54,14 @@ export async function handleSingle(
   const run = await runHeadlessAgent({
     taskText,
     signal: ec.signal,
-    bwrap: { ...ec.spec.spawn.bwrap, allowWrite: params.allowWrite ?? false },
+    model: ec.operatorModel,
     cwd: params.cwd ?? ec.ctx.cwd,
+    thinking: ec.operatorThinking,
     spawnFlagEnv: ec.spec.spawn.flagEnv,
     tools: buildAllowlist(ec.spec, params.allowWrite ?? false),
     systemPrompt: buildSystemPrompt(ec.spec, params.allowWrite ?? false),
     parentSessionId: ec.ctx.sessionManager.getSessionId(),
-    model: ec.operatorModel,
-    thinking: ec.operatorThinking,
+    bwrap: { ...ec.spec.spawn.bwrap, allowWrite: params.allowWrite ?? false },
   });
 
   const needsInput = parseNeedsInput(
@@ -133,14 +133,14 @@ export async function handleParallel(
       const run = await runHeadlessAgent({
         taskText,
         signal: ec.signal,
-        bwrap: { ...ec.spec.spawn.bwrap, allowWrite: t.allowWrite ?? false },
+        model: ec.operatorModel,
         cwd: t.cwd ?? ec.ctx.cwd,
+        thinking: ec.operatorThinking,
         spawnFlagEnv: ec.spec.spawn.flagEnv,
         tools: buildAllowlist(ec.spec, t.allowWrite ?? false),
-        systemPrompt: buildSystemPrompt(ec.spec, t.allowWrite ?? false),
         parentSessionId: ec.ctx.sessionManager.getSessionId(),
-        model: ec.operatorModel,
-        thinking: ec.operatorThinking,
+        systemPrompt: buildSystemPrompt(ec.spec, t.allowWrite ?? false),
+        bwrap: { ...ec.spec.spawn.bwrap, allowWrite: t.allowWrite ?? false },
       });
 
       const needsInput = parseNeedsInput(
