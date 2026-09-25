@@ -1,5 +1,7 @@
 # @leo-alvarenga/pi-autonomous-mode
 
+> THIS IS A WORK IN PROGRESS AND A POC ONLY; I am currently trying to accertain whether this is a good idea or not.
+
 A Pi extension that turns the agent into a durable Supervisor capable of researching a goal, breaking it into structured database entries, and driving Executor subagents to completion — surviving crashes and resuming from any failure point.
 
 ## Peer dependencies
@@ -8,13 +10,13 @@ A Pi extension that turns the agent into a durable Supervisor capable of researc
 
 ## Commands
 
-| Command | Description |
-|---|---|
+| Command                    | Description                                     |
+| -------------------------- | ----------------------------------------------- |
 | `/autonomous start <file>` | Start researching and planning from a goal file |
-| `/autonomous resume <id>` | Resume a paused or crashed goal |
-| `/autonomous status` | Show current goal progress |
-| `/autonomous list` | List all goals |
-| `/autonomous abort` | Pause the active goal |
+| `/autonomous resume <id>`  | Resume a paused or crashed goal                 |
+| `/autonomous status`       | Show current goal progress                      |
+| `/autonomous list`         | List all goals                                  |
+| `/autonomous abort`        | Pause the active goal                           |
 
 ## How it works
 
