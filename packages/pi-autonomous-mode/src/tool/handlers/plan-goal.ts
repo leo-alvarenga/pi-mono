@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import { getAgentDir } from "@earendil-works/pi-coding-agent";
-import type { ExtensionContext } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import type { SessionRecordStore } from "@leo-alvarenga/pi-ext-core";
 import type { AutonomousState } from "../../types";
 import { openIndexDb, openGoalDb } from "../../db/open";
@@ -11,6 +11,8 @@ import {
   insertMilestone,
 } from "../../db/queries";
 import { writeEpicFile, writeMilestoneFile } from "../../files";
+import { renderProgress } from "../../supervisor/progress";
+import { buildSupervisorPrompt } from "../../supervisor/supervisor-prompt";
 
 export type PlanGoalArgs = {
   goal: { title: string; description: string };
@@ -28,6 +30,7 @@ export async function handlePlanGoal(
   args: PlanGoalArgs,
   ctx: ExtensionContext,
   store: SessionRecordStore<AutonomousState>,
+  pi: ExtensionAPI,
 ): Promise<{ content: Array<{ type: string; text: string }> }> {
   const now = Date.now();
   const cwd = process.cwd();
@@ -114,6 +117,7 @@ export async function handlePlanGoal(
       updated_at: now,
       db_path: goalDbPath,
       status: "executing",
+      lock_holder: "",
       title: args.goal.title,
     });
 
@@ -129,11 +133,21 @@ export async function handlePlanGoal(
     indexDb.close();
   }
 
+  // Kickstart the supervisor loop
+  const goalDb2 = openGoalDb(agentDir, goalId);
+  const progress = renderProgress(goalDb2);
+  goalDb2.close();
+
+  pi.sendUserMessage(
+    buildSupervisorPrompt(args.goal.title, progress),
+    { deliverAs: "followUp" },
+  );
+
   return {
     content: [
       {
         type: "text",
-        text: `Goal planned: "${args.goal.title}" (id: ${goalId}). ${args.epics.length} epics and ${args.milestones.length} milestones created.`,
+        text: `Goal planned: "${args.goal.title}" (id: ${goalId}). ${args.epics.length} epics and ${args.milestones.length} milestones created. Execution starting.`,
       },
     ],
   };

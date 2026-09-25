@@ -34,10 +34,10 @@ export function registerAutonomousUpdateTool(
 
       switch (args.action) {
         case "plan_goal":
-          return handlePlanGoal(args, ctx, store);
+          return handlePlanGoal(args, ctx, store, pi);
 
         case "goal_done":
-          return handleGoalDone(ctx, store);
+          return handleGoalDone(args, ctx, store);
 
         case "epic_create":
           return handleEpicCreate(args, hCtx);

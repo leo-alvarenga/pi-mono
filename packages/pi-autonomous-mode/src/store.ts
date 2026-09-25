@@ -1,4 +1,4 @@
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
 import {
   createSessionStore,
   type SessionRecordStore,
@@ -9,6 +9,7 @@ import type { AutonomousState } from "./types";
 
 export function createAutonomousStore(
   pi: ExtensionAPI,
+  onChanged?: (next: AutonomousState, ctx: ExtensionContext) => void,
 ): SessionRecordStore<AutonomousState> {
   return createSessionStore<AutonomousState>({
     entryType: STATE_ENTRY,
@@ -21,7 +22,10 @@ export function createAutonomousStore(
       goalFilePath: null,
     }),
 
-    onChange: (next) => pi.appendEntry(STATE_ENTRY, next),
+    onChange: (next, ctx) => {
+      pi.appendEntry(STATE_ENTRY, next);
+      onChanged?.(next, ctx);
+    },
     snapshotOf: (entry) => entry.data as AutonomousState | undefined,
   });
 }

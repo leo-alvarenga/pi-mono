@@ -6,6 +6,7 @@ export const GoalIndexSchema = Type.Object({
   status:     Type.String(),
   db_path:    Type.String(),
   cwd:        Type.String(),
+  lock_holder: Type.String(),
   created_at: Type.Integer(),
   updated_at: Type.Integer(),
 });
@@ -44,4 +45,16 @@ export const MilestoneSchema = Type.Object({
   retry_count:    Type.Integer(),
   created_at:     Type.Integer(),
   updated_at:     Type.Integer(),
+});
+
+export const ExecutionLogSchema = Type.Object({
+  id:             Type.String(),
+  milestone_id:   Type.String(),
+  attempt:        Type.Integer(),
+  started_at:     Type.Integer(),
+  completed_at:   Type.Integer(),
+  status:         Type.String(),
+  output_summary: Type.String(),
+  error:          Type.String(),
+  tokens_used:    Type.Integer(),
 });

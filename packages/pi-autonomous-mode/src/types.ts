@@ -14,7 +14,7 @@ export type AutonomousState = {
   activeGoalId: string | null;
   goalFilePath: string | null;
   activeGoalTitle: string | null;
-  phase: "idle" | "researching" | "planning" | "executing" | "done";
+  phase: "idle" | "researching" | "planning" | "executing" | "done" | "failed";
 };
 
 export type GoalRow = {
@@ -34,6 +34,7 @@ export type GoalIndexRow = {
   title: string;
   status: string;
   db_path: string;
+  lock_holder: string;
   created_at: number;
   updated_at: number;
 };
@@ -61,4 +62,16 @@ export type MilestoneRow = {
   executor_id: string;
   retry_count: number;
   failure_reason: string;
+};
+
+export type ExecutionLogRow = {
+  id: string;
+  milestone_id: string;
+  attempt: number;
+  started_at: number;
+  completed_at: number;
+  status: string;
+  output_summary: string;
+  error: string;
+  tokens_used: number;
 };

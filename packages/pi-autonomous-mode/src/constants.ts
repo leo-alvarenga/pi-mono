@@ -4,6 +4,7 @@ export const TOOL_NAME = "autonomous_update";
 export const STATE_ENTRY = "autonomous_state_v1";
 export const SPAWN_GUARD_ENV = "PI_AUTONOMOUS_EXECUTOR";
 export const NEEDS_INPUT_MARKER = "SUPERVISOR_NEEDS_INPUT";
+export const WIDGET_KEY = "autonomous-status";
 
 export const ICONS: Record<string, string> = {
   failed: "✗",

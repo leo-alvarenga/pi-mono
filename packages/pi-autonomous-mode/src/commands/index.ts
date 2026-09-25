@@ -8,8 +8,9 @@ import { handleResume } from "./resume";
 import { handleStatus } from "./status";
 import { handleList } from "./list";
 import { handleAbort } from "./abort";
+import { handleAnswer } from "./answer";
 
-const SUBCOMMANDS = ["start", "resume", "status", "list", "abort"];
+const SUBCOMMANDS = ["start", "resume", "status", "list", "abort", "answer"];
 
 export function registerAutonomousCommand(
   pi: ExtensionAPI,
@@ -17,7 +18,7 @@ export function registerAutonomousCommand(
 ): void {
   pi.registerCommand(COMMAND_NAME, {
     description:
-      "Autonomous supervisor: start <file> | resume <id> | status | list | abort",
+      "Autonomous supervisor: start <file> | resume <id> | status | list | abort | answer <milestone-id> <answers>",
 
     async getArgumentCompletions(prefix: string) {
       return SUBCOMMANDS.filter((s) => s.startsWith(prefix)).map((s) => ({
@@ -35,7 +36,7 @@ export function registerAutonomousCommand(
           return handleStart(tail, ctx, store, pi);
 
         case "resume":
-          return handleResume(tail, ctx, store);
+          return handleResume(tail, ctx, store, pi);
 
         case "status":
           return handleStatus(tail, ctx, store);
@@ -45,10 +46,11 @@ export function registerAutonomousCommand(
 
         case "abort":
           return handleAbort(tail, ctx, store);
-
+        case "answer":
+          return handleAnswer(tail, ctx, store, pi);
         default:
           ctx.ui.notify(
-            "Usage: /autonomous start <file> | resume <id> | status | list | abort",
+            "Usage: /autonomous start <file> | resume <id> | status | list | abort | answer <milestone-id> <answers>",
             "error",
           );
       }

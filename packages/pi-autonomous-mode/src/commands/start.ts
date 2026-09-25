@@ -25,6 +25,19 @@ export async function handleStart(
     return;
   }
 
+  // Validate goal file format: non-empty, has at least one non-whitespace line
+  const content = fs.readFileSync(goalFilePath, "utf8");
+  if (!content.trim()) {
+    ctx.ui.notify("Goal file is empty. Write a title and description first.", "error");
+    return;
+  }
+
+  const lines = content.split("\n").filter((l) => l.trim());
+  if (lines.length === 0) {
+    ctx.ui.notify("Goal file has no content. Write a title and description first.", "error");
+    return;
+  }
+
   store.commit(ctx, {
     dbPath: null,
     goalFilePath,
@@ -35,11 +48,19 @@ export async function handleStart(
 
   try {
     pi.sendUserMessage(
-      buildResearcherPrompt(fs.readFileSync(goalFilePath, "utf8")),
+      buildResearcherPrompt(content),
+      {
+        deliverAs: "followUp",
+      },
     );
-  } catch {
+
     ctx.ui.notify(
       "Autonomous mode: RESEARCHER phase started. The Supervisor will analyze the goal and ask clarifying questions before planning.",
+      "info",
+    );
+  } catch (error) {
+    ctx.ui.notify(
+      `"Autonomous mode failed to start.\nError: ${JSON.stringify(error)}"`,
       "info",
     );
   }

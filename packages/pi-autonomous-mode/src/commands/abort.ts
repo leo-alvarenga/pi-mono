@@ -3,7 +3,7 @@ import type { ExtensionCommandContext } from "@earendil-works/pi-coding-agent";
 import type { SessionRecordStore } from "@leo-alvarenga/pi-ext-core";
 import type { AutonomousState } from "../types";
 import { openIndexDb, openGoalDb } from "../db/open";
-import { updateGoalStatus, updateGoalIndexStatus } from "../db/queries";
+import { updateGoalStatus, updateGoalIndexStatus, releaseGoalLock } from "../db/queries";
 
 export async function handleAbort(
   _args: string,
@@ -23,6 +23,7 @@ export async function handleAbort(
   try {
     updateGoalStatus(goalDb, s.activeGoalId, "paused");
     updateGoalIndexStatus(indexDb, s.activeGoalId, "paused");
+    releaseGoalLock(indexDb, s.activeGoalId, ctx.sessionManager.getSessionId());
   } finally {
     goalDb.close();
     indexDb.close();
