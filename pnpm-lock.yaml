@@ -11,6 +11,9 @@ importers:
       prettier:
         specifier: ^3.9.6
         version: 3.9.6
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
 
   libs/pi-ext-core:
     dependencies:
@@ -173,6 +176,25 @@ importers:
       typebox:
         specifier: '*'
         version: 1.3.7
+    devDependencies:
+      '@types/node':
+        specifier: ^22.0.0
+        version: 22.20.1
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vitest:
+        specifier: ^3.2.4
+        version: 3.2.7(@types/node@22.20.1)(jiti@2.7.0)(yaml@2.9.0)
+
+  packages/pi-qol:
+    dependencies:
+      '@earendil-works/pi-coding-agent':
+        specifier: '*'
+        version: 0.84.2(ws@8.21.3)
+      '@earendil-works/pi-tui':
+        specifier: '*'
+        version: 0.84.2
     devDependencies:
       '@types/node':
         specifier: ^22.0.0
