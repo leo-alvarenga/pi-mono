@@ -1,6 +1,6 @@
 {
   "name": "@leo-alvarenga/pi-qol",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Small quality-of-life features for pi, individually toggleable",
   "author": "Leonardo A. Alvarenga",
   "license": "MIT",
