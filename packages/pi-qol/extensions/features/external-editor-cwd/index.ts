@@ -36,7 +36,7 @@ let file: PromptFile | null = null;
 
 /**
  * Resolve which key to register (or null to skip) based on the user's config.
- * Exported for testing with injected deps.
+ * Exported for testing with injected deps
  */
 export function resolveKeyBinding(
   options: FeatureConfig,
@@ -59,10 +59,8 @@ export function resolveKeyBinding(
   if (raw === "native") {
     const bound = deps.getBoundKeys(BUILTIN_ACTIONS);
 
-    // undefined = no entry in keybindings.json = pi default (ctrl+g) is active
-    const ctrlGBound =
-      bound === undefined ||
-      BUILTIN_ACTIONS.find((action) => bound.find((b) => b?.includes(action)));
+    // undefined entry = not in keybindings.json (pi default ctrl+g active); [] = explicitly unbound
+    const ctrlGBound = bound.some((b) => b === undefined || b.length > 0);
 
     if (!ctrlGBound) return BUILTIN_EDITOR_KEY;
     const result = deps.unbindAction(BUILTIN_ACTIONS);
@@ -77,7 +75,7 @@ export function resolveKeyBinding(
       `unbound pi's built-in editor key; run \`/reload\` to activate \`${BUILTIN_EDITOR_KEY}\``,
     );
 
-    return BUILTIN_EDITOR_KEY;
+    return DEFAULT_KEY;
   }
 
   const canonical = normalizeKeyId(raw);
@@ -99,10 +97,13 @@ export function resolveKeyBinding(
 }
 
 function createPromptFile(cwd: string, text: string): PromptFile {
-  const newId = () => randomBytes(6).toString("base64url");
+  const getName = (random?: boolean) =>
+    `prompt${random ? `-${randomBytes(6).toString("base64url")}` : ""}.md`;
 
-  for (let i = 0; i < 2; i++) {
-    const filePath = join(cwd, `prompt-${newId()}.md`);
+  const names = [getName(), getName(true)];
+
+  for (const name of names) {
+    const filePath = join(cwd, name);
 
     try {
       writeFileSync(filePath, text, { flag: "wx", encoding: "utf8" });
@@ -118,9 +119,9 @@ function createPromptFile(cwd: string, text: string): PromptFile {
     }
   }
 
-  const filePath = join(tmpdir(), `prompt-${newId()}.md`);
-  writeFileSync(filePath, text, "utf8");
+  const filePath = join(tmpdir(), getName(true));
 
+  writeFileSync(filePath, text, "utf8");
   return { path: filePath, inCwd: false };
 }
 

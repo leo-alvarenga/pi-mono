@@ -29,7 +29,7 @@ export function getBoundKeys(actionIds: string[]): (string[] | undefined)[] {
   });
 }
 
-/** Set `actionId` to [] in keybindings.json, preserving every other entry. */
+/** Set `actionId` to [] in keybindings.json, preserving every other entry */
 export function unbindAction(actionIds: string[]): UnbindResult {
   const path = getKeybindingsPath();
   let current: Record<string, unknown> = {};
@@ -59,6 +59,7 @@ export function unbindAction(actionIds: string[]): UnbindResult {
   }
 
   const replaced: (string | string[] | undefined)[] = [];
+
   for (const actionId of actionIds) {
     const previous = current[actionId];
     current[actionId] = [];

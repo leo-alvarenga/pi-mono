@@ -97,15 +97,15 @@ describe("normalizeKeyId", () => {
 // ---------------------------------------------------------------------------
 describe("resolveKeyBinding", () => {
   const noOp = {
-    getBoundKeys: () => [] as string[],
-    unbindAction: () => ({ ok: true as const, replaced: undefined }),
+    getBoundKeys: () => [] as (string[] | undefined)[],
+    unbindAction: () => ({ ok: true as const, replaced: [] as (string | string[] | undefined)[] }),
   };
   const ctrlGBound = {
-    getBoundKeys: () => ["ctrl+g"],
-    unbindAction: () => ({ ok: true as const, replaced: ["ctrl+g"] }),
+    getBoundKeys: () => [["ctrl+g"]] as (string[] | undefined)[],
+    unbindAction: () => ({ ok: true as const, replaced: [["ctrl+g"]] as (string | string[] | undefined)[] }),
   };
   const writeFails = {
-    getBoundKeys: () => ["ctrl+g"],
+    getBoundKeys: () => [["ctrl+g"]] as (string[] | undefined)[],
     unbindAction: () => ({ ok: false as const, reason: "EPERM: permission denied" }),
   };
 
@@ -161,7 +161,7 @@ describe("resolveKeyBinding", () => {
 // ---------------------------------------------------------------------------
 describe("unbindAction", () => {
   it("missing file -> creates file with { actionId: [] }", () => {
-    const result = unbindAction("app.editor.external");
+    const result = unbindAction(["app.editor.external"]);
     expect(result.ok).toBe(true);
     const content = JSON.parse(readFileSync(join(tmpDir, "keybindings.json"), "utf8"));
     expect(content["app.editor.external"]).toEqual([]);
@@ -172,7 +172,7 @@ describe("unbindAction", () => {
       join(tmpDir, "keybindings.json"),
       JSON.stringify({ "app.editor.external": "ctrl+g", "other.action": "ctrl+k" }, null, 2),
     );
-    const result = unbindAction("app.editor.external");
+    const result = unbindAction(["app.editor.external"]);
     expect(result.ok).toBe(true);
     const content = JSON.parse(readFileSync(join(tmpDir, "keybindings.json"), "utf8"));
     expect(content["app.editor.external"]).toEqual([]);
@@ -182,7 +182,7 @@ describe("unbindAction", () => {
   it("malformed file -> { ok: false }, file byte-identical", () => {
     const malformed = "{ bad json }";
     writeFileSync(join(tmpDir, "keybindings.json"), malformed);
-    const result = unbindAction("app.editor.external");
+    const result = unbindAction(["app.editor.external"]);
     expect(result.ok).toBe(false);
     expect(readFileSync(join(tmpDir, "keybindings.json"), "utf8")).toBe(malformed);
   });
