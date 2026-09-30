@@ -1,0 +1,26 @@
+{
+  "name": "@leo-alvarenga/pi-qol",
+  "version": "0.1.0",
+  "description": "Small quality-of-life features for pi, individually toggleable",
+  "author": "Leonardo A. Alvarenga",
+  "license": "MIT",
+  "repository": "github.com/leo-alvarenga/pi-mono",
+  "publishConfig": { "access": "public" },
+  "keywords": ["pi-extension", "pi-package", "pi"],
+  "files": ["extensions", "!extensions/lib/test", "README.md", "LICENSE"],
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*",
+    "@earendil-works/pi-tui": "*"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "pi": { "extensions": ["./extensions/index.ts"] },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "typescript": "^7.0.2",
+    "vitest": "^3.2.4"
+  }
+}
