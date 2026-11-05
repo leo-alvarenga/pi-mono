@@ -11,13 +11,17 @@ import {
   SubagentState,
 } from "..";
 
+/** `provider/id`: bare ids are ambiguous across providers and Pi rejects them */
+const modelRef = (m: { provider: string; id: string }) =>
+  `${m.provider}/${m.id}`;
+
 function getAllModels(ctx: ExtensionCommandContext) {
   const scopedModels = ctx.scopedModels ?? [];
   const allModels = ctx.modelRegistry.getAvailable();
 
   if (scopedModels.length > 0) {
     return allModels.filter((m) =>
-      scopedModels.find((scoped) => scoped.model.id === m.id),
+      scopedModels.find((scoped) => modelRef(scoped.model) === modelRef(m)),
     );
   }
 
@@ -66,7 +70,8 @@ export function registerSubagentCommands(
 
         if (operatorModel) {
           const modelName =
-            models.find((m) => m.id === operatorModel)?.name ?? operatorModel;
+            models.find((m) => modelRef(m) === operatorModel)?.name ??
+            operatorModel;
 
           modelSelectTitle += ` (Current: ${modelName}${operatorThinking ? ` (thinking: ${operatorThinking})` : ""})`;
         }
@@ -75,7 +80,7 @@ export function registerSubagentCommands(
           ctx.ui,
           modelSelectTitle,
           models.map((m) => ({
-            value: m.id,
+            value: modelRef(m),
             label: m.name,
             description:
               [
@@ -90,7 +95,7 @@ export function registerSubagentCommands(
 
         if (!modelId) return;
 
-        const model = models.find((m) => m.id === modelId);
+        const model = models.find((m) => modelRef(m) === modelId);
         const levels = Object.keys(
           model?.thinkingLevelMap ?? {},
         ) as ThinkingLevel[];
