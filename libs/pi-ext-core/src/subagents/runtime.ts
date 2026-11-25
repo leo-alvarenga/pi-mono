@@ -19,6 +19,7 @@ import type {
 } from "./types";
 import { registerSubagentCommands } from "./commands";
 import { hookEvents } from "./events";
+import { defaultResolveModel } from "./model";
 
 /** Register the subagent tool, command, panel, and session event handlers;
  *
@@ -119,7 +120,10 @@ export function createSubagentRuntime(
         );
       }
 
-      const { operatorModel, operatorThinking } = store.getState(ctx);
+      const state = store.getState(ctx);
+      const { model: operatorModel, thinking: operatorThinking } = (
+        spec.resolveModel ?? defaultResolveModel
+      )(ctx, state);
       const ec = { store, spec, ctx, signal, operatorModel, operatorThinking };
 
       if (hasSingle) {

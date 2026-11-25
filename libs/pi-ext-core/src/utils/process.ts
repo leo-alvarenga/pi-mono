@@ -27,7 +27,14 @@ export function attachProcessListeners(
   const attach = (p: ChildProcess) => {
     if (options.onStdout) p.stdout?.on("data", options.onStdout);
     if (options.onStderr) p.stderr?.on("data", options.onStderr);
-    if (options.onClose) p.on("close", options.onClose);
+    // a spawn-failed proc may still emit "close"; its fallback reports instead
+    if (options.onClose) {
+      const onClose = options.onClose;
+      p.on("close", (code) => {
+        if (p === proc && (proc as any)[fallbackKey]) return;
+        onClose(code);
+      });
+    }
     if (options.onError) p.on("error", options.onError);
   };
 

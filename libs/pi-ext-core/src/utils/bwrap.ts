@@ -1,3 +1,6 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
+import { getAgentDir } from "@earendil-works/pi-coding-agent";
 import {
   spawn,
   spawnSync,
@@ -13,6 +16,16 @@ type BwrapCache = {
 };
 
 const CACHE_TTL = 10 * 60 * 1000; // 10 min in ms
+
+/** Agent-dir entries that hold code or skills the sandbox must not modify */
+const AGENT_DIR_READONLY_SUBDIRS = [
+  "extensions",
+  "npm",
+  "git",
+  "skills",
+  "themes",
+];
+
 const _bwrapCache: BwrapCache = {};
 
 function hasBubblewrapCacheExpired() {
@@ -26,7 +39,7 @@ function resetBubblewrapCache() {
   _bwrapCache.available = undefined;
 }
 
-function buildDefaultBwrapArgs(
+export function buildDefaultBwrapArgs(
   cwd: string | undefined,
   allowWrite: boolean,
 ): string[] {
@@ -44,6 +57,18 @@ function buildDefaultBwrapArgs(
   ];
 
   if (allowWrite && cwd) args.push("--bind", cwd, cwd);
+
+  // Pi needs to write lock files (settings/auth/models) and refresh OAuth
+  // tokens under its agent dir; without this, config fails to load with
+  // EROFS and the child reports "No API key found".
+  const agentDir = getAgentDir();
+  args.push("--bind", agentDir, agentDir);
+
+  // Keep executable content read-only so a read-only subagent cannot plant code
+  for (const sub of AGENT_DIR_READONLY_SUBDIRS) {
+    const p = path.join(agentDir, sub);
+    if (fs.existsSync(p)) args.push("--ro-bind", p, p);
+  }
 
   return args;
 }

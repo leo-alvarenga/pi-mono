@@ -1,4 +1,7 @@
-import type { Theme } from "@earendil-works/pi-coding-agent";
+import type {
+  ExtensionContext,
+  Theme,
+} from "@earendil-works/pi-coding-agent";
 import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
 import type { KeyId } from "@earendil-works/pi-tui";
 import type { BubblewrapOptions } from "../types";
@@ -18,6 +21,12 @@ export type SubagentRecord = {
   questions?: string[];
   status: SubagentStatus;
   parentSessionId: string;
+};
+
+/** Model passed to a subagent as `--model provider/id`; empty lets Pi decide */
+export type ResolvedModel = {
+  model?: string;
+  thinking?: ThinkingLevel;
 };
 
 export type SubagentState = {
@@ -62,6 +71,14 @@ export type SubagentSpec = {
   orchestratorMode?: {
     enabled?: boolean;
   };
+
+  /**
+   * Picks the model/thinking level passed to each subagent. Default (when
+   * omitted): inherit the orchestrator session's current model. Note the
+   * default ignores `SubagentState.operatorModel`; a consumer that wants the
+   * `set-operator-model` value honored must read it here.
+   */
+  resolveModel?(ctx: ExtensionContext, state: SubagentState): ResolvedModel;
 
   /** Tool allowlist; If left empty, readOnly enforcement is done via prompt guard-rails only **/
   allowlists?: {

@@ -11,11 +11,24 @@ import { attachProcessListeners } from "../utils/process";
 
 const activeProcesses = new Set<ChildProcess>();
 
+/** SIGTERM a process and, if bwrap fell back to a plain spawn, its fallback */
+function killProc(proc: ChildProcess): void {
+  const fallback = (proc as { _bwrapFallback?: ChildProcess })._bwrapFallback;
+
+  for (const p of [proc, fallback]) {
+    try {
+      p?.kill("SIGTERM");
+    } catch {
+      /* already gone */
+    }
+  }
+}
+
 /** Signal every still-running headless process spawned by this consumer */
 export function killAllRunning(): void {
   for (const proc of activeProcesses) {
     try {
-      proc.kill("SIGTERM");
+      killProc(proc);
     } catch {
       /* already gone */
     }
@@ -108,7 +121,7 @@ export async function runHeadlessAgent(
 
       opts.signal?.addEventListener("abort", () => {
         result.aborted = true;
-        proc.kill("SIGTERM");
+        killProc(proc);
       });
     });
 

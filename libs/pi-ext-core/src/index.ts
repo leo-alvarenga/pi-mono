@@ -21,4 +21,5 @@ export * from "./tui/picker";
 export * from "./subagents/types";
 export * from "./subagents/prompt";
 export * from "./subagents/result";
+export * from "./subagents/model";
 export * from "./subagents/runtime";

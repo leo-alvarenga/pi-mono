@@ -11,9 +11,7 @@ import {
   SubagentState,
 } from "..";
 
-/** `provider/id`: bare ids are ambiguous across providers and Pi rejects them */
-const modelRef = (m: { provider: string; id: string }) =>
-  `${m.provider}/${m.id}`;
+import { modelRef } from "./model";
 
 function getAllModels(ctx: ExtensionCommandContext) {
   const scopedModels = ctx.scopedModels ?? [];
