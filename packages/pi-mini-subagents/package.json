@@ -1,7 +1,7 @@
 {
   "name": "@leo-alvarenga/pi-mini-subagents",
-  "version": "0.4.4",
-  "description": "Transient subagents for Pi: mini_subagent tool (single + parallel), /subagents command, and a live TUI panel",
+  "version": "1.0.0",
+  "description": "DEPRECATED: no longer works. Migrate to another subagent solution.",
   "license": "MIT",
   "repository": "github.com/leo-alvarenga/pi-mono",
   "publishConfig": {
@@ -16,35 +16,23 @@
   "files": [
     "src",
     "!src/test",
-    "skills",
     "README.md",
     "LICENSE"
   ],
   "peerDependencies": {
-    "@earendil-works/pi-ai": "*",
-    "@earendil-works/pi-coding-agent": "*",
-    "@earendil-works/pi-tui": "*",
-    "typebox": "*"
-  },
-  "dependencies": {
-    "@leo-alvarenga/pi-ext-core": "workspace:*"
+    "@earendil-works/pi-coding-agent": "*"
   },
   "scripts": {
     "build": "tsc --noEmit",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "typecheck": "tsc --noEmit"
   },
   "pi": {
     "extensions": [
       "./src/index.ts"
-    ],
-    "skills": [
-      "./skills"
     ]
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "typescript": "^7.0.2",
-    "vitest": "^3.2.4"
+    "typescript": "^7.0.2"
   }
 }
